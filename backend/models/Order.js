@@ -131,7 +131,7 @@ const getAllOrderItemByUserID = async (id) => {
     try {
         let poolConnection = await sql.connect(config);
         const result = await poolConnection.request().query(`
-           SELECT p.Id,p.Name, oi.CreatedAt, oi.Price, oi.Quantity, i.Url, o.Status
+           SELECT p.Id,p.Name, oi.CreatedAt, oi.Price, oi.Quantity, i.Url, o.Status,p.Category
             FROM OrderItem oi, Orders o, Products p, Image i
             WHERE oi.OrdersId = o.Id AND o.UserID = ${id} AND oi.ProductId = p.id AND i.ProductId = p.Id
 
