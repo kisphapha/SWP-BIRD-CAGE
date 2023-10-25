@@ -17,6 +17,14 @@ const getOrderById = async (req, res) => {
         res.status(500).json({message: error.message});
     }
 }
+const getOrderByUserId = async (req, res) => {
+    try {
+        const products = await Order.getOrderByUserId(req.params.id);
+        res.json(products);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
 
 const addOrderToDB = async (req, res) => {
     try {
@@ -38,9 +46,9 @@ const addOrderToDB = async (req, res) => {
     }
 }
 
-const getAllOrderItemByUserID = async (req, res) => {
+const getOrderItemByOrderID = async (req, res) => {
     try {
-        const order = await Order.getAllOrderItemByUserID(req.params.id);
+        const order = await Order.getAllOrderItemByOrderID(req.params.id);
         res.json(order);
     }catch (error){
         res.status(500).json({message: error.message})
@@ -60,7 +68,8 @@ module.exports = {
     getAllOrder,
     getOrderById,
     addOrderToDB,
-    getAllOrderItemByUserID,
+    getOrderItemByOrderID,
+    getOrderByUserId,
     changeStatus_Paid
 }
 

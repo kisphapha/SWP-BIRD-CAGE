@@ -14,6 +14,20 @@ const getAllOrder = async () => {
     }
 };
 
+const getOrderByUserId = async (id) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request().query(
+            `select *
+             from Orders
+             where Orders.UserID = ${id}`
+        );
+        return result.recordset[0];
+    } catch (error) {
+        console.log("error: ", error);
+    }
+};
+
 const getOrderById = async (id) => {
     try {
         let poolConnection = await sql.connect(config);
@@ -127,13 +141,13 @@ const changeStatus_Paid = async (id) => {
 }
 
 
-const getAllOrderItemByUserID = async (id) => {
+const getAllOrderItemByOrderID = async (id) => {
     try {
         let poolConnection = await sql.connect(config);
         const result = await poolConnection.request().query(`
            SELECT p.Id,p.Name, oi.CreatedAt, oi.Price, oi.Quantity, i.Url, o.Status
-            FROM OrderItem oi, Orders o, Products p, Image i
-            WHERE oi.OrdersId = o.Id AND o.UserID = ${id} AND oi.ProductId = p.id AND i.ProductId = p.Id
+         FROM OrderItem oi, Orders o, Products p, Image i
+         WHERE o.Id = ${id} AND o.Id = oi.OrdersId AND oi.ProductId = p.id AND i.ProductId = p.Id
 
         `)
         return result.recordset;
@@ -148,5 +162,6 @@ module.exports = {
     getOrderById,
     addOrderToDB,
     changeStatus_Paid,
-    getAllOrderItemByUserID
+    getAllOrderItemByOrderID,
+    getOrderByUserId
 }

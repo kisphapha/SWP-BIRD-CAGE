@@ -123,7 +123,15 @@ export default function Users() {
                             <td className="w-1/12  text-left mr-16   ">{user.Point}</td>
                             <td className="w-1/12  mr-16">{user.CreatedAt ? user.CreatedAt.substr(0, 10) : ""} </td>
                             <td className="w-1/12 ">{user.Role}</td>
-                            <td className="w-1/12 ">{user.Status}</td>
+                            <td className="w-1/12 ">
+                                <TextField className="text-left" fullWidth select label="Status" variant="filled" defaultValue={user.status}>
+                                    {status.map((option) => (
+                                        <MenuItem key={option.value} value={option.value}>
+                                            {option.label}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                            </td>
                     </tr>
                     <hr className=" my-2" />
                 </>
