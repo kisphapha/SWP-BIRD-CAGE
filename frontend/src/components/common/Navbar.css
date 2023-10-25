@@ -1,0 +1,82 @@
+#navbar {
+    display: flex;
+    background-color: lightgray;
+    width: 100%;
+    justify-content: center;
+    position: sticky;
+    z-index: 1;
+    top: 0;
+}
+
+#navbar > .menu {
+    background-color: gray;
+    margin-left: 0px;
+    position: relative;
+}
+
+#navbar > .menu > .menu-button {
+    padding: 15px;
+    width: 220px;
+    text-align: justify-all;
+    display: flex;
+    align-items: flex-end;
+}
+#navbar > .nav > .cart-button {
+    /* margin-right: 20%; */
+    /* background-color: black; */
+    color: black;
+    border: none;
+    width: 100px;
+}
+#navbar > .nav > .cart-button:hover {
+    /* color: rgb(148, 201, 204); */
+    color: rgb(224, 42, 42);
+    background-color: darkgray;
+    height: 100%;
+}
+
+#navbar > .menu > .menu-list {
+    z-index: 100;
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    list-style: none;
+    flex-direction: column;
+    padding: 0px;
+    background-color: #bdbdbd;
+    width: 100%;
+    border: 1px solid black;
+}
+
+#navbar > .menu > .menu-list > li {
+    border: 1px solid black;
+    padding: 20px;
+}
+
+#navbar > .nav {
+    display: flex;
+    margin-left: 0;
+    align-items: center;
+}
+
+.nav-content {
+    padding: 15px 20px 15px 20px;
+    display: flex;
+    align-items: flex-end;
+}
+
+#navbar > .menu:hover > .menu-list {
+    display: flex;
+}
+
+.nav-content:hover {
+    color: rgb(224, 42, 42);
+    background-color: darkgray;
+}
+
+.nav .active {
+    font-weight: bold;
+    background-color: darkgray;
+    border-radius: 0 0 0 0;
+}

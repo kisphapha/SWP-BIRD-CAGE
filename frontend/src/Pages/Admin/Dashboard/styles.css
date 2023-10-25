@@ -1,0 +1,18 @@
+.dashboard {
+    width: 100%;
+    align-items: center;
+}
+
+.dashboard-detail {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 65% 30%;
+    gap: 15px;
+}
+
+.chart-container {
+    background-color: white;
+    padding: 0 10px;
+    border-radius: 4px;
+    box-shadow: 2px 2px 5px lightgray;
+}
