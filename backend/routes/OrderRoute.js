@@ -11,7 +11,9 @@ OrderRouter.route("/:id").get(OrderController.getOrderById)
 
 OrderRouter.route("/addordertodb").post(OrderController.addOrderToDB)
 
-OrderRouter.route("/list/:id").get(OrderController.getAllOrderItemByUserID)
+OrderRouter.route("/list/:id").get(OrderController.getOrderItemByOrderID)
+
+OrderRouter.route("/user/:id").get(OrderController.getOrderByUserId)
 
 OrderRouter.route("/changeUnPaidToPaid/:id").get(OrderController.changeStatus_Paid);
 

@@ -14,6 +14,20 @@ const getAllOrder = async () => {
     }
 };
 
+const getOrderByUserId = async (id) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request().query(
+            `select *
+             from Orders
+             where Orders.UserID = ${id}`
+        );
+        return result.recordset[0];
+    } catch (error) {
+        console.log("error: ", error);
+    }
+};
+
 const getOrderById = async (id) => {
     try {
         let poolConnection = await sql.connect(config);
@@ -127,7 +141,7 @@ const changeStatus_Paid = async (id) => {
 }
 
 
-const getAllOrderItemByUserID = async (id) => {
+const getAllOrderItemByOrderID = async (id) => {
     try {
         let poolConnection = await sql.connect(config);
         const result = await poolConnection.request().query(`
@@ -148,5 +162,6 @@ module.exports = {
     getOrderById,
     addOrderToDB,
     changeStatus_Paid,
-    getAllOrderItemByUserID
+    getAllOrderItemByOrderID,
+    getOrderByUserId
 }

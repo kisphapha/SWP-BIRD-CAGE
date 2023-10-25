@@ -16,13 +16,17 @@ const OrderList = (props) => {
     const handleRebuy = (productId) => {
         navigate('/products/' + productId)
     }
+    async function fetchOrderItems() {
+        const response = await axios.get(`http://localhost:3000/order/list/${props.user.Id}`)
+        setCards(response.data)
+    }
+    async function fetchOrder() {
+        const response = await axios.get(`http://localhost:3000/order/list/${props.user.Id}`)
+        setCards(response.data)
+    }
 
-    useEffect(() => {
-        async function fetchOrder() {
-            const response = await axios.get(`http://localhost:3000/order/list/${props.user.Id}`)
-            setCards(response.data)
-        }
-        fetchOrder()
+    useEffect(() => {      
+        fetchOrderItems()
     })
     const [activeStep, setActiveStep] = React.useState(1)
     return (
