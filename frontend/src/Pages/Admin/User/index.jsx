@@ -1,8 +1,22 @@
 import { Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material'
-import React from 'react'
+import React, { useState,useEffect} from 'react'
 import MenuItem from '@mui/material/MenuItem'
+import axios from 'axios'
+
 
 export default function Users() {
+    const [users, setUsers] = useState([])
+
+    const fetchUser = async () => {
+        const response = await axios.get(`http://localhost:3000/users`)
+        setUsers(response.data)
+    }
+
+    useEffect(() => {
+        fetchUser()
+        
+    })
+
     const status = [
         {
             value: 'All',
@@ -74,7 +88,7 @@ export default function Users() {
                         <TextField className="w-16" id="outlined-basic" label="To" variant="standard" />
                     </th>
                     <th className="w-1/12">
-                        <TextField className="text-left" fullWidth select label="Role" variant="filled">
+                        <TextField className="text-left" fullWidth select label="Role" variant="filled" defaultValue="All">
                             {role.map((option) => (
                                 <MenuItem key={option.value} value={option.value}>
                                     {option.label}
@@ -83,7 +97,7 @@ export default function Users() {
                         </TextField>
                     </th>
                     <th className="w-40">
-                        <TextField className="text-left" fullWidth select label="Status" variant="filled">
+                        <TextField className="text-left" fullWidth select label="Status" variant="filled" defaultValue="All">
                             {status.map((option) => (
                                 <MenuItem key={option.value} value={option.value}>
                                     {option.label}
@@ -93,143 +107,28 @@ export default function Users() {
                     </th>
                 </tr>
                 <hr className=" my-2" />
-                <tr className="items-center flex ">
-                    <th className="mr-4">
-                        <img
-                            className="w-12 h-12"
-                            src="https://lh3.googleusercontent.com/a/ACg8ocIPw3Rx-PuSPn_up0_ZEwSU8B_HRoiEUsiD1ixS1yQWD1w=s96-c"
-                        />
-                    </th>
-                    <th className="w-52 flex ">Hưng Đẹp Trai</th>
-                    <th className="w-1/6 pl-4 overflow-e">thanhhung16082003@gmail.com</th>
-                    <th className="w-1/12   gap-12 mr-16  ">0123456789</th>
-                    <th className="w-1/12  text-left    mr-16 ">2003-08-03</th>
-                    <th className="w-1/12  text-left mr-16   ">10000</th>
-                    <th className="w-1/12  mr-16">2023-10-07 </th>
-                    <th className="w-1/12 ">User</th>
-                    <th className="w-1/12 ">Active</th>
-                </tr>
-                <hr className=" my-2" />
-                <tr className="items-center flex ">
-                    <th className="mr-4">
-                        <img
-                            className="w-12 h-12"
-                            src="https://lh3.googleusercontent.com/a/ACg8ocIPw3Rx-PuSPn_up0_ZEwSU8B_HRoiEUsiD1ixS1yQWD1w=s96-c"
-                        />
-                    </th>
-                    <th className="w-52 flex ">Hưng Đẹp Trai</th>
-                    <th className="w-1/6 pl-4">thanhhung16082003@gmail.com</th>
-                    <th className="w-1/12   gap-12 mr-16  ">0123456789</th>
-                    <th className="w-1/12  text-left    mr-16 ">2003-08-03</th>
-                    <th className="w-1/12  text-left mr-16   ">10000</th>
-                    <th className="w-1/12  mr-16">2023-10-07 </th>
-                    <th className="w-1/12 ">User</th>
-                    <th className="w-1/12 ">Active</th>
-                </tr>
-                <hr className=" my-2" />
-                <tr className="items-center flex ">
-                    <th className="mr-4">
-                        <img
-                            className="w-12 h-12"
-                            src="https://lh3.googleusercontent.com/a/ACg8ocIPw3Rx-PuSPn_up0_ZEwSU8B_HRoiEUsiD1ixS1yQWD1w=s96-c"
-                        />
-                    </th>
-                    <th className="w-52 flex ">Hưng Đẹp Trai</th>
-                    <th className="w-1/6 pl-4">thanhhung16082003@gmail.com</th>
-                    <th className="w-1/12   gap-12 mr-16  ">0123456789</th>
-                    <th className="w-1/12  text-left    mr-16 ">2003-08-03</th>
-                    <th className="w-1/12  text-left mr-16   ">10000</th>
-                    <th className="w-1/12  mr-16">2023-10-07 </th>
-                    <th className="w-1/12 ">User</th>
-                    <th className="w-1/12 ">Active</th>
-                </tr>
-                <hr className=" my-2" />
-                <tr className="items-center flex ">
-                    <th className="mr-4">
-                        <img
-                            className="w-12 h-12"
-                            src="https://lh3.googleusercontent.com/a/ACg8ocIPw3Rx-PuSPn_up0_ZEwSU8B_HRoiEUsiD1ixS1yQWD1w=s96-c"
-                        />
-                    </th>
-                    <th className="w-52 flex ">Hưng Đẹp Trai</th>
-                    <th className="w-1/6 pl-4">thanhhung16082003@gmail.com</th>
-                    <th className="w-1/12   gap-12 mr-16  ">0123456789</th>
-                    <th className="w-1/12  text-left    mr-16 ">2003-08-03</th>
-                    <th className="w-1/12  text-left mr-16   ">10000</th>
-                    <th className="w-1/12  mr-16">2023-10-07 </th>
-                    <th className="w-1/12 ">User</th>
-                    <th className="w-1/12 ">Active</th>
-                </tr>
-                <hr className=" my-2" />
-                <tr className="items-center flex ">
-                    <th className="mr-4">
-                        <img
-                            className="w-12 h-12"
-                            src="https://lh3.googleusercontent.com/a/ACg8ocIPw3Rx-PuSPn_up0_ZEwSU8B_HRoiEUsiD1ixS1yQWD1w=s96-c"
-                        />
-                    </th>
-                    <th className="w-52 flex ">Hưng Đẹp Trai</th>
-                    <th className="w-1/6 pl-4">thanhhung16082003@gmail.com</th>
-                    <th className="w-1/12   gap-12 mr-16  ">0123456789</th>
-                    <th className="w-1/12  text-left    mr-16 ">2003-08-03</th>
-                    <th className="w-1/12  text-left mr-16   ">10000</th>
-                    <th className="w-1/12  mr-16">2023-10-07 </th>
-                    <th className="w-1/12 ">User</th>
-                    <th className="w-1/12 ">Active</th>
-                </tr>
-                <hr className=" my-2" />
-                <tr className="items-center flex ">
-                    <th className="mr-4">
-                        <img
-                            className="w-12 h-12"
-                            src="https://lh3.googleusercontent.com/a/ACg8ocIPw3Rx-PuSPn_up0_ZEwSU8B_HRoiEUsiD1ixS1yQWD1w=s96-c"
-                        />
-                    </th>
-                    <th className="w-52 flex ">Hưng Đẹp Trai</th>
-                    <th className="w-1/6 pl-4">thanhhung16082003@gmail.com</th>
-                    <th className="w-1/12   gap-12 mr-16  ">0123456789</th>
-                    <th className="w-1/12  text-left    mr-16 ">2003-08-03</th>
-                    <th className="w-1/12  text-left mr-16   ">10000</th>
-                    <th className="w-1/12  mr-16">2023-10-07 </th>
-                    <th className="w-1/12 ">User</th>
-                    <th className="w-1/12 ">Active</th>
-                </tr>
-                <hr className=" my-2" />
-                <tr className="items-center flex ">
-                    <th className="mr-4">
-                        <img
-                            className="w-12 h-12"
-                            src="https://lh3.googleusercontent.com/a/ACg8ocIPw3Rx-PuSPn_up0_ZEwSU8B_HRoiEUsiD1ixS1yQWD1w=s96-c"
-                        />
-                    </th>
-                    <th className="w-52 flex ">Hưng Đẹp Trai</th>
-                    <th className="w-1/6 pl-4">thanhhung16082003@gmail.com</th>
-                    <th className="w-1/12   gap-12 mr-16  ">0123456789</th>
-                    <th className="w-1/12  text-left    mr-16 ">2003-08-03</th>
-                    <th className="w-1/12  text-left mr-16   ">10000</th>
-                    <th className="w-1/12  mr-16">2023-10-07 </th>
-                    <th className="w-1/12 ">User</th>
-                    <th className="w-1/12 ">Active</th>
-                </tr>
-                <hr className=" my-2" />
-                <tr className="items-center flex ">
-                    <th className="mr-4">
-                        <img
-                            className="w-12 h-12"
-                            src="https://lh3.googleusercontent.com/a/ACg8ocIPw3Rx-PuSPn_up0_ZEwSU8B_HRoiEUsiD1ixS1yQWD1w=s96-c"
-                        />
-                    </th>
-                    <th className="w-52 flex ">Hưng Đẹp Trai</th>
-                    <th className="w-1/6 pl-4">thanhhung16082003@gmail.com</th>
-                    <th className="w-1/12   gap-12 mr-16  ">0123456789</th>
-                    <th className="w-1/12  text-left    mr-16 ">2003-08-03</th>
-                    <th className="w-1/12  text-left mr-16   ">10000</th>
-                    <th className="w-1/12  mr-16">2023-10-07 </th>
-                    <th className="w-1/12 ">User</th>
-                    <th className="w-1/12 ">Active</th>
-                </tr>
-
-                <tr></tr>
+                {users.map((user) => (
+                    <>
+                     <tr className="items-center flex ">
+                        <td className="mr-4">
+                            <img
+                                    className="w-12 h-12"
+                                    src={user.Picture }
+                            />
+                        </td>
+                            <td className="w-52 flex ">{ user.Name}</td>
+                            <td className="w-1/6  truncate mr-8" >{user.Email}</td>
+                            <td className="w-1/12   gap-12 mr-16  ">{ user.PhoneNumber}</td>
+                            <td className="w-1/12  text-left    mr-16 ">{ user.DateOfBirth ? user.DateOfBirth.substr(0,10) : ""}</td>
+                            <td className="w-1/12  text-left mr-16   ">{user.Point}</td>
+                            <td className="w-1/12  mr-16">{user.CreatedAt ? user.CreatedAt.substr(0, 10) : ""} </td>
+                            <td className="w-1/12 ">{user.Role}</td>
+                            <td className="w-1/12 ">{user.Status}</td>
+                    </tr>
+                    <hr className=" my-2" />
+                </>
+                ))}
+                
             </table>
         </div>
     )

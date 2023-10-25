@@ -28,14 +28,8 @@ const getOrderById = async (id) => {
     }
 };
 
-const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentId, Status) => {
+const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentId, Status, Items) => {
     try {
-        // const paymentDate = new Date(PaymentDate);
-        // if (isNaN(paymentDate)) {
-        //     console.error('Invalid PaymentDate:', PaymentDate);
-        //     return;
-        // }
-
         let poolConnection = await sql.connect(config);
         const result = await poolConnection.request()
             .input('UserID', sql.Int, UserID)
@@ -86,6 +80,32 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                         'UnPaid'
                     );
             `);
+            Items.forEach(item => {
+                poolConnection.request()
+                .input('ProductId', sql.Int, item.id)
+                .input('Quantity', sql.Int, parseInt(item.quantity))
+                .input('Price', sql.Int, parseInt(item.price))
+                .query(`
+                INSERT INTO OrderItem(
+                    ProductId,
+                    OrdersId,
+                    Quantity,
+                    Price,
+                    CreatedAt
+                ) VALUES (
+                    @ProductId,
+                    (SELECT 
+                        TOP 1 Id 
+                    FROM 
+                        Orders 
+                    ORDER BY 
+                        Id DESC),
+                    @Quantity,
+                    @Price,
+                    GETDATE()
+                )               
+                `)
+            });
         return result.recordset;
     } catch (error) {
         console.log("error: ", error);

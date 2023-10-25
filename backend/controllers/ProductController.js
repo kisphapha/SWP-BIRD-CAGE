@@ -38,18 +38,19 @@ const getProductsByCategory = async (req, res) => {
 
 const getNewProductToDB = async (req, res) => {
     try {
-        const Name = req.query.Name;
-        const Description = req.query.Description;
-        const Price = req.query.Price;
-        const Stock = req.query.Stock;
-        const Category = req.query.Category;
-        const material = req.query.material;
-        const Size = req.query.Size;
-        const SuitableBird = req.query.SuitableBird;
-        const discount = req.query.discount;
-        const Status = req.query.Status;
+        const Name = req.body.Name;
+        const Description = req.body.Description;
+        const Price = req.body.Price;
+        const Stock = req.body.Stock;
+        const Category = req.body.Category;
+        const material = req.body.material;
+        const Size = req.body.Size;
+        const SuitableBird = req.body.SuitableBird;
+        const discount = req.body.discount;
+        const Status = req.body.Status;
+        const Url = req.body.Url
 
-        await Product.addNewProductToDB(Name, Description, Price, Stock, Category, material, Size, SuitableBird, discount, Status);
+        await Product.addNewProductToDB(Name, Description, Price, Category, material, SuitableBird, discount, Size, Stock, Status, Url);
         res.json({ message: "done" });
     }catch (error){
         res.status(500).json({message: error.message});

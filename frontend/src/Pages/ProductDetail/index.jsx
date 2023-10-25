@@ -18,9 +18,9 @@ export default function ProductDetails() {
             const user = JSON.parse(sessionStorage.loginedUser)
             if (user.Role === 'Admin' || user.Role === 'Staff') {
                 return (
-                    <div>
-                        <TextField label="Trả lời bình luận" />
-                        <Button>Lưu</Button>
+                    <div className="flex h-16">
+                        <TextField label="Reply to comment" />
+                        <Button>Save</Button>
                     </div>
                 )
             }
@@ -68,12 +68,12 @@ export default function ProductDetails() {
         const existingProduct = cart.products.find((product) => product.id === productId)
 
         if (existingProduct) {
-            existingProduct.quantity = ((existingProduct.quantity) + (quantity))
+            existingProduct.quantity = (parseInt(existingProduct.quantity) + parseInt(quantity)).toString()
         } else {
             cart.products.push({
                 id: productId,
                 name: product.Name,
-                quantity: quantity,
+                quantity: quantity.toString(),
                 url: product.Url,
                 price: product.Price
             })
@@ -146,7 +146,8 @@ export default function ProductDetails() {
                                 </button>
                             </div>
                             <div className="add-cart" onClick={addToCart}>
-                                Thêm vào giỏ hàng
+                                {' '}
+                                Thêm vào giỏ hàng{' '}
                             </div>
                         </div>
 
@@ -166,16 +167,22 @@ export default function ProductDetails() {
 
                     <div>
                         {ratingsData.map((rating, index) => (
-                            <div key={index}>
+                            <div key={index} className="bg-white flex py-2">
                                 <hr className="py-2" />
-                                <div className="flex">
-                                    <Avatar src={rating.Picture} />
-                                    <h4>{rating.Name}</h4>
+                                {/* <div className="flex-row"> */}
+                                <div>
+                                    <Avatar className="rounded-xl w-16 h-16 m-2" src={rating.Picture} />
                                 </div>
-                                <Rating name="hover-feedback" value={rating.StarPoint} precision={1} readOnly />
-                                <p>{rating.Content}</p>
-                                {getFeedback()}
-                                {/* <hr className="py-2" /> */}
+                                <div className="">
+                                    <div>
+                                        <h4 className=" px-4">{rating.Name}</h4>
+                                        <Rating name="hover-feedback" value={rating.StarPoint} precision={1} readOnly />
+                                    </div>
+                                    <p>{rating.Content}</p>
+                                    {getFeedback()}
+                                </div>
+                                <hr className="py-2 " />
+                                {/* </div> */}
                                 <div className="py-2"></div>
                             </div>
                         ))}

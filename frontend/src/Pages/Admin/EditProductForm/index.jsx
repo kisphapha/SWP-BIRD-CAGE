@@ -4,7 +4,7 @@ import { Button } from '@mui/material'
 import MenuItem from '@mui/material/MenuItem'
 import axios from 'axios'
 
-export default function EditProductForm({ productId, close, fetchProducts }) {
+export default function EditProductForm({ productId, close, handleFilter }) {
     const [materials, setMaterials] = useState([])
     const [categories, setCategories] = useState([])
     const [product, setProduct] = useState('')
@@ -56,7 +56,7 @@ export default function EditProductForm({ productId, close, fetchProducts }) {
         await axios.post(`http://localhost:3000/products/update`, json)
         alert('Product updated')
         close()
-        fetchProducts()
+        handleFilter()
     }
 
     const handleNameChange = (event) => {

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/jsx-key */
 import { Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material'
 import React, { useEffect, useState } from 'react'
@@ -11,6 +12,10 @@ import axios from 'axios'
 
 export default function Products() {
     const [products, setProducts] = useState([])
+    const [page, setPage] = useState(1)
+    const [maxPage, setMaxPage] = useState(1)
+    const [pageList, setPageList] = useState([])
+
     const [cate, setCate] = useState([])
     const [id, setId] = useState('')
     const [name, setName] = useState('')
@@ -20,7 +25,6 @@ export default function Products() {
     const [upperStock, setUpperStock] = useState('')
     const [lowerStock, setLowerStock] = useState('')
     const [prostatus, setProStatus] = useState('')
-
     const handleIdChange = (event) => {
         setId(event.target.value)
     }
@@ -51,11 +55,14 @@ export default function Products() {
     const handleStatusChange = (event) => {
         setProStatus(event.target.value)
     }
-
+    const handleSwitchPage = (page) => {
+        console.log(page)
+        setPage(page)
+    }
     async function handleDelete(id) {
         await axios.delete(`http://localhost:3000/products/` + id)
         alert('Product deleted')
-        fetchProducts()
+        handleFilter()
     }
 
     const handleFilter = async () => {
@@ -68,25 +75,16 @@ export default function Products() {
             upper_stock: upperStock,
             lower_stock: lowerStock,
             status: prostatus,
-            page: '1'
+            page: page
         }
+        console.log(json)
         Axios.post('http://localhost:3000/products/filter/', json)
             .then((response) => {
-                console.log(json)
-                console.log(response.data)
-                setProducts(response.data)
+                setProducts(response.data.data)
+                setMaxPage(Math.ceil(response.data.lines.Count / 10))
             })
             .catch((error) => {
                 console.error('Error fetching data:', error)
-            })
-    }
-    async function fetchProducts() {
-        Axios.get('http://localhost:3000/products')
-            .then((response) => {
-                setProducts(response.data)
-            })
-            .catch((error) => {
-                console.error('Error fetching category data:', error)
             })
     }
     async function fetchCates() {
@@ -100,9 +98,13 @@ export default function Products() {
     }
 
     useEffect(() => {
-        fetchProducts()
+        setPageList(Array.from({ length: maxPage }));
+    }, [maxPage]);
+
+    useEffect(() => {
+        handleFilter()
         fetchCates()
-    }, [])
+    }, [page])
     const status = [
         {
             value: 'All',
@@ -124,7 +126,8 @@ export default function Products() {
                 <div className="my-5">Product</div>
                 {/* <Button onClick={() => '/admin/NewProduct'}>New Product</Button> */}
             </div>
-            <table className="bg-white w-full m-2">
+
+            <table className="bg-white w-full m-4 m-2">
                 <thead>
                     <tr className="items-center flex h-10 w-full">
                         <th className="w-1/12 text-left pl-2">Mã SP</th>
@@ -173,7 +176,12 @@ export default function Products() {
                             </TextField>
                         </td>
                         <td className="w-1/12 text-end pr-2">
-                            <Button variant="outlined" onClick={handleFilter}>
+                            <Button variant="outlined" onClick={() =>
+                                {
+                                setPage(1)
+                                handleFilter()
+                            }
+                            }>
                                 Filter
                             </Button>
                         </td>
@@ -212,7 +220,8 @@ export default function Products() {
                                                     <button className="px-5" onClick={close}>
                                                         X
                                                     </button>
-                                                    <EditProductForm productId={product.Id} close={close} fetchProducts={fetchProducts} />
+                                                    <EditProductForm productId={product.Id} close={close}
+                                                        handleFilter={handleFilter} />
                                                 </>
                                             )}
                                         </Popup>
@@ -225,6 +234,20 @@ export default function Products() {
                         </div>
                     ))}
                 </tbody>
+            </table>
+            <table>
+                <tr className="page-stuff">
+                    {pageList.map((pg, index) => (
+                        <td key={index}>
+                            <Button
+                                variant={index + 1 === page ? "contained" : "outlined"}
+                                onClick={() => handleSwitchPage(index + 1)}
+                            >
+                                {index + 1}
+                            </Button>
+                        </td>
+                    ))}
+                </tr>
             </table>
         </div>
     )

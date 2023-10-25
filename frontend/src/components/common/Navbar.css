@@ -2,10 +2,8 @@
     display: flex;
     background-color: lightgray;
     width: 100%;
+    /* padding: 0px 300px; */
     justify-content: center;
-    position: sticky;
-    z-index: 1;
-    top: 0;
 }
 
 #navbar > .menu {
@@ -15,11 +13,9 @@
 }
 
 #navbar > .menu > .menu-button {
-    padding: 15px;
+    padding: 10px;
     width: 220px;
     text-align: justify-all;
-    display: flex;
-    align-items: flex-end;
 }
 #navbar > .nav > .cart-button {
     /* margin-right: 20%; */
@@ -30,7 +26,7 @@
 }
 #navbar > .nav > .cart-button:hover {
     /* color: rgb(148, 201, 204); */
-    color: rgb(224, 42, 42);
+    color: rgb(22, 234, 217);
     background-color: darkgray;
     height: 100%;
 }
@@ -61,9 +57,7 @@
 }
 
 .nav-content {
-    padding: 15px 20px 15px 20px;
-    display: flex;
-    align-items: flex-end;
+    padding: 10px 20px 10px 20px;
 }
 
 #navbar > .menu:hover > .menu-list {
@@ -71,7 +65,7 @@
 }
 
 .nav-content:hover {
-    color: rgb(224, 42, 42);
+    color: rgb(22, 234, 217);
     background-color: darkgray;
 }
 

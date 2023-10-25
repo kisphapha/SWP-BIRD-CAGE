@@ -20,17 +20,18 @@ const getOrderById = async (req, res) => {
 
 const addOrderToDB = async (req, res) => {
     try {
-        const UserID = req.query.UserID;
-        const OrderDate = req.query.OrderDate;
-        const PaymentDate = req.query.PaymentDate;
-        const ShippingAddress = req.query.ShippingAddress;
-        const PhoneNumber = req.query.PhoneNumber;
-        const Note = req.query.Note;
-        const TotalAmount = req.query.TotalAmount;
-        const PaymentId = req.query.PaymentId;
-        const Status = req.query.Status;
+        const UserID = req.body.UserID;
+        const OrderDate = req.body.OrderDate;
+        const PaymentDate = req.body.PaymentDate;
+        const ShippingAddress = req.body.ShippingAddress;
+        const PhoneNumber = req.body.PhoneNumber;
+        const Note = req.body.Note;
+        const TotalAmount = req.body.TotalAmount;
+        const PaymentId = req.body.PaymentId;
+        const Status = req.body.Status;
+        const Items = req.body.Items;
 
-        await Order.addOrderToDB(UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentId, Status);
+        await Order.addOrderToDB(UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentId, Status,Items);
         res.json({ message: "done" });
     }catch (e){
         res.status(500).json({message: e.message});

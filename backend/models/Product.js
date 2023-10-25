@@ -58,7 +58,7 @@ const getProductByName = async (name) => {
     }
 }
 
-const addNewProductToDB = async (Name, Description, Price, Category, Material, SuitableBird, Discount, Size, Stock, Status) => {
+const addNewProductToDB = async (Name, Description, Price, Category, Material, SuitableBird, Discount, Size, Stock, Status, Url) => {
     try {
         let poolConnection = await sql.connect(config);
         const result = await poolConnection.request()
@@ -99,13 +99,20 @@ const addNewProductToDB = async (Name, Description, Price, Category, Material, S
                 @Category, 
                 @Size, 
                 @Material, 
-                NULL, 
+                0, 
                 GETDATE(), 
                 GETDATE(),
                 @SuitableBird, 
                 @Discount
             );
         `);
+        await poolConnection.request().query(`
+            INSERT INTO Image (ProductId,Url,isDeleted)
+            VALUES (
+                (SELECT TOP 1 Id FROM Products ORDER BY Id DESC),
+                '${Url}',0
+            )
+        `)
         return result.recordset;
     } catch (error) {
         console.log("error: ", error);
@@ -240,55 +247,55 @@ const paging = async (page, cate) => {
         console.log("error: ", e)
     }
 }
-const filterProduct = async (id,name,category,upper_price,lower_price,upper_stock,lower_stock,status, page) => {
+const filterProduct = async (id, name, category, upper_price, lower_price, upper_stock, lower_stock, status, page) => {
     try {
-        var perPage = 10;
-        let poolConnection = await sql.connect(config);
-        let checkId = ""
-        let checkName = ""
-        let checkCate = ""
-        let checkStatus = ""
-        let checkUpperPrice = ""
-        let checkLowerPrice = ""
-        let checkUpperStock = ""
-        let checkLowerStock = ""
+        const perPage = 10;
+        const poolConnection = await sql.connect(config);
 
-        if (id != null && id != "") checkId = `AND p.id = ${id} `
-        if (name != null && name != "") checkName = `AND p.Name LIKE N'%${name}%' `
-        if (category != null && category != "" && category != "All") checkCate = `AND c.id = N'${category}' `
-        if (status != null && status != "" && status != "All") checkStatus = `AND p.Status = '${status}' `
-        if (upper_price != null && upper_price != "") checkUpperPrice = `AND p.Price <= ${upper_price} `
-        if (lower_price != null && lower_price != "") checkLowerPrice = `AND p.Price >= ${lower_price} `
-        if (upper_stock != null && upper_stock != "") checkUpperStock = `AND p.Stock <= ${upper_stock} `
-        if (lower_stock != null && lower_stock != "") checkLowerStock = `AND p.Stock >= ${lower_stock} `
+        const conditions = [];
+        if (id) conditions.push(`p.id = ${id}`);
+        if (name) conditions.push(`p.Name LIKE N'%${name}%'`);
+        if (category && category !== "All") conditions.push(`c.id = N'${category}'`);
+        if (status && status !== "All") conditions.push(`p.Status = '${status}'`);
+        if (upper_price) conditions.push(`p.Price <= ${upper_price}`);
+        if (lower_price) conditions.push(`p.Price >= ${lower_price}`);
+        if (upper_stock) conditions.push(`p.Stock <= ${upper_stock}`);
+        if (lower_stock) conditions.push(`p.Stock >= ${lower_stock}`);
 
-        const result = await poolConnection.request().query(
-            `
-                SELECT DISTINCT p.*, i.Url, c.name as Shape
-                FROM Products p
-                         JOIN Image i ON i.ProductId = p.id
-                         JOIN Category c ON p.Category = c.Id
-                WHERE p.isDeleted = 0
-                   ${checkCate} 
-                   ${checkId}           
-                   ${checkName}
-                   ${checkStatus} 
-                   ${checkUpperPrice} 
-                   ${checkLowerPrice} 
-                   ${checkUpperStock}
-                   ${checkLowerStock} 
-                ORDER BY p.CreatedAt DESC
-                OFFSET ${(page - 1) * perPage} ROWS
-                    FETCH NEXT ${perPage} ROWS ONLY;
-                ;
-            `
-        );
-        return result.recordset;
+        const conditionString = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
+        const query = `
+            SELECT DISTINCT p.*, i.Url, c.name as Shape
+            FROM Products p
+            JOIN Image i ON i.ProductId = p.id
+            JOIN Category c ON p.Category = c.Id
+            ${conditionString}
+            AND p.isDeleted = 0
+            ORDER BY p.Id ASC
+            OFFSET ${(page - 1) * perPage} ROWS
+            FETCH NEXT ${perPage} ROWS ONLY;
+        `;
+
+        const result = await poolConnection.request().query(query);
+        const json = { data: result.recordset };
+
+        const linesQuery = `
+            SELECT COUNT(*) AS Count
+            FROM Products p
+            JOIN Image i ON i.ProductId = p.id
+            JOIN Category c ON p.Category = c.Id
+            ${conditionString}
+            AND p.isDeleted = 0;
+        `;
+
+        const linesResult = await poolConnection.request().query(linesQuery);
+        json.lines = linesResult.recordset[0];
+        console.log(json)
+        return json;
     } catch (error) {
         console.log("error: ", error);
     }
-}
-
+};
 
 module.exports = {
     getAllProducts,
