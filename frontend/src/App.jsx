@@ -27,6 +27,7 @@ import GeneralPolicy from './Pages/NaviFooter/Policy/GeneralPolicy'
 import PaymentPolicy from './Pages/NaviFooter/Policy/PaymentPolicy'
 import ReturnPolicy from './Pages/NaviFooter/Policy/ReturnPolicy'
 import SecurePolicy from './Pages/NaviFooter/Policy/SecurePolicy'
+import Custom from './Pages/Custom'
 function App() {
     return (
         <div>
@@ -65,6 +66,7 @@ function App() {
                     />
                     <Route element={<Cart />} path="cart" />
                     <Route element={<FilteredPage />} path="/filter/:filter/:keyword" />
+                    <Route element={<Custom />} path="/Custom" />
                     <Route element={<VNPaySuccess />} path="/test" />
                 </Route>
 
