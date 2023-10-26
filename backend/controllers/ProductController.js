@@ -144,12 +144,12 @@ const filterProduct = async (req, res) => {
 }
 
 
-const pagingTop5SearchBar = async(req, res) => {
+const pagingSearchBar = async(req, res) => {
     try {
         const name = req.body.name;
         const page = req.body.page;
 
-        const products = await Product.pagingTop5SearchBar(name, page);
+        const products = await Product.pagingSearchBar(name, page);
         res.json(products);
     } catch (error) {
         res.status(500).json({message: error.message});
@@ -169,5 +169,5 @@ module.exports = {
     deleteProduct,
     paging,
     filterProduct,
-    pagingTop5SearchBar 
+    pagingSearchBar 
 };
