@@ -5,7 +5,7 @@ const getAllOrder = async (req, res) => {
         const order = await Order.getAllOrder();
         res.json(order);
     } catch (error) {
-        res.status(500).json({message: error.message});
+        res.status(500).json({ message: error.message });
     }
 }
 
@@ -14,7 +14,7 @@ const getOrderById = async (req, res) => {
         const products = await Order.getOrderById(req.params.id);
         res.json(products);
     } catch (error) {
-        res.status(500).json({message: error.message});
+        res.status(500).json({ message: error.message });
     }
 }
 const getOrderByUserId = async (req, res) => {
@@ -39,10 +39,13 @@ const addOrderToDB = async (req, res) => {
         const Status = req.body.Status;
         const Items = req.body.Items;
 
-        await Order.addOrderToDB(UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentId, Status,Items);
-        res.json({ message: "done" });
-    }catch (e){
-        res.status(500).json({message: e.message});
+        var id = await Order.addOrderToDB(UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentId, Status, Items);
+        res.json({
+            message: "done",
+            orderid: id
+        });
+    } catch (e) {
+        res.status(500).json({ message: e.message });
     }
 }
 
@@ -50,17 +53,17 @@ const getOrderItemByOrderID = async (req, res) => {
     try {
         const order = await Order.getAllOrderItemByOrderID(req.params.id);
         res.json(order);
-    }catch (error){
-        res.status(500).json({message: error.message})
+    } catch (error) {
+        res.status(500).json({ message: error.message })
     }
 }
 
-const changeStatus_Paid  =async(req, res) => {
+const changeStatus_Paid = async (req, res) => {
     try {
         const order = await Order.changeStatus_Paid(req.params.id);
         res.json("success");
-    }catch (e) {
-        res.status(500).json({message: e.message});
+    } catch (e) {
+        res.status(500).json({ message: e.message });
     }
 }
 

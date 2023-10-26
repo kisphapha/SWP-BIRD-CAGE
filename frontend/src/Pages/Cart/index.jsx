@@ -26,7 +26,7 @@ export default function Cart() {
     useEffect(() => {
         loadCartData();
     }, []);
-    
+
     const handleDecrement = (productId) => {
         const updatedCart = { ...cartData }
         const productIndex = updatedCart.products.findIndex((product) => product.id === productId)
@@ -55,24 +55,35 @@ export default function Cart() {
 
                 const res = await axios.post('http://localhost:3000/order/addordertodb', {
                     UserID: JSON.parse(sessionStorage.loginedUser).Id,
-                    ShippingAddress: 'ABC',
+                    OrderDate: new Date().toISOString().slice(0, 10),
+                    PaymentDate: null,
+                    ShippingAddress: null,
                     PhoneNumber: JSON.parse(sessionStorage.loginedUser).PhoneNumber,
+                    Note: 'abcxyz',
                     TotalAmount: calculateTotalPrice(),
                     PaymentMethod: paymentMethod,
-                    Status: 'unpaid',
+                    Status: 'UNPAID',
                     Items: JSON.parse(sessionStorage.cart).products
                 })
-                console.log(res)
+                console.log(res.data.orderid)
                 if (paymentMethod == 'vnpay') {
                     const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
                         amount: calculateTotalPrice(),
                         bankCode: '',
                         language: 'vn',
                         email: JSON.parse(sessionStorage.loginedUser).Email,
-                        phoneNumber: JSON.parse(sessionStorage.loginedUser).PhoneNumber
+                        phoneNumber: JSON.parse(sessionStorage.loginedUser).PhoneNumber,
+                        orderid: res.data.orderid
                     })
+                    setTimeout(() => {
+                        alert("Đang chuyển tiếp đến VNPay")
+                    }, 2000);
                     window.location.href = response.data.url
+                } else {
+                    alert("Đặt hàng thành công")
                 }
+                sessionStorage.setItem("cart", '{"products":[]}')
+                window.location.reload(false);
             } else {
                 alert("Đăng nhập để tiến hành thanh toán")
             }
@@ -188,14 +199,14 @@ export default function Cart() {
                         </tr>
                         <tr>
                             <td colSpan="5" className="text-right font-bold">
-                                Số điểm bonnus: {calculateBonus()}
+                                Số điểm bonus sẽ tích được: {calculateBonus()}
                             </td>
                         </tr>
                         <tr>
                             <td></td>
                             <td></td>
                             <td colSpan="4" className="text-right font-bold py-8 pr-10">
-                            <Popup trigger={<Button variant="contained">Thanh toán</Button>} position="right center" modal>
+                                <Popup trigger={<Button variant="contained">Thanh toán</Button>} position="right center" modal>
                                     {(close) => (
                                         <div>
                                             <h2>Chi tiết thanh toán</h2>
