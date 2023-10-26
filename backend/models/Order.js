@@ -22,7 +22,7 @@ const getOrderByUserId = async (id) => {
              from Orders
              where Orders.UserID = ${id}`
         );
-        return result.recordset[0];
+        return result.recordset;
     } catch (error) {
         console.log("error: ", error);
     }

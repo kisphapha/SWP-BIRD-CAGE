@@ -3,14 +3,14 @@
     "",
     "\\frontend",
     "\\frontend\\src",
-    "\\frontend\\src\\layouts",
+    "\\frontend\\src\\components",
+    "\\frontend\\src\\components\\features\\CardList",
+    "\\frontend\\src\\components\\features\\CardListExtend",
+    "\\frontend\\src\\components\\features\\CategoryNav",
+    "\\frontend\\src\\components\\features\\OrderList",
     "\\frontend\\src\\Pages",
-    "\\frontend\\src\\Pages\\Cart",
-    "\\frontend\\src\\Pages\\FilteredPage",
-    "\\frontend\\src\\Pages\\ProductDetail",
-    "\\frontend\\src\\Pages\\Test",
-    "\\frontend\\src\\Pages\\UserPage"
+    "\\frontend\\src\\Pages\\Custom"
   ],
-  "SelectedNode": "\\frontend\\src\\Pages\\UserPage\\AddressPage.jsx",
+  "SelectedNode": "\\backend\\routes\\OrderRoute.js",
   "PreviewInSolutionExplorer": false
 }

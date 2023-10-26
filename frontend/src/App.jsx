@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 import Home from './Pages/Home'
 import Cart from './Pages/Cart'
+import Custom from './Pages/Custom'
 import Test from './Pages/Test'
 import ProductDetails from './Pages/ProductDetail'
 import FilteredPage from './Pages/FilteredPage'
@@ -66,6 +67,7 @@ function App() {
                     <Route element={<Cart />} path="cart" />
                     <Route element={<FilteredPage />} path="/filter/:filter/:keyword" />
                     <Route element={<VNPaySuccess />} path="/test" />
+                    <Route element={<Custom /> } path="/custom"/>
                 </Route>
 
                 <Route element={<AdminLayout />} path="/admin">
