@@ -12,6 +12,10 @@ productRouter.get("/rating/:id", ProductController.getRatingByProductId);
 productRouter.post("/rating", ProductController.addRating);
 productRouter.get("/paging/", ProductController.paging);
 productRouter.post("/filter/", ProductController.filterProduct);
+productRouter.get("/pagingTop5", ProductController.pagingTop5SearchBar);
+
+
+
 productRouter.get("/:id", ProductController.getProductById);
 productRouter.delete("/:id", ProductController.deleteProduct);
 

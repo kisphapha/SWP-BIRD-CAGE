@@ -6,7 +6,7 @@ const orderRoutes = require("./routes/OrderRoute");
 const addressRoutes = require("./routes/AddressRoute");
 const paymentRoutes = require("./routes/PaymentRoute");
 const adminRoutes = require("./routes/AdminRoute");
-
+const shipperRoutes = require("./routes/ShipperRoutes");
 const eventLog = require('./helper/logEvent');
 const app = express();
 const helmet = require('helmet'); // make web more secure
@@ -33,6 +33,7 @@ app.use("/order", orderRoutes);
 app.use("/address", addressRoutes);
 app.use("/admin", adminRoutes);
 app.use("/payment",paymentRoutes);
+app.use("/shipper", shipperRoutes);
 // jsdsdf
 
 
