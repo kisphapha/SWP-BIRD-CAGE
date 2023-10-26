@@ -96,6 +96,15 @@ const OrderList = (props) => {
                                             {parseInt(item.Price * (100 - item.discount)/100).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
                                         </div>
                                     </div>
+                                    <div className="flex  justify-end gap-4">
+                                        <Button className="" variant="contained" onClick={() => handleRebuy(card.Id)}>
+                                            Mua lại
+                                        </Button>
+
+                                        <Button className="" variant="contained" onClick={() => handleRebuy(card.Id)}>
+                                            Đánh giá
+                                        </Button>
+                                    </div>
                                 </div>
                             ))
                         
@@ -106,15 +115,7 @@ const OrderList = (props) => {
                         <div className="text-right mx-8 my-4  text-red-500 text-2xl">
                             {parseInt(card.TotalAmount).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
                         </div>
-                        <div className="flex  justify-end gap-4">
-                            <Button className="" variant="contained" onClick={() => handleRebuy(card.Id)}>
-                                Mua lại
-                            </Button>
-
-                            <Button className="" variant="contained" onClick={() => handleRebuy(card.Id)}>
-                                Đánh giá
-                            </Button>
-                        </div>
+                        
                     </div>
                 </div>
             ))}
