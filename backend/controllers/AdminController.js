@@ -55,7 +55,10 @@ const updateUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
     try {
-        const admin = await Admin.deleteUser(req.query.userID, req.query.ReasonBlock);
+        const id = req.body.userId
+        const status = req.body.status
+        const reasonBlock = req.body.ReasonBlock
+        const admin = await Admin.deleteUser(id,status,reasonBlock);
         res.json("delete success");
     }catch (error){
         res.status(500).json({message: error.message})

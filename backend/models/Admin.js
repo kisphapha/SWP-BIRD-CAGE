@@ -79,13 +79,13 @@ const updateUser = async (name, email, phone, dateOfBirth) => {
 };
 
 
-const deleteUser = async (userId, ReasonBlock) => {
+const deleteUser = async (userId, status, ReasonBlock) => {
     try {
         let poolConnection = await sql.connect(config);
         await poolConnection.request().query(
             `
                 UPDATE dbo.[User]
-                SET BlockDate = GETDATE(), ReasonBlocked= N'${ReasonBlock}', Status = 'InActive'
+                SET BlockDate = GETDATE(), ReasonBlocked= N'${ReasonBlock}', Status = '${status}' 
                 WHERE Id = ${userId}
             `
         );
