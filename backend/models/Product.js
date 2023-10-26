@@ -297,6 +297,28 @@ const filterProduct = async (id, name, category, upper_price, lower_price, upper
     }
 };
 
+const pagingTop5SearchBar = async(name, page) => {
+  try {
+    const perPage = 5;
+    let poolConnection = await sql.connect(config);
+    const result = await poolConnection.request().query(
+        `
+        SELECT * FROM dbo.Products p 
+        LEFT JOIN dbo.Category c
+        ON c.Id = p.Category 
+        WHERE p.Name = N'${name}' AND p.isDeleted = 0 
+        ORDER BY c.Id DESC
+        OFFSET ${(page - 1) * perPage} ROWS
+         FETCH NEXT ${perPage} ROWS ONLY
+        `
+    )
+    return result.recordset;
+  } catch (error) {
+    console.log("error: ", error);
+  }
+
+}
+
 module.exports = {
     getAllProducts,
     getProductsByCategory,
@@ -308,6 +330,7 @@ module.exports = {
     addRating,
     deleteProduct,
     paging,
-    filterProduct
+    filterProduct,
+    pagingTop5SearchBar
 }
 

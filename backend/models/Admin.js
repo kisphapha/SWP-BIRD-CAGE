@@ -94,19 +94,6 @@ const deleteUser = async (userId, ReasonBlock) => {
     }
 }
 
-const getIdyParams = async (id, name) => {
-    try {
-        let connectionPool = await sql.connect(config);
-        await connectionPool.request().query(`
-         
-            
-        `)
-    }catch (e) {
-        
-    }
-}
-
-
 module.exports = {
     getOrderBy5Month,
     getBestSellingProducts,
