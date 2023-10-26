@@ -202,7 +202,9 @@ export default function Custom() {
                             <div>Giá dự tính:</div>
                             <div>Thời gian hoàn thành dự kiến:</div>
                             <div className="my-8 text-center">
-                                <Button variant="contained"> Đặt hàng </Button>
+                                <Button variant="contained" className="">
+                                    Đặt hàng{' '}
+                                </Button>
                             </div>
                         </div>
                     </div>
