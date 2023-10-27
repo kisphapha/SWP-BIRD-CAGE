@@ -1,16 +1,16 @@
 {
   "ExpandedNodes": [
     "",
+    "\\backend",
+    "\\backend\\controllers",
+    "\\backend\\models",
+    "\\backend\\routes",
     "\\frontend",
     "\\frontend\\src",
     "\\frontend\\src\\components",
-    "\\frontend\\src\\components\\features\\CardList",
-    "\\frontend\\src\\components\\features\\CardListExtend",
-    "\\frontend\\src\\components\\features\\CategoryNav",
-    "\\frontend\\src\\components\\features\\OrderList",
-    "\\frontend\\src\\Pages",
+    "\\frontend\\src\\components\\features",
     "\\frontend\\src\\Pages\\Custom"
   ],
-  "SelectedNode": "\\backend\\routes\\OrderRoute.js",
+  "SelectedNode": "\\frontend\\src\\components\\features\\OrderList\\index.jsx",
   "PreviewInSolutionExplorer": false
 }

@@ -3,19 +3,20 @@ const sql = require("mssql");
 
 const changeShippingState = async(id, status) => {
     try {
+        console.log(id, status);
         let poolConnection = await sql.connect(config);
-         var newStatus  = status === 'Delivered' ? 'Delivered' : 'Failed';
          const result  = await poolConnection.request().query(
                 `
                  UPDATE dbo.Orders
-                 SET Status_Shipping = '${newStatus}'
+                 SET Status_Shipping = '${status}'
                  WHERE id = ${id};
-            `
+            `   
             );
     }catch (error) {
         console.log("error: ", error);
     }
 }
+
 
 
 module.exports = {

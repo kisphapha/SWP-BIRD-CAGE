@@ -42,7 +42,7 @@ const getOrderById = async (id) => {
     }
 };
 
-const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentId, Status, Items) => {
+const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentMethod, Status, Items) => {
     try {
         let poolConnection = await sql.connect(config);
         const result = await poolConnection.request()
@@ -53,7 +53,7 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
             .input('PhoneNumber', sql.NVarChar, PhoneNumber)
             .input('Note', sql.NVarChar, Note)
             .input('TotalAmount', sql.Int, TotalAmount)
-            .input('PaymentId', sql.NVarChar, PaymentId)
+            .input('PaymentMethod', sql.NVarChar, PaymentMethod)
             .input('Status', sql.NVarChar, Status)
             .query(`
                 INSERT INTO dbo.Orders
@@ -73,8 +73,8 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                     [View_Status],
                     [Status_Shipping],
                     [Status_Paid]
-                    
-                )
+                    )
+                OUTPUT INSERTED.Id
                 VALUES
                     (
                         @UserID,
@@ -84,7 +84,7 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                         @PhoneNumber,
                         @Note,
                         @TotalAmount,
-                        @PaymentId,
+                        @PaymentMethod,
                         0,
                         GETDATE(),
                         GETDATE(),
@@ -94,8 +94,8 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                         'UnPaid'
                     );
             `);
-            Items.forEach(item => {
-                poolConnection.request()
+        Items.forEach(item => {
+            poolConnection.request()
                 .input('ProductId', sql.Int, item.id)
                 .input('Quantity', sql.Int, parseInt(item.quantity))
                 .input('Price', sql.Int, parseInt(item.price))
@@ -119,8 +119,8 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                     GETDATE()
                 )               
                 `)
-            });
-        return result.recordset;
+        });
+        return result.recordset[0].Id;
     } catch (error) {
         console.log("error: ", error);
     }
@@ -135,7 +135,7 @@ const changeStatus_Paid = async (id) => {
               WHERE id = ${id}
               `
         )
-    }catch (e) {
+    } catch (e) {
         console.log("error: ", e);
     }
 }
@@ -151,7 +151,7 @@ const getAllOrderItemByOrderID = async (id) => {
 
         `)
         return result.recordset;
-    }catch (error) {
+    } catch (error) {
         console.log("error: ", error)
     }
 }

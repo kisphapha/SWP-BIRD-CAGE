@@ -175,6 +175,7 @@ const getRatingByProductId = async (ProductId) => {
             where 
                 ProductId = ${ProductId} 
                 and f.UserId = u.id
+                
 `
         )
         return result.recordset;
@@ -230,7 +231,7 @@ const addRating = async (UserId, ProductId, StarPoint, Content) => {
 
 const paging = async (page, cate) => {
     try {
-        const perPage = 2; // so phan tu hien thi trong 1 lan
+        const perPage = 15; // so phan tu hien thi trong 1 lan
         let poolConnection = await sql.connect(config);
         const result = await poolConnection.request().query(
             `
@@ -297,6 +298,28 @@ const filterProduct = async (id, name, category, upper_price, lower_price, upper
     }
 };
 
+const pagingSearchBar = async(name, page) => {
+  try {
+    const perPage = 15;
+    let poolConnection = await sql.connect(config);
+    const result = await poolConnection.request().query(
+        `
+        SELECT * FROM dbo.Products p 
+        LEFT JOIN dbo.Category c
+        ON c.Id = p.Category 
+        WHERE p.Name = N'${name}' AND p.isDeleted = 0 
+        ORDER BY c.Id DESC
+        OFFSET ${(page - 1) * perPage} ROWS
+         FETCH NEXT ${perPage} ROWS ONLY
+        `
+    )
+    return result.recordset;
+  } catch (error) {
+    console.log("error: ", error);
+  }
+
+}
+
 module.exports = {
     getAllProducts,
     getProductsByCategory,
@@ -308,6 +331,7 @@ module.exports = {
     addRating,
     deleteProduct,
     paging,
-    filterProduct
+    filterProduct,
+    pagingSearchBar
 }
 

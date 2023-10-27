@@ -2,6 +2,7 @@ const express = require("express");
 let $ = require('jquery');
 const request = require('request');
 const moment = require('moment');
+const axios = require('axios');
 
 const paymentRouter = express.Router();
 
@@ -19,7 +20,7 @@ paymentRouter.post('/create_payment_url', function (req, res, next) {
     let secretKey = "EIJWFMARSXNWVZNSUKUHWOGELUYKPFBS";
     let vnpUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
     let returnUrl = "http://localhost:3000/payment/vnpay_return";
-    let orderId = moment(date).format('DDHHmmss');
+    let orderId = req.body.orderid;
     let amount = req.body.amount;
     let bankCode = req.body.bankCode;
 
@@ -54,7 +55,7 @@ paymentRouter.post('/create_payment_url', function (req, res, next) {
     let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
     vnp_Params['vnp_SecureHash'] = signed;
     vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: false });
-
+    // console.log(vnpUrl)
     res.json({ url: vnpUrl })
 });
 
@@ -73,16 +74,20 @@ paymentRouter.get('/vnpay_return', function (req, res, next) {
 
     let querystring = require('qs');
     let signData = querystring.stringify(vnp_Params, { encode: false });
-    let crypto = require("crypto");     
+    let crypto = require("crypto");
     let hmac = crypto.createHmac("sha512", secretKey);
-    let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");     
+    let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
 
-    if(secureHash === signed){
-        // res.json({status: 'success'});
-        res.redirect("http://localhost:5000/test")
-      } else {
-        res.json({status: 'failed'}); 
-      }
+    if (secureHash === signed) {
+        axios.get('http://localhost:3000/order/paidstatus/' + vnp_Params['vnp_TxnRef'])
+            .then(response => {
+                res.redirect("http://localhost:5000/test");
+                console.log("success")
+            })
+        // console.log("success")
+    } else {
+        res.json({ status: 'failed' });
+    }
 });
 
 paymentRouter.get('/vnpay_ipn', function (req, res, next) {

@@ -5,11 +5,18 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from '@mui/material'
 import Stepper from '@mui/material/Stepper'
 import Step from '@mui/material/Step'
+import Rating from '@mui/material/Rating'
+import Typography from '@mui/material/Typography'
 import StepLabel from '@mui/material/StepLabel'
+import TextField from '@mui/material/TextField'
+import Popup from 'reactjs-popup'
 
 const steps = ['Chờ duyệt', 'Đang chuẩn bị', 'Đang giao', 'Đã Giao']
 const OrderList = (props) => {
     const [cards, setCards] = useState([])
+    const [orders, setOrders] = useState([]);
+    const [rating, setRating] = useState(0);
+    const [feedbackContent, setFeedbackContent] = useState('');
     const navigate = useNavigate()
 
     const handleRebuy = (productId) => {
@@ -34,6 +41,11 @@ const OrderList = (props) => {
             setCards(ordersWithItems);
         }
     }
+
+    const submitFeedback = () => {
+        console.log('Rating submitted:', rating);
+        console.log('Feedback content:', feedbackContent);
+    };
 
     useEffect(() => {      
         fetchOrder()       
@@ -80,7 +92,9 @@ const OrderList = (props) => {
                             card.items.map((item) => (
                                 <div key={item.Id }>
                                     <div className="flex">
+                                        <Button onClick={() => handleRebuy(item.Id)}>
                                         <img className="h-30 w-20 mx-4  " src={item.Url}></img>
+                                        </Button>
                                         <div className="">
                                             <div className="font-bold">{item.Name}</div>
                                             <div className="pl-2">Phân loại: {item.Shape}</div>
@@ -97,10 +111,6 @@ const OrderList = (props) => {
                                         </div>
                                     </div>
                                     <div className="flex  justify-end gap-4">
-                                        <Button className="" variant="contained" onClick={() => handleRebuy(card.Id)}>
-                                            Mua lại
-                                        </Button>
-
                                         <Button className="" variant="contained" onClick={() => handleRebuy(card.Id)}>
                                             Đánh giá
                                         </Button>
@@ -120,7 +130,6 @@ const OrderList = (props) => {
                 </div>
             ))}
 
-            {/*Loop*/}
         </>
     )
 }

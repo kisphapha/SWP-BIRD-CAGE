@@ -144,6 +144,18 @@ const filterProduct = async (req, res) => {
 }
 
 
+const pagingSearchBar = async(req, res) => {
+    try {
+        const name = req.body.name;
+        const page = req.body.page;
+
+        const products = await Product.pagingSearchBar(name, page);
+        res.json(products);
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+}
+
 
 module.exports = {
     getAllProducts,
@@ -156,5 +168,6 @@ module.exports = {
     updateProduct,
     deleteProduct,
     paging,
-    filterProduct
+    filterProduct,
+    pagingSearchBar 
 };

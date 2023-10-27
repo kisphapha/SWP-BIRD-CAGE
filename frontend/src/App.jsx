@@ -66,6 +66,7 @@ function App() {
                     />
                     <Route element={<Cart />} path="cart" />
                     <Route element={<FilteredPage />} path="/filter/:filter/:keyword" />
+                    <Route element={<Custom />} path="/Custom" />
                     <Route element={<VNPaySuccess />} path="/test" />
                     <Route element={<Custom /> } path="/custom"/>
                 </Route>
