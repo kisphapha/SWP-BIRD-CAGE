@@ -99,10 +99,10 @@ const getRatingByProductId = async (req, res) => {
 const addRating = async (req, res) => {
     try {
 
-        const UserId = req.query.UserId;
-        const ProductId  = req.query.ProductId;
-        const StarPoint = req.query.StarPoint;
-        const Content = req.query.Content;
+        const UserId = req.body.UserId;
+        const ProductId = req.body.ProductId;
+        const StarPoint = req.body.StarPoint;
+        const Content = req.body.Content;
 
         await Product.addRating(UserId, ProductId, StarPoint, Content);
         res.json({message: "done"});

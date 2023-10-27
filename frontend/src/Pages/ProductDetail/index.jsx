@@ -115,7 +115,7 @@ export default function ProductDetails() {
                         <div className="price">
                             <div className="cost">{parseInt(product.Price).toLocaleString('vi', { style: 'currency', currency: 'VND' })}</div>
                             <div className="discount">
-                                {parseInt(product.Price * 0.9).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+                                {parseInt(product.Price * (100-product.discount)/100).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
                             </div>
                         </div>
                         <div className="data">
@@ -132,6 +132,11 @@ export default function ProductDetails() {
                             <div className="row">
                                 <span className="title">Chất Liệu</span>
                                 <span className="info">{product.material}</span>
+                            </div>
+                            <hr />
+                            <div className="row">
+                                <span className="title">Còn</span>
+                                <span className="info">{product.Stock}</span>
                             </div>
                             <hr />
                         </div>
@@ -160,14 +165,40 @@ export default function ProductDetails() {
                 <div className="description">
                     <div>Mô tả</div>
                     <div>{product.Description}</div>
-                    <img className="logo-img" src="https://wallpapers.com/images/featured/soft-aesthetic-cei80uravrnl6ltm.jpg" />
+                    <div>Thông số</div>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>Tên sản phẩm</td>
+                                <td>{product.Name}</td>
+                            </tr>
+                            <tr>
+                                <td>Phân loại</td>
+                                <td>{product.Shape}</td>
+                            </tr>
+                            <tr>
+                                <td>Kích thước dài rộng (cm)</td>
+                                <td>{product.Size}</td>
+                            </tr>
+                            <tr>
+                                <td>Loại chim phù hợp</td>
+                                <td>{product.SuitableBird}</td>
+                            </tr>
+                            <tr>
+                                <td>Chất Liệu</td>
+                                <td>{product.material}</td>
+                            </tr>
+
+
+                        </tbody>
+                    </table>
                 </div>
                 <div className="feedback">
                     <div>ĐÁNH GIÁ SẢN PHẨM</div>
 
                     <div>
                         {ratingsData.map((rating, index) => (
-                            <div key={index} className="bg-white flex py-2">
+                            <div key={index} className="bg-white flex py-2 ">
                                 <hr className="py-2" />
                                 {/* <div className="flex-row"> */}
                                 <div>

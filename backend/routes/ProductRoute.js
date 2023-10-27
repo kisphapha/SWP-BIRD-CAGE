@@ -8,7 +8,7 @@ productRouter.get("/cate/:code", ProductController.getProductsByCategory);
 productRouter.get("/search/:name", ProductController.getProductByName)
 productRouter.post("/add", ProductController.getNewProductToDB);
 productRouter.post("/update", ProductController.updateProduct);
-productRouter.get("/rating/", ProductController.getRatingByProductId);
+productRouter.get("/rating/:id", ProductController.getRatingByProductId);
 productRouter.post("/rating", ProductController.addRating);
 productRouter.get("/paging/", ProductController.paging);
 productRouter.post("/filter/", ProductController.filterProduct);

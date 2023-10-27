@@ -2,10 +2,9 @@
 import './styles.css'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
-import { Button } from '@mui/material'
+import { Button, Rating } from '@mui/material'
 import Stepper from '@mui/material/Stepper'
 import Step from '@mui/material/Step'
-import Rating from '@mui/material/Rating'
 import Typography from '@mui/material/Typography'
 import StepLabel from '@mui/material/StepLabel'
 import TextField from '@mui/material/TextField'
@@ -19,12 +18,31 @@ const OrderList = (props) => {
     const [feedbackContent, setFeedbackContent] = useState('');
     const navigate = useNavigate()
 
+    const handleStarPoint = (event) => {
+        setRating(event.target.value)
+    }
+    const handleFeedbackContent = (event) => {
+        setFeedbackContent(event.target.value)
+    }
     const handleRebuy = (productId) => {
         navigate('/products/' + productId)
     }
     async function fetchOrderItems(id) {
         const response = await axios.get(`http://localhost:3000/order/list/${id}`)
         return response.data
+    }
+    async function submitFeedback(productId, close) {
+        const json = {
+            UserId: props.user.Id,
+            ProductId: productId,
+            StarPoint: rating,
+            Content : feedbackContent
+        }
+        console.log(json)
+
+        const response = await axios.post(`http://localhost:3000/products/rating/`,json)
+        alert("Chúng tôi đã ghi nhận. Chân thành cảm ơn bạn!")
+        close()
     }
     async function fetchOrder() {
         const response = await axios.get(`http://localhost:3000/order/user/${props.user.Id}`);
@@ -37,15 +55,10 @@ const OrderList = (props) => {
                 const orderWithItems = { ...order, items };
                 ordersWithItems.push(orderWithItems);
             }
-            console.log(ordersWithItems)
             setCards(ordersWithItems);
         }
     }
 
-    const submitFeedback = () => {
-        console.log('Rating submitted:', rating);
-        console.log('Feedback content:', feedbackContent);
-    };
 
     useEffect(() => {      
         fetchOrder()       
@@ -111,9 +124,39 @@ const OrderList = (props) => {
                                         </div>
                                     </div>
                                     <div className="flex  justify-end gap-4">
-                                        <Button className="" variant="contained" onClick={() => handleRebuy(card.Id)}>
-                                            Đánh giá
-                                        </Button>
+                                        <Popup
+                                            trigger={
+                                                <Button className="" variant="contained" onClick={() => handleRebuy(card.Id)}>
+                                                    Đánh giá
+                                                </Button>
+                                            }
+                                            position="right center"
+                                            closeOnDocumentClick={false}
+                                            closeOnEscape={false}
+                                            modal
+                                        >
+                                            {(close) => (
+                                                <div className="p-4">
+                                                    <h2>ĐÁNH GIÁ SẢN PHẨM</h2>
+                                                    <h3>{item.Name}</h3>
+                                                    <div>
+                                                        <Rating name="hover-feedback" precision={1} onChange={handleStarPoint} />
+
+                                                        <TextField className="text-left" fullWidth variant="standard"
+                                                            label="Hãy cho chúng tôi biết cảm nghĩ của bạn về sản phẩm"
+                                                            multiline rows={6}
+                                                            onChange={handleFeedbackContent }
+                                                            >
+                                                            </TextField>
+                                                        </div>
+                                                    <div className="flex justify-end">
+                                                        <Button variant="outlined" onClick={close}>Cancel</Button>
+                                                        <Button variant="outlined" onClick={() => submitFeedback(item.Id, close)}>OK</Button>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </Popup>
+                                        
                                     </div>
                                 </div>
                             ))
