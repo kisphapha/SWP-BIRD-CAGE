@@ -203,7 +203,7 @@ export default function Custom() {
                             <div>Thời gian hoàn thành dự kiến:</div>
                             <div className="my-8 text-center">
                                 <Button variant="contained" className="">
-                                    Đặt hàng{' '}
+                                    Đặt hàng
                                 </Button>
                             </div>
                         </div>
