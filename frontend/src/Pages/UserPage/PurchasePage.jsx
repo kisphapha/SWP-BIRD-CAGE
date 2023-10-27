@@ -10,7 +10,7 @@ import OrderList from '../../components/features/OrderList/index';
 
 const PurchasePage = () => {
     const { user } = useContext(UserContext);
-    console.log(user)
+    // console.log(user)
 
     return (
 

@@ -6,13 +6,13 @@ import Header from '../../components/common/Header'
 import Navbar from '../../components/common/Navbar'
 import { Button, Grid, RadioGroup, TextField, ToggleButtonGroup } from '@mui/material'
 import axios from 'axios'
-import Radio from '@mui/material/Radio'
 export default function Custom() {
     const [categories, setCategories] = useState([])
     const [tmpName, setTempName] = useState('')
     const [tmpMaterial, setMaterial] = useState('')
-    const [tmpCate, setCate] = useState('')
+    // const [tmpCate, setCate] = useState('')
     const [tmpDescription, setTempDescription] = useState('')
+    const [selectedImage, setSelectedImage] = useState(null);
 
     const handleCategoryChange = (event) => {
         setCate(event.target.value.trim())
@@ -37,6 +37,9 @@ export default function Custom() {
         fetchCategories()
     }, [])
 
+    const defaultImageClass = 'h-40 w-40 m-4 transition-transform transform-gpu rounded-lg';
+    const selectedImageClass = 'h-52 w-52 m-4 hover:scale-105 border-2 border-blue-500';
+
     return (
         <form action="">
             <div className="w-full">
@@ -45,38 +48,23 @@ export default function Custom() {
                     <Navbar />
                 </UserProvider>
                 <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }]} current="Lồng tùy chỉnh"></CategoryNav>
-
                 <div className="flex-row bg-slate-50 my-8 mx-32">
                     <div>Chọn kiểu lồng</div>
-                    {/* fetch category custom */}
-                    <RadioGroup>
-                        <div className="grid grid-cols-4 place-items-center">
-                            <div>
-                                <img className="h-40" src="https://mengjinblog.files.wordpress.com/2021/06/17.jpg" alt="" />
-                                <div className="text-center">
-                                    <Radio />
-                                </div>
-                            </div>
-                            <div>
-                                <img className="h-40" src="https://i2.ntcdntempv3.com/data/images/20857/441088/002-fix.jpg?data=nht" alt="" />
-                                <div className="text-center">
-                                    <Radio />
-                                </div>
-                            </div>
-                            <div>
-                                <img className="h-40" src="https://i2.ntcdntempv3.com/data/images/20857/441088/002-fix.jpg?data=nht" alt="" />
-                                <div className="text-center">
-                                    <Radio />
-                                </div>
-                            </div>
-                            <div>
-                                <img className="h-40" src="https://mengjinblog.files.wordpress.com/2021/06/17.jpg" alt="" />
-                                <div className="text-center">
-                                    <Radio />
-                                </div>
-                            </div>
-                        </div>
-                    </RadioGroup>
+                    <div className="grid grid-cols-3 place-items-center">
+                        {categories.map((category, index) => {
+                            if (category.Allow_customize == true) {
+                                return (
+                                    <div className={selectedImage === index + 1 ? selectedImageClass : defaultImageClass} onClick={() => setSelectedImage(index+1)}>
+                                        <img className='max-h-52' src={category.imageUrl} alt="" />
+                                        <div className="text-center">
+                                            <h1>{category.name}</h1>
+                                        </div>
+                                    </div>
+                                )
+                            }
+                        })}
+                        
+                    </div>
                     <div className="flex my-12 place-content-between m-8">
                         <div className="w-2/5 mx-4 pr-20 flex-row space-y-4">
                             <div className="w-3/4">

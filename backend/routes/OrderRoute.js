@@ -15,7 +15,8 @@ OrderRouter.route("/list/:id").get(OrderController.getOrderItemByOrderID)
 
 OrderRouter.route("/user/:id").get(OrderController.getOrderByUserId)
 
-OrderRouter.route("/changeUnPaidToPaid/:id").get(OrderController.changeStatus_Paid);
+OrderRouter.route("/paidstatus/:id").get(OrderController.changeStatus_Paid);
 
 
 module.exports = OrderRouter;
+
