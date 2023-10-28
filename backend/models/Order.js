@@ -49,7 +49,7 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
             .input('UserID', sql.Int, UserID)
             .input('OrderDate', sql.DateTime, OrderDate)
             .input('PaymentDate', sql.DateTime, PaymentDate)
-            .input('ShippingAddress', sql.NVarChar, ShippingAddress)
+            .input('AddressID', sql.Int, ShippingAddress)
             .input('PhoneNumber', sql.NVarChar, PhoneNumber)
             .input('Note', sql.NVarChar, Note)
             .input('TotalAmount', sql.Int, TotalAmount)
@@ -61,7 +61,7 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                     [UserID],
                     [OrderDate],
                     [PaymentDate],
-                    [ShippingAddress],
+                    [AddressID],
                     [PhoneNumber],
                     [Note],
                     [TotalAmount],
@@ -80,7 +80,7 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                         @UserID,
                         @OrderDate,
                         @PaymentDate,
-                        @ShippingAddress,
+                        @AddressID,
                         @PhoneNumber,
                         @Note,
                         @TotalAmount,
@@ -145,9 +145,9 @@ const getAllOrderItemByOrderID = async (id) => {
     try {
         let poolConnection = await sql.connect(config);
         const result = await poolConnection.request().query(`
-           SELECT p.Id,p.Name, oi.CreatedAt, oi.Price, oi.Quantity, i.Url, o.Status,p.Category
-            FROM OrderItem oi, Orders o, Products p, Image i
-            WHERE oi.OrdersId = o.Id AND o.UserID = ${id} AND oi.ProductId = p.id AND i.ProductId = p.Id
+           SELECT p.Id,p.Name, oi.CreatedAt, oi.Price, oi.Quantity, i.Url, o.Status, c.name AS Shape, p.discount
+         FROM OrderItem oi, Orders o, Products p, Image i, Category c
+         WHERE o.Id = ${id} AND o.Id = oi.OrdersId AND oi.ProductId = p.id AND i.ProductId = p.Id AND p.Category = c.Id
 
         `)
         return result.recordset;

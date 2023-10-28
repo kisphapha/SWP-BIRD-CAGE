@@ -51,9 +51,10 @@ const updateUser = async (name, email, phone, dateOfBirth) => {
 };
 
 
+
 module.exports = {
     getAllUser,
     getUserByEmail,
     newUser,
-    updateUser
+    updateUser,
 };

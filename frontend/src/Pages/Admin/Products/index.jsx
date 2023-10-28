@@ -77,7 +77,6 @@ export default function Products() {
             status: prostatus,
             page: page
         }
-        console.log(json)
         Axios.post('http://localhost:3000/products/filter/', json)
             .then((response) => {
                 setProducts(response.data.data)

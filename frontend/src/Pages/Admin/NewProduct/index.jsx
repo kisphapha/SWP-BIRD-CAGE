@@ -43,7 +43,6 @@ export default function NewProduct() {
             Status: tmpStatus,
             Url: tmpUrl
         }
-        console.log(json)
         if (json.Stock && json.Name && json.Category && json.Price && json.Status) {
             await axios.post(`http://localhost:3000/products/add`, json)
             alert('Đã thêm sản phẩm')
@@ -119,9 +118,6 @@ export default function NewProduct() {
                             ))}
                         </TextField>
                     </div>
-
-                    {tmpCate != 'PK' && (
-                        <>
                     <div className="w-3/4">
                         {/* <div>material</div> */}
                         <TextField
@@ -132,6 +128,9 @@ export default function NewProduct() {
                             value={tmpMaterial}
                         />
                     </div>
+                    {tmpCate != 'PK' && (
+                        <>
+                    
                     <div className="w-3/4">
                         {/* <div>bird suitable</div> */}
 

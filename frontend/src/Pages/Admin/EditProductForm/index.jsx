@@ -37,17 +37,19 @@ export default function EditProductForm({ productId, close, handleFilter }) {
     }
 
     async function handleUpdate(event) {
-        const _size = (tmpWidth ? tmpWidth : product.Size.split(',')[0]) + ',' + (tmpHeight ? tmpHeight : product.Size.split(',')[1])
+        const _cate = (tmpCate ? tmpCate : product.Category).trim()
+        const _size = _cate != 'PK' ? (tmpWidth ? tmpWidth : product.Size.split(',')[0]) + ',' + (tmpHeight ? tmpHeight : product.Size.split(',')[1]) : ''
+        if (!tmpDiscount) setDiscount(0)
         const json = {
             Id: product.Id,
             Name: tmpName ? tmpName : product.Name,
-            Category: (tmpCate ? tmpCate : product.Category).trim(),
+            Category: _cate,
             material: tmpMaterial ? tmpMaterial : product.material,
             Description: tmpDescription ? tmpDescription : product.Description,
             Price: tmpPrice ? tmpPrice : product.Price,
             Stock: tmpStock ? tmpStock : product.Stock,
             Size: _size,
-            SuitableBird: tmpBird ? tmpBird : product.SuitableBird,
+            SuitableBird: _cate != 'PK' ? (tmpBird ? tmpBird : product.SuitableBird) : '',
             discount: tmpDiscount ? tmpDiscount : product.discount,
             Status: tmpStatus ? tmpStatus : product.Status,
             Url: tmpUrl ? tmpUrl : product.Url
@@ -136,7 +138,6 @@ export default function EditProductForm({ productId, close, handleFilter }) {
                                 ))}
                             </TextField>
                         </div>
-
                         <div className="w-3/4">
                             {/* <div>material</div> */}
                             <TextField
@@ -148,18 +149,23 @@ export default function EditProductForm({ productId, close, handleFilter }) {
                                 value={tmpMaterial ? tmpMaterial : product.material}
                             />
                         </div>
-                        <div className="w-3/4">
-                            {/* <div>bird suitable</div> */}
+                        {(tmpCate ? tmpCate.trim() : product.Category.trim()) != 'PK' && (
+                            <>
+                                
+                                <div className="w-3/4">
+                                    {/* <div>bird suitable</div> */}
 
-                            <TextField
-                                InputLabelProps={{ shrink: true }}
-                                fullWidth
-                                label={'Bird Suitable'}
-                                variant="standard"
-                                onChange={handleBirdChange}
-                                value={tmpBird ? tmpBird : product.SuitableBird}
-                            />
-                        </div>
+                                    <TextField
+                                        InputLabelProps={{ shrink: true }}
+                                        fullWidth
+                                        label={'Bird Suitable'}
+                                        variant="standard"
+                                        onChange={handleBirdChange}
+                                        value={tmpBird ? tmpBird : product.SuitableBird}
+                                    />
+                                </div>
+                            </>
+                        )}
                         <div className="w-3/4">
                             {/* <div>price</div> */}
                             <TextField
@@ -199,32 +205,35 @@ export default function EditProductForm({ productId, close, handleFilter }) {
                                 />
                             </div>
                             <div className="flex-col my-2">
-                                <div className="">
-                                    {/* <div>height</div> */}
-                                    <div>
-                                        <TextField
-                                            InputLabelProps={{ shrink: true }}
-                                            fullWidth
-                                            label={'Height'}
-                                            variant="standard"
-                                            onChange={handleHeightChange}
-                                            value={tmpHeight ? tmpHeight : product.Size ? product.Size.split(',')[1] : ''}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="mt-5">
-                                    {/* <div>width</div> */}
-                                    <div>
-                                        <TextField
-                                            InputLabelProps={{ shrink: true }}
-                                            fullWidth
-                                            label={'Width'}
-                                            variant="standard"
-                                            onChange={handleWidthChange}
-                                            value={tmpWidth ? tmpHeight : product.Size ? product.Size.split(',')[0] : ''}
-                                        />
-                                    </div>
-                                </div>
+                                {(tmpCate ? tmpCate.trim(): product.Category.trim()) != 'PK' && (
+                                    <>
+                                        <div className="">
+                                            {/* <div>height</div> */}
+                                            <div>
+                                                <TextField
+                                                    InputLabelProps={{ shrink: true }}
+                                                    fullWidth
+                                                    label={'Height'}
+                                                    variant="standard"
+                                                    onChange={handleHeightChange}
+                                                    value={tmpHeight ? tmpHeight : product.Size ? product.Size.split(',')[1] : ''}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="mt-5">
+                                            {/* <div>width</div> */}
+                                            <div>
+                                                <TextField
+                                                    InputLabelProps={{ shrink: true }}
+                                                    fullWidth
+                                                    label={'Width'}
+                                                    variant="standard"
+                                                    onChange={handleWidthChange}
+                                                    value={tmpWidth ? tmpHeight : product.Size ? product.Size.split(',')[0] : ''}
+                                                />
+                                            </div>
+                                        </div>
+                                    </>)}
                             </div>
                             <div className="mt-12">
                                 <FormControl>

@@ -13,9 +13,6 @@ import { useNavigate } from 'react-router-dom'
 
 export default function Home() {
     const [cates, setCate] = useState([])
-    const [filter, setFilter] = useState(0)
-    const [keyword, setKeyword] = useState('')
-    const [proList, setProList] = useState([])
     // const [searchResults, setSearchResults] = useState([]);
     // const handleSearch = async (query) => {
     //     const response = await axios.post('http://localhost:3000/products/search/', { query });
@@ -31,17 +28,6 @@ export default function Home() {
         fetchCate()
     }, [])
 
-    const getCardListFilter = async (filter, keyword) => {
-        if (filter === 1) {
-            const response = await axios.get('http://localhost:3000/products/cate/' + keyword)
-            setProList(response.data)
-            setFilter(filter)
-        } else if (filter === 2) {
-            const response = await axios.get('http://localhost:3000/products/search' + keyword)
-            setProList(response.data)
-            setFilter(filter)
-        }
-    }
 
     const navigate = useNavigate()
 
@@ -63,9 +49,7 @@ export default function Home() {
                 <div className="body-bottom">
                     
                 </div>
-                {filter === 0 &&
-                    cates.map((cate) => <CardList key={cate.id} categoryId={cate.id} category={cate.name} getCardListFilter={getCardListFilter} />)}
-                {filter === 1 && <CardListExtend categoryId={keyword} filter={filter} getCardListFilter={getCardListFilter} proList={proList} />}
+                { cates.map((cate) => <CardList key={cate.id} categoryId={cate.id} category={cate.name} />)}
             </main>
         </div>
     )

@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 import Home from './Pages/Home'
 import Cart from './Pages/Cart'
+import Custom from './Pages/Custom'
 import Test from './Pages/Test'
 import ProductDetails from './Pages/ProductDetail'
 import FilteredPage from './Pages/FilteredPage'
@@ -27,7 +28,6 @@ import GeneralPolicy from './Pages/NaviFooter/Policy/GeneralPolicy'
 import PaymentPolicy from './Pages/NaviFooter/Policy/PaymentPolicy'
 import ReturnPolicy from './Pages/NaviFooter/Policy/ReturnPolicy'
 import SecurePolicy from './Pages/NaviFooter/Policy/SecurePolicy'
-import Custom from './Pages/Custom'
 function App() {
     return (
         <div>
@@ -68,6 +68,7 @@ function App() {
                     <Route element={<FilteredPage />} path="/filter/:filter/:keyword" />
                     <Route element={<Custom />} path="/Custom" />
                     <Route element={<VNPaySuccess />} path="/test" />
+                    <Route element={<Custom /> } path="/custom"/>
                 </Route>
 
                 <Route element={<AdminLayout />} path="/admin">

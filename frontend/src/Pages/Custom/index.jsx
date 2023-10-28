@@ -1,3 +1,4 @@
+﻿/* eslint-disable react/jsx-key */
 import { React, useState, useEffect } from 'react'
 import CategoryNav from '../../components/features/CategoryNav'
 import MenuItem from '@mui/material/MenuItem'
@@ -15,7 +16,7 @@ export default function Custom() {
     const [selectedImage, setSelectedImage] = useState(null)
 
     const handleCategoryChange = (event) => {
-        setCate(event.target.value.trim())
+        setCategories(event.target.value.trim())
     }
     const handleNameChange = (event) => {
         setTempName(event.target.value)
@@ -57,10 +58,9 @@ export default function Custom() {
                                     <div
                                         className={selectedImage === index + 1 ? selectedImageClass : defaultImageClass}
                                         onClick={() => setSelectedImage(index + 1)}
-                                        key={category.id}
                                     >
-                                        <img className="max-h-64" src={category.imageUrl} alt="" />
-                                        <div className="text-center py-4  w-full">
+                                        <img className="max-h-52" src={category.imageUrl} alt="" />
+                                        <div className="text-center">
                                             <h1>{category.name}</h1>
                                         </div>
                                     </div>

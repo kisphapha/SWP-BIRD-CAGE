@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+﻿import React, { useContext, useEffect, useState } from 'react'
 import UserUtilities from "../../components/common/UserUtilities";
 import "./styles.css"
 import { UserContext } from '../../UserContext';
@@ -10,7 +10,6 @@ import OrderList from '../../components/features/OrderList/index';
 
 const PurchasePage = () => {
     const { user } = useContext(UserContext);
-    // console.log(user)
 
     return (
 
@@ -21,13 +20,13 @@ const PurchasePage = () => {
             </UserProvider>
             <CategoryNav
                 parents={[
-                    { "name": "Home", "link": "/" }
+                    { "name": "Trang chủ", "link": "/" }
                 ]}
-                current="User Profile"></CategoryNav>
+                current="Hồ sơ"></CategoryNav>
             <div className="user-container">
                 {user != null ? (<UserUtilities user={user} />) : (<div>Loading...</div>)}
                 <div className="user-view">
-                    <OrderList user={user} />
+                    {user != null ? (<OrderList user={user} />) : (<div>Loading...</div>)}
                 </div>
             </div>
         </div>

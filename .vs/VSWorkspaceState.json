@@ -1,16 +1,14 @@
 {
   "ExpandedNodes": [
     "",
-    "\\backend",
-    "\\backend\\controllers",
-    "\\backend\\routes",
     "\\frontend",
+    "\\frontend\\src",
     "\\frontend\\src\\Pages",
-    "\\frontend\\src\\Pages\\Admin",
-    "\\frontend\\src\\Pages\\Admin\\NewProduct",
-    "\\frontend\\src\\Pages\\Admin\\Products",
+    "\\frontend\\src\\Pages\\Admin\\User",
+    "\\frontend\\src\\Pages\\Cart",
+    "\\frontend\\src\\Pages\\Home",
     "\\frontend\\src\\Pages\\ProductDetail"
   ],
-  "SelectedNode": "\\frontend\\package-lock.json",
+  "SelectedNode": "\\frontend\\src\\Pages\\Cart\\index.jsx",
   "PreviewInSolutionExplorer": false
 }

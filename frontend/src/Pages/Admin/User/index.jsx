@@ -1,21 +1,54 @@
-import { Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material'
+﻿import { Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material'
 import React, { useState,useEffect} from 'react'
 import MenuItem from '@mui/material/MenuItem'
 import axios from 'axios'
-
+import Popup from 'reactjs-popup'
 
 export default function Users() {
     const [users, setUsers] = useState([])
-
+    const [ban, setBan] = useState()
+    const [reason, setReason] = useState()
+ 
     const fetchUser = async () => {
         const response = await axios.get(`http://localhost:3000/users`)
         setUsers(response.data)
     }
+    const banUser = async (userId) => {
+        const json = {
+            userId: userId,
+            status: ban,
+            ReasonBlock : reason
+        }
+        console.log(json)
+        const response = await axios.post(`http://localhost:3000/admin/deleteUser`,json)
+        setUsers(response.data)
+    }
+
 
     useEffect(() => {
         fetchUser()
-        
+
     })
+
+    const handleStatus = (event) => {
+        setBan(event.target.value)
+    }
+    const handleReasoon = (event) => {
+        setReason(event.target.value)
+    }
+
+
+    const handleChange = (status, reason) => {
+        setBan(status)
+        setReason(reason)
+    }
+
+    const handleOk = (userid, close) => {
+        banUser(userid)
+        setReason()
+        close()
+        fetchUser()
+    }
 
     const status = [
         {
@@ -124,13 +157,44 @@ export default function Users() {
                             <td className="w-1/12  mr-16">{user.CreatedAt ? user.CreatedAt.substr(0, 10) : ""} </td>
                             <td className="w-1/12 ">{user.Role}</td>
                             <td className="w-1/12 ">
-                                <TextField className="text-left" fullWidth select label="Status" variant="filled" defaultValue={user.status}>
-                                    {status.map((option) => (
-                                        <MenuItem key={option.value} value={option.value}>
-                                            {option.label}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
+                                <Popup
+                                    trigger={
+                                        <Button>{user.Status}</Button>
+                                    }
+                                    position="right center"
+                                    closeOnDocumentClick={false}
+                                    closeOnEscape={false}
+                                    modal
+                                    onOpen={() => handleChange(user.Status, user.ReasonBlocked) }
+                                >
+                                    {(close) => (
+                                        <div className="p-4">
+                                            <h2>CẬP NHẬT TRẠNG THÁI</h2>
+                                            <div>
+                                            <TextField className="text-left w-1/2" select label="Trạng thái" variant="filled" defaultValue={user.Status} onChange={handleStatus }>
+                                                <MenuItem value="Active">Active</MenuItem>
+                                                <MenuItem value="Inactive">Inactive</MenuItem>
+                                            </TextField>
+                                            </div>
+                                            {ban == "Inactive" && (
+                                                <div>
+                                                    <TextField className="text-left" fullWidth variant="standard"
+                                                        label="Lí do vô hiệu hóa tài khoản này"
+                                                        multiline rows={6}
+                                                        onChange={handleReasoon}
+                                                        defaultValue={reason }
+                                                    >
+                                                    </TextField>
+                                                </div>
+                                            )}
+                                            <div className="flex justify-end">
+                                                <Button variant="outlined" onClick={close}>Cancel</Button>
+                                                <Button variant="outlined" onClick={() => handleOk(user.Id,close) }>OK</Button>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                </Popup>                             
                             </td>
                     </tr>
                     <hr className=" my-2" />

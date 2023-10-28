@@ -1,12 +1,10 @@
 ﻿import React, { useState, useEffect } from 'react'
 import './styles.css'
-import Card from '../Card'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
-import { Button } from '@mui/material'
+import { Button, Rating } from '@mui/material'
 import Stepper from '@mui/material/Stepper'
 import Step from '@mui/material/Step'
-import Rating from '@mui/material/Rating'
 import Typography from '@mui/material/Typography'
 import StepLabel from '@mui/material/StepLabel'
 import TextField from '@mui/material/TextField'
@@ -20,32 +18,52 @@ const OrderList = (props) => {
     const [feedbackContent, setFeedbackContent] = useState('');
     const navigate = useNavigate()
 
+    const handleStarPoint = (event) => {
+        setRating(event.target.value)
+    }
+    const handleFeedbackContent = (event) => {
+        setFeedbackContent(event.target.value)
+    }
     const handleRebuy = (productId) => {
         navigate('/products/' + productId)
     }
+    async function fetchOrderItems(id) {
+        const response = await axios.get(`http://localhost:3000/order/list/${id}`)
+        return response.data
+    }
+    async function submitFeedback(productId, close) {
+        const json = {
+            UserId: props.user.Id,
+            ProductId: productId,
+            StarPoint: rating,
+            Content : feedbackContent
+        }
+        console.log(json)
 
+        const response = await axios.post(`http://localhost:3000/products/rating/`,json)
+        alert("Chúng tôi đã ghi nhận. Chân thành cảm ơn bạn!")
+        close()
+    }
     async function fetchOrder() {
-        const response = await axios.get(`http://localhost:3000/order/user/${JSON.parse(sessionStorage.loginedUser).Id}`)
-        setOrders(response.data)
+        const response = await axios.get(`http://localhost:3000/order/user/${props.user.Id}`);
+        if (response.data) {
+            const jsonData = response.data;
+            const ordersWithItems = [];
+
+            for (const order of jsonData) {
+                const items = await fetchOrderItems(order.Id);
+                const orderWithItems = { ...order, items };
+                ordersWithItems.push(orderWithItems);
+            }
+            setCards(ordersWithItems);
+        }
     }
-    async function fetchOrderItems() {
-        const response = await axios.get(`http://localhost:3000/order/list/${JSON.parse(sessionStorage.loginedUser).Id}`)
-        setCards(response.data)
-    }
 
 
-    const submitFeedback = () => {
-        console.log('Rating submitted:', rating);
-        console.log('Feedback content:', feedbackContent);
+    useEffect(() => {      
+        fetchOrder()       
+    },[])
 
-        closePopup();
-    };
-
-
-    useEffect(() => {
-        fetchOrder();
-        fetchOrderItems()
-    }, [])
     const [activeStep, setActiveStep] = React.useState(1)
     return (
         <>
@@ -54,14 +72,15 @@ const OrderList = (props) => {
                 <p>Những mặt hàng bạn đã mua</p>
             </div>
             <hr />
-            {orders.map((order) => (
-                <div className="flex-col bg-slate-50 m-2 p-2" key={order.Id}>
-                    {console.log(order)}
-                    <div className="flex place-content-between px-4 my-4">
+            {/*Loop*/}
+
+            {cards.map((card) => (
+                <div className=" flex-col bg-slate-50 m-2 p-2" key={card.Id}>
+                    <div className=" flex place-content-between px-4 my-4">
                         <div className="flex">
-                            <div className="px-2">Mã đơn hàng: {order.Id} </div>
+                            <div className="px-2">Mã đơn hàng: {card.Id} </div>
                             <div>|</div>
-                            <div className="px-2">Ngày đặt mua: {(order.CreateAt + '').slice(0, 10)} </div>
+                            <div className="px-2">Ngày đặt mua: {(card.CreateAt + '').substr(0, 10)} </div>
                         </div>
                         <div className="flex">
                             <Stepper activeStep={activeStep}>
@@ -81,55 +100,75 @@ const OrderList = (props) => {
                         </div>
                     </div>
                     <div className="flex py-2 place-content-between">
-                        <div className="flex">
-                            <ul>
-                                {cards.map((card) => (
-                                    <li className="font-bold">{card.Quantity} x {card.Name}</li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div className="">
-                            <div className="mx-8 my-4 text-right line-through text-gray-400 ">
-                                {order.TotalAmount.toLocaleString('vi', { style: 'currency', currency: 'VND' })}
-                            </div>
-                            <div className="mx-8 text-right  text-red-500 ">
-                                {' '}
-                                {parseInt(order.TotalAmount * 0.9).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
-                            </div>
-                        </div>
-                    </div>
-                    <div className="flex-col">
-                        <div className="text-right mx-8 my-4  text-red-500 text-2xl">
-                            {parseInt(order.TotalAmount).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
-                        </div>
-                        <div className="flex justify-end gap-4">
-                            <Button className="" variant="contained" onClick={() => handleRebuy(order.Id)}>
-                                Mua lại
-                            </Button>
+                    {
+                        
+                            card.items.map((item) => (
+                                <div key={item.Id }>
+                                    <div className="flex">
+                                        <Button onClick={() => handleRebuy(item.Id)}>
+                                        <img className="h-30 w-20 mx-4  " src={item.Url}></img>
+                                        </Button>
+                                        <div className="">
+                                            <div className="font-bold">{item.Name}</div>
+                                            <div className="pl-2">Phân loại: {item.Shape}</div>
+                                            <div className="pl-2">x{item.Quantity}</div>
+                                        </div>
+                                    </div>
+                                    <div className="">
+                                        <div className="mx-8 my-4 text-right line-through text-gray-400 ">
+                                            {item.Price.toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+                                        </div>
+                                        <div className="mx-8 text-right  text-red-500 ">
+                                            {' '}
+                                            {parseInt(item.Price * (100 - item.discount)/100).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+                                        </div>
+                                    </div>
+                                    <div className="flex  justify-end gap-4">
+                                        <Popup
+                                            trigger={
+                                                <Button className="" variant="contained" onClick={() => handleRebuy(card.Id)}>
+                                                    Đánh giá
+                                                </Button>
+                                            }
+                                            position="right center"
+                                            closeOnDocumentClick={false}
+                                            closeOnEscape={false}
+                                            modal
+                                        >
+                                            {(close) => (
+                                                <div className="p-4">
+                                                    <h2>ĐÁNH GIÁ SẢN PHẨM</h2>
+                                                    <h3>{item.Name}</h3>
+                                                    <div>
+                                                        <Rating name="hover-feedback" precision={1} onChange={handleStarPoint} />
 
-                            <Popup
-                                trigger={<Button className="" variant="contained">Đánh giá</Button>}
-                                position="right center"
-                                modal
-                            >
-                                <div className="popup-content">
-                                    <Typography component="legend">Đánh giá sản phẩm</Typography>
-                                    <Rating value={rating} onChange={(event, newValue) => setRating(newValue)} />
-                                    <TextField
-                                        label="Nội dung đánh giá"
-                                        variant="outlined"
-                                        fullWidth
-                                        multiline
-                                        rows={4}
-                                        value={feedbackContent}
-                                        onChange={(event) => setFeedbackContent(event.target.value)}
-                                    />
-                                    <Button variant="contained" color="primary" onClick={submitFeedback}>
-                                        Submit
-                                    </Button>
+                                                        <TextField className="text-left" fullWidth variant="standard"
+                                                            label="Hãy cho chúng tôi biết cảm nghĩ của bạn về sản phẩm"
+                                                            multiline rows={6}
+                                                            onChange={handleFeedbackContent }
+                                                            >
+                                                            </TextField>
+                                                        </div>
+                                                    <div className="flex justify-end">
+                                                        <Button variant="outlined" onClick={close}>Cancel</Button>
+                                                        <Button variant="outlined" onClick={() => submitFeedback(item.Id, close)}>OK</Button>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </Popup>
+                                        
+                                    </div>
                                 </div>
-                            </Popup>
+                            ))
+                        
+                    }
+                        
+                    </div>
+                    <div className="flex-col ">
+                        <div className="text-right mx-8 my-4  text-red-500 text-2xl">
+                            {parseInt(card.TotalAmount).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
                         </div>
+                        
                     </div>
                 </div>
             ))}

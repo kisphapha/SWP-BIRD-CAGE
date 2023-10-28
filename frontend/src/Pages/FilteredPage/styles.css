@@ -1,8 +1,12 @@
 
-#page_home {
+#page_filter {
     min-height: 100vh;
     position: relative;
     padding-bottom: 12rem;
+}
+
+.page-stuff {
+    margin-left: 100px
 }
 /*
 #body > .body-logo > .logo-img {
