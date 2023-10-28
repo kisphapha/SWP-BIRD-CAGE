@@ -1,4 +1,4 @@
-const config = require("../config/db.config")
+﻿const config = require("../config/db.config")
 const sql = require("mssql");
 
 const getAllOrder = async () => {
@@ -90,7 +90,7 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                         GETDATE(),
                         @Status,
                         0,
-                        'Pending',
+                        N'Chờ duyệt',
                         'UnPaid'
                     );
             `);
