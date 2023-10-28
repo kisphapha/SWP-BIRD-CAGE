@@ -49,7 +49,7 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
             .input('UserID', sql.Int, UserID)
             .input('OrderDate', sql.DateTime, OrderDate)
             .input('PaymentDate', sql.DateTime, PaymentDate)
-            .input('ShippingAddress', sql.NVarChar, ShippingAddress)
+            .input('AddressID', sql.Int, ShippingAddress)
             .input('PhoneNumber', sql.NVarChar, PhoneNumber)
             .input('Note', sql.NVarChar, Note)
             .input('TotalAmount', sql.Int, TotalAmount)
@@ -61,7 +61,7 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                     [UserID],
                     [OrderDate],
                     [PaymentDate],
-                    [ShippingAddress],
+                    [AddressID],
                     [PhoneNumber],
                     [Note],
                     [TotalAmount],
@@ -80,7 +80,7 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                         @UserID,
                         @OrderDate,
                         @PaymentDate,
-                        @ShippingAddress,
+                        @AddressID,
                         @PhoneNumber,
                         @Note,
                         @TotalAmount,

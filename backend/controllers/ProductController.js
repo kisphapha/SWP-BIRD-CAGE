@@ -114,7 +114,7 @@ const addRating = async (req, res) => {
 
 const paging = async (req, res) => {
     try {
-        const products = await Product.paging(req.query.page, req.query.cate);
+        const products = await Product.paging(req.body.page, req.body.cate);
         res.json(products);
     }catch (e) {
         res.status(500).json({message: e.message})

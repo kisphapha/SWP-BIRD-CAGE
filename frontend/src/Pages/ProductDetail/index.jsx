@@ -75,7 +75,7 @@ export default function ProductDetails() {
                 name: product.Name,
                 quantity: quantity.toString(),
                 url: product.Url,
-                price: product.Price
+                price: product.Price * (100 - product.discount) / 100
             })
         }
 

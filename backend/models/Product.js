@@ -235,15 +235,25 @@ const paging = async (page, cate) => {
         let poolConnection = await sql.connect(config);
         const result = await poolConnection.request().query(
             `
-                SELECT *
-                FROM dbo.Products
-                WHERE dbo.Products.Category = '${cate}' AND p.isDeleted = 0
-                ORDER BY CreatedAt DESC
-                OFFSET ${(page - 1) * perPage} ROWS
-                    FETCH NEXT ${perPage} ROWS ONLY
+            SELECT DISTINCT p.*,i.Url,c.name as Shape
+            FROM Products p, Image i, Category c
+            WHERE i.ProductId = p.id AND p.Category = c.id AND Category = '${cate}' AND material != 'Custom' AND p.isDeleted = 0
+            ORDER BY p.CreatedAt DESC
+            OFFSET ${(page - 1) * perPage} ROWS
+                FETCH NEXT ${perPage} ROWS ONLY
         `
         );
-        return result.recordset;
+        const json = { data: result.recordset };
+
+        const linesQuery = `
+            SELECT COUNT(*) AS Count
+            FROM Products p, Image i, Category c
+            WHERE i.ProductId = p.id AND p.Category = c.id AND Category = '${cate}' AND material != 'Custom' AND p.isDeleted = 0
+        `;
+
+        const linesResult = await poolConnection.request().query(linesQuery);
+        json.lines = linesResult.recordset[0];
+        return json;
     } catch (e) {
         console.log("error: ", e)
     }
@@ -304,16 +314,27 @@ const pagingSearchBar = async(name, page) => {
     let poolConnection = await sql.connect(config);
     const result = await poolConnection.request().query(
         `
-        SELECT * FROM dbo.Products p 
-        LEFT JOIN dbo.Category c
-        ON c.Id = p.Category 
-        WHERE p.Name = N'${name}' AND p.isDeleted = 0 
-        ORDER BY c.Id DESC
-        OFFSET ${(page - 1) * perPage} ROWS
-         FETCH NEXT ${perPage} ROWS ONLY
+            SELECT DISTINCT p.*, i.Url, c.name as Shape
+            FROM [dbo].[Products] p, image i, Category c
+            WHERE i.ProductId = p.id AND p.Category = c.Id
+            AND p.Name LIKE N'%${name}%' AND p.isDeleted = 0 
+            ORDER BY p.createdAt DESC
+            OFFSET ${(page - 1) * perPage} ROWS
+             FETCH NEXT ${perPage} ROWS ONLY
         `
-    )
-    return result.recordset;
+      )
+      const json = { data: result.recordset };
+
+      const linesQuery = `
+            SELECT COUNT(*) AS Count
+             FROM [dbo].[Products] p, image i, Category c
+            WHERE i.ProductId = p.id AND p.Category = c.Id
+            AND p.Name LIKE N'%${name}%' AND p.isDeleted = 0
+        `;
+
+      const linesResult = await poolConnection.request().query(linesQuery);
+      json.lines = linesResult.recordset[0];
+       return json;
   } catch (error) {
     console.log("error: ", error);
   }

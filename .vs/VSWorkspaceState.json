@@ -4,13 +4,11 @@
     "\\frontend",
     "\\frontend\\src",
     "\\frontend\\src\\Pages",
-    "\\frontend\\src\\Pages\\Admin",
-    "\\frontend\\src\\Pages\\Admin\\NewProduct",
-    "\\frontend\\src\\Pages\\Admin\\Products",
     "\\frontend\\src\\Pages\\Admin\\User",
+    "\\frontend\\src\\Pages\\Cart",
     "\\frontend\\src\\Pages\\Home",
     "\\frontend\\src\\Pages\\ProductDetail"
   ],
-  "SelectedNode": "\\frontend\\src\\Pages\\Admin\\NewProduct\\index.jsx",
+  "SelectedNode": "\\frontend\\src\\Pages\\Cart\\index.jsx",
   "PreviewInSolutionExplorer": false
 }
