@@ -61,7 +61,7 @@ export default function Custom() {
                                     >
                                         <img className="max-h-52" src={category.imageUrl} alt="" />
                                         <div className="text-center">
-                                            <h1>{category.name}</h1>
+                                            <h1 className="font-bold my-2">{category.name}</h1>
                                         </div>
                                     </div>
                                 )
@@ -195,7 +195,7 @@ export default function Custom() {
                                 rows={6}
                             />
 
-                            <div>Giá dự tính:</div>
+                            <div>Tổng cộng:</div>
                             <div>Thời gian hoàn thành dự kiến:</div>
                             <div className="my-8 text-center">
                                 <Button variant="contained" className="">

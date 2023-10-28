@@ -13,19 +13,19 @@ import './style.css'
 export default function Cart() {
     const [cartData, setCartData] = useState({ products: [] })
     const [loading, setLoading] = useState(true)
-    const [paymentMethod, setPaymentMethod] = useState('COD'); // Default to 'onDelivery'
+    const [paymentMethod, setPaymentMethod] = useState('COD') // Default to 'onDelivery'
     const navigate = useNavigate()
     const loadCartData = async () => {
-        const cartDataFromSession = sessionStorage.getItem('cart');
+        const cartDataFromSession = sessionStorage.getItem('cart')
         if (cartDataFromSession) {
-            setCartData(JSON.parse(cartDataFromSession));
+            setCartData(JSON.parse(cartDataFromSession))
         }
-        setLoading(false);
-    };
+        setLoading(false)
+    }
 
     useEffect(() => {
-        loadCartData();
-    }, []);
+        loadCartData()
+    }, [])
 
     const handleDecrement = (productId) => {
         const updatedCart = { ...cartData }
@@ -52,7 +52,6 @@ export default function Cart() {
     const handlePayment = async () => {
         try {
             if (sessionStorage.loginedUser != null) {
-
                 const res = await axios.post('http://localhost:3000/order/addordertodb', {
                     UserID: JSON.parse(sessionStorage.loginedUser).Id,
                     OrderDate: new Date().toISOString().slice(0, 10),
@@ -76,16 +75,16 @@ export default function Cart() {
                         orderid: res.data.orderid
                     })
                     setTimeout(() => {
-                        alert("Đang chuyển tiếp đến VNPay")
-                    }, 2000);
+                        alert('Đang chuyển tiếp đến VNPay')
+                    }, 2000)
                     window.location.href = response.data.url
                 } else {
-                    alert("Đặt hàng thành công")
+                    alert('Đặt hàng thành công')
                 }
-                sessionStorage.setItem("cart", '{"products":[]}')
-                window.location.reload(false);
+                sessionStorage.setItem('cart', '{"products":[]}')
+                window.location.reload(false)
             } else {
-                alert("Đăng nhập để tiến hành thanh toán")
+                alert('Đăng nhập để tiến hành thanh toán')
             }
         } catch (error) {
             console.error('Lỗi thanh toán:', error)
@@ -247,6 +246,10 @@ export default function Cart() {
                             </td>
                         </tr>
                     </table>
+                    <div className="flex justify-end gap-4 mx-4 my-2 ">
+                        <Button variant="contained">Tiếp tục mua hàng</Button>
+                        <Button variant="contained">Xóa tất cả</Button>
+                    </div>
                 </div>
             )}
         </div>

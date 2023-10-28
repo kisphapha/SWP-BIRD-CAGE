@@ -39,9 +39,9 @@
     justify-content: center;
 }
 #page-product > .product-container > .product > .product-detail > .name {
-    font-size: 1.25rem;
+    font-size: 1.7rem;
     font-weight: 700;
-    color: red;
+    color: rgb(243, 62, 62);
 }
 #page-product > .product-container > .product > .product-detail > .price {
     flex-direction: column;
@@ -159,10 +159,11 @@
 #page-product > .product-container > .feedback {
     height: fit-content;
     margin-top: 20px;
+    /* margin-bottom: 20px; */
     padding: 20px 20px 10px 20px;
     margin-left: 300px;
     margin-right: 300px;
-    min-height: 500px;
+    /* min-height: 500px; */
     display: flex;
     flex-direction: column;
     background-color: aliceblue;

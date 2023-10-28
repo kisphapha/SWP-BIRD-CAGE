@@ -18,9 +18,9 @@ export default function ProductDetails() {
             const user = JSON.parse(sessionStorage.loginedUser)
             if (user.Role === 'Admin' || user.Role === 'Staff') {
                 return (
-                    <div className="flex h-16">
-                        <TextField label="Reply to comment" />
-                        <Button>Save</Button>
+                    <div className="flex ml-8 my-2 pl-8">
+                        <TextField variant="standard" label="Reply to comment" />
+                        <Button variant="text">Save</Button>
                     </div>
                 )
             }
@@ -75,7 +75,7 @@ export default function ProductDetails() {
                 name: product.Name,
                 quantity: quantity.toString(),
                 url: product.Url,
-                price: product.Price * (100 - product.discount) / 100
+                price: (product.Price * (100 - product.discount)) / 100
             })
         }
 
@@ -115,7 +115,10 @@ export default function ProductDetails() {
                         <div className="price">
                             <div className="cost">{parseInt(product.Price).toLocaleString('vi', { style: 'currency', currency: 'VND' })}</div>
                             <div className="discount">
-                                {parseInt(product.Price * (100-product.discount)/100).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+                                {parseInt((product.Price * (100 - product.discount)) / 100).toLocaleString('vi', {
+                                    style: 'currency',
+                                    currency: 'VND'
+                                })}
                             </div>
                         </div>
                         <div className="data">
@@ -123,22 +126,22 @@ export default function ProductDetails() {
                                 <span className="title">Mã Sản Phẩm</span>
                                 <span className="info">{productId}</span>
                             </div>
-                            <hr />
+                            <hr className="border border-slate-300 " />
                             <div className="row">
                                 <span className="title">Hình dáng</span>
                                 <span className="info">{product.Shape}</span>
                             </div>
-                            <hr />
+                            <hr className="border border-slate-300 " />
                             <div className="row">
                                 <span className="title">Chất Liệu</span>
                                 <span className="info">{product.material}</span>
                             </div>
-                            <hr />
+                            <hr className="border border-slate-300 " />
                             <div className="row">
                                 <span className="title">Còn</span>
                                 <span className="info">{product.Stock}</span>
                             </div>
-                            <hr />
+                            <hr className="border border-slate-300 " />
                         </div>
                         <div className="option">
                             <div className="quantity">
@@ -163,58 +166,71 @@ export default function ProductDetails() {
                     </div>
                 </div>
                 <div className="description">
-                    <div>Mô tả</div>
-                    <div>{product.Description}</div>
-                    <div>Thông số</div>
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td>Tên sản phẩm</td>
-                                <td>{product.Name}</td>
-                            </tr>
-                            <tr>
-                                <td>Phân loại</td>
-                                <td>{product.Shape}</td>
-                            </tr>
-                            <tr>
-                                <td>Kích thước dài rộng (cm)</td>
-                                <td>{product.Size}</td>
-                            </tr>
-                            <tr>
-                                <td>Loại chim phù hợp</td>
-                                <td>{product.SuitableBird}</td>
-                            </tr>
-                            <tr>
-                                <td>Chất Liệu</td>
-                                <td>{product.material}</td>
-                            </tr>
-
-
-                        </tbody>
-                    </table>
+                    <div>
+                        <div className="font-bold text-xl my-4">Mô tả</div>
+                        <div className="mb-4">{product.Description}</div>
+                    </div>
+                    <hr className="border border-slate-300" />
+                    <div className="my-4">
+                        <div className="font-bold text-xl my-2">Thông số</div>
+                        <table className="w-full">
+                            <thead></thead>
+                            <tbody>
+                                <tr className="">
+                                    <td className="my-4 py-4  w-1/6 pl-4 bg-slate-300">Tên sản phẩm</td>
+                                    <td className="my-4 py-4  bg-white pl-4">{product.Name}</td>
+                                </tr>
+                                <hr className="border border-r-violet-400" />
+                                <tr className="">
+                                    <td className="my-4 py-4  w-1/6 pl-4 bg-slate-300">Phân loại</td>
+                                    <td className="my-4 py-4  bg-white pl-4">{product.Shape}</td>
+                                </tr>
+                                <hr className="border border-r-violet-400" />
+                                <tr className="">
+                                    <td className="my-4 py-4  w-1/6 pl-4 bg-slate-300">Kích thước: dài , rộng</td>
+                                    <td className="my-4 py-4  bg-white pl-4">{product.Size}</td>
+                                </tr>
+                                <hr className="border border-r-violet-400" />
+                                <tr className="">
+                                    <td className="my-4 py-4  w-1/6 pl-4 bg-slate-300">Loại chim phù hợp</td>
+                                    <td className="my-4 py-4  bg-white pl-4">{product.SuitableBird}</td>
+                                </tr>
+                                <hr className="border border-r-violet-400" />
+                                <tr className="">
+                                    <td className="my-4 py-4 w-1/6 pl-4 bg-slate-300">Chất Liệu</td>
+                                    <td className="my-4 py-4  bg-white pl-4">{product.material}</td>
+                                </tr>
+                                <hr className="border border-r-violet-400" />
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <div className="feedback">
-                    <div>ĐÁNH GIÁ SẢN PHẨM</div>
+                    <div className="font-bold my-4 text-xl ">Đánh giá sản phẩm </div>
 
-                    <div>
+                    <hr className="border border-slate-300  mt-1" />
+                    <div className="bg-white w-full ">
                         {ratingsData.map((rating, index) => (
-                            <div key={index} className="bg-white flex py-2 ">
-                                <hr className="py-2" />
-                                {/* <div className="flex-row"> */}
-                                <div>
-                                    <Avatar className="rounded-xl w-16 h-16 m-2" src={rating.Picture} />
-                                </div>
+                            <div key={index} className=" mb-2 ">
                                 <div className="">
-                                    <div>
-                                        <h4 className=" px-4">{rating.Name}</h4>
-                                        <Rating name="hover-feedback" value={rating.StarPoint} precision={1} readOnly />
+                                    <div className="flex">
+                                        <div>
+                                            <Avatar className="rounded-2xl h-24 w-24 m-2" src={rating.Picture} />
+                                        </div>
+                                        <div className="mx-4">
+                                            <div className="">
+                                                <h4 className=" ">{rating.Name}</h4>
+
+                                                <div className="text-sm">
+                                                    <Rating name="hover-feedback " size="small" value={rating.StarPoint} precision={1} readOnly />
+                                                </div>
+                                            </div>
+                                            <p>{rating.Content}</p>
+                                        </div>
                                     </div>
-                                    <p>{rating.Content}</p>
-                                    {getFeedback()}
+                                    <div className="mx-8">{getFeedback()}</div>
+                                    <hr className="border border-slate-300 mt-4 mx-4" />
                                 </div>
-                                <hr className="py-2 " />
-                                {/* </div> */}
-                                <div className="py-2"></div>
                             </div>
                         ))}
                     </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Button} from '@mui/material'
+import { Button } from '@mui/material'
 import { useParams } from 'react-router-dom'
 import Header from '../../components/common/Header'
 import Navbar from '../../components/common/Navbar'
@@ -23,8 +23,8 @@ export default function FilteredPage() {
     }, [page])
 
     useEffect(() => {
-        setPageList(Array.from({ length: maxPage }));
-    }, [maxPage]);
+        setPageList(Array.from({ length: maxPage }))
+    }, [maxPage])
 
     const handleSwitchPage = (page) => {
         setPage(page)
@@ -35,11 +35,11 @@ export default function FilteredPage() {
     }
 
     const getCardListFilter = async (filter, keyword) => {
-        window.scrollTo(0,96)
+        window.scrollTo(0, 96)
         if (filter == 1) {
-            const response = await axios.post('http://localhost:3000/products/paging/category/',{
+            const response = await axios.post('http://localhost:3000/products/paging/category/', {
                 page: page,
-                cate:keyword
+                cate: keyword
             })
             setProList(response.data.data)
             setMaxPage(Math.ceil(response.data.lines.Count / 15))
@@ -64,20 +64,19 @@ export default function FilteredPage() {
 
             <main id="body">
                 <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }]} current={search}></CategoryNav>
-                <CardListExtend categoryId={keyword} proList={proList} />          
+                <CardListExtend categoryId={keyword} proList={proList} />
             </main>
-            <tr className="page-stuff">
+            <div className="flex justify-center">
                 {pageList.map((pg, index) => (
                     <td key={index}>
-                        <Button
-                            variant={index + 1 === page ? "contained" : "outlined"}
-                            onClick={() => handleSwitchPage(index + 1)}
-                        >
-                            {index + 1}
-                        </Button>
+                        <div className="items-center">
+                            <Button variant={index + 1 === page ? 'contained' : 'outlined'} onClick={() => handleSwitchPage(index + 1)}>
+                                {index + 1}
+                            </Button>
+                        </div>
                     </td>
                 ))}
-            </tr>
+            </div>
         </div>
     )
 }
