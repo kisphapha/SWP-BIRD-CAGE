@@ -26,14 +26,8 @@
     color: black;
     border: none;
     width: 100px;
-    padding: 7.5px 0;
     position: absolute;
     right: 15%;
-}
-#navbar > .nav > .cart-button:hover {
-    color: rgb(22, 234, 217);
-    background-color: darkgray;
-
 }
 
 #navbar > .menu > .menu-list {
@@ -65,6 +59,12 @@
     padding: 10px 20px 10px 10px;
 }
 
+#navbar >.nav >.cart-button > .nav-content{
+    padding: 7.725px 10px 7.725px 10px;
+    display: flex;
+    justify-content: center;
+}
+
 #navbar > .menu:hover > .menu-list {
     display: flex;
 }
@@ -77,5 +77,4 @@
 .nav .active {
     font-weight: bold;
     background-color: darkgray;
-    border-radius: 0 0 0 0;
 }

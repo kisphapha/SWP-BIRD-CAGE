@@ -238,7 +238,7 @@ export default function Cart() {
                                             </div>
 
                                             <Button onClick={handlePayment} variant="outlined">
-                                                Tiến hành thanh toán
+                                                Đặt hàng
                                             </Button>
                                         </div>
                                     )}

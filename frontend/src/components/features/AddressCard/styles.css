@@ -4,7 +4,7 @@
     border-radius: 10px;
     transition: all 0.2s linear;
     cursor: pointer;
-    width:100%;
+    width: 100% ;
 }
 
 .adr-comp {
@@ -21,7 +21,8 @@
 .adr-item-detail{
     display: flex;
     justify-content: space-between;
-    gap: normal
+    gap: normal;
+    width: 100%;
 }
 
 .adr-item-detail > .ftn{
