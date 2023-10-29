@@ -3,15 +3,19 @@ const sql = require("mssql");
 
 const changeShippingState = async(id, status) => {
     try {
-        console.log(id, status);
         let poolConnection = await sql.connect(config);
-         const result  = await poolConnection.request().query(
-                `
-                 UPDATE dbo.Orders
-                 SET Status_Shipping = '${status}'
-                 WHERE id = ${id};
-            `   
-            );
+        const result = await poolConnection
+        .request()
+        .input('Status_Shipping', sql.NVarChar, status)
+        .input('id', sql.Int, id)
+        .query(`
+          UPDATE dbo.Orders
+          SET Status_Shipping = @Status_Shipping
+          WHERE id = @id;
+        `);
+      
+      return result.recordset;
+      
     }catch (error) {
         console.log("error: ", error);
     }

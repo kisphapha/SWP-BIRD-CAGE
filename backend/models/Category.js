@@ -18,8 +18,10 @@ const getAllCategory = async () => {
 const getACategory = async (id) => {
     try {
         let poolConnection = await sql.connect(config);
-        const result = await poolConnection.request().query(
-            `SELECT * FROM Category WHERE id = '${id}'`
+        const result = await poolConnection.request()
+        .input('id', id)
+        .query(
+            `SELECT * FROM Category WHERE id = @id`
         );
         return result.recordset;
     } catch (error) {
@@ -30,67 +32,78 @@ const getACategory = async (id) => {
 const updateCategory = async (name, imageUrl, Allow_Customize, id) => {
     try {
         let poolConnection = await sql.connect(config);
-        await poolConnection.request().query(
-            `UPDATE dbo.Category 
-            SET Name = '${name}' , imageUrl = '${imageUrl}' , Allow_Customize =  ${Allow_Customize}
-            WHERE id  = '${id}'
-                  `
-        );
+        const request = poolConnection.request()
+            .input('Name', sql.NVarChar, name)
+            .input('ImageUrl', sql.NVarChar, imageUrl)
+            .input('AllowCustomize', sql.Bit, Allow_Customize)
+            .input('Id', sql.Int, id);
+    
+        await request.query(`
+            UPDATE dbo.Category 
+            SET Name = @Name, imageUrl = @ImageUrl, Allow_Customize = @AllowCustomize
+            WHERE id = @Id
+        `);
     } catch (error) {
         console.log("error: ", error);
     }
+    
 };
 
-const deteleCategory = async (id) => {
+const deleteCategory = async (id) => {
     try {
         let poolConnection = await sql.connect(config);
-        await poolConnection.request().query(
-            `
-          UPDATE dbo.Category
-          SET isHide = 1
-          WHERE id = '${id}'
-            `
+        const request = poolConnection.request()
+            .input('Id', sql.Int, id);
 
-        )
-    }catch (error) {
-        console.log("error: " , error)
+        await request.query(`
+            UPDATE dbo.Category
+            SET isHide = 1
+            WHERE id = @Id
+        `);
+    } catch (error) {
+        console.log("error: ", error);
     }
 }
 
 
-const addCategory = async (Id,Name,imageU,Allow_Customize,isHide ) => {
+
+const addCategory = async (Id, Name, imageU, Allow_Customize, isHide) => {
     try {
         let poolConnection = await sql.connect(config);
-        await poolConnection.request()
-            .query(
-            `
-                INSERT INTO dbo.Category
-              (
-                  [Id],
-                  [Name],
-                  [imageUrl],
-                  [Allow_Customize],
-                  [isHide]
-              )
-              VALUES
-              (   
-                    '${Id}',
-                    '${Name}',
-                    '${imageU}',
-                    ${Allow_Customize},
-                    ${isHide}
-                  )
-            `
+        const request = poolConnection.request()
+            .input('Id', sql.Int, Id)
+            .input('Name', sql.NVarChar, Name)
+            .input('ImageUrl', sql.NVarChar, imageU)
+            .input('AllowCustomize', sql.Bit, Allow_Customize)
+            .input('IsHide', sql.Bit, isHide);
 
-        )
-    }catch (error) {
-        console.log("error: " , error)
+        await request.query(`
+            INSERT INTO dbo.Category
+            (
+                [Id],
+                [Name],
+                [imageUrl],
+                [Allow_Customize],
+                [isHide]
+            )
+            VALUES
+            (
+                @Id,
+                @Name,
+                @ImageUrl,
+                @AllowCustomize,
+                @IsHide
+            )
+        `);
+    } catch (error) {
+        console.log("error: ", error);
     }
 }
+
 module.exports = {
     getAllCategory,
     updateCategory,
-    deteleCategory,
+    deleteCategory,
     addCategory,
     getACategory
 }

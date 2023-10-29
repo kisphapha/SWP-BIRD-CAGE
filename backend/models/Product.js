@@ -36,7 +36,9 @@ const getImgsOfProduct = async (id) => {
 const getProductsByCategory = async (code) => {
     try {
         let poolConnection = await sql.connect(config);
-        const result = await poolConnection.request().query(
+        const result = await poolConnection.request()
+        .input('code', code)
+        .query(
             `SELECT p.*, i.Url, c.name AS Shape
             FROM Products p
             JOIN (
@@ -44,7 +46,7 @@ const getProductsByCategory = async (code) => {
                 FROM Image
             ) i ON i.ProductId = p.id AND i.RowNum = 1
             JOIN Category c ON p.Category = c.id
-            WHERE Category = '${code}' AND material != 'Custom' AND p.isDeleted = 0`
+            WHERE Category = @code AND material != 'Custom' AND p.isDeleted = 0`
         );
         return result.recordset;
     } catch (error) {
@@ -55,7 +57,9 @@ const getProductsByCategory = async (code) => {
 const getProductById = async (id) => {
     try {
         let poolConnection = await sql.connect(config);
-        const result = await poolConnection.request().query(
+        const result = await poolConnection.request()
+        .input('ProductId', id)
+        .query(
             `SELECT p.*, i.Url, c.name AS Shape
             FROM Products p
             JOIN (
@@ -209,7 +213,9 @@ const updateProduct = async (Id, Name, Description, Price, Stock, Category, mate
 const getRatingByProductId = async (ProductId) => {
     try {
         let poolConnection = await sql.connect(config);
-        const result = await poolConnection.request().query(
+        const result = await poolConnection.request()
+        .input('ProductId', ProductId)
+        .query(
             `select 
                 u.Picture, 
                 u.Name, 
@@ -219,7 +225,7 @@ const getRatingByProductId = async (ProductId) => {
                 Feedback f, 
                 [User] u 
             where 
-                ProductId = ${ProductId} 
+                ProductId = @ProductId
                 and f.UserId = u.id
                 
 `
@@ -250,7 +256,12 @@ const deleteProduct = async (Id) => {
 const addRating = async (UserId, ProductId, StarPoint, Content) => {
     try {
         let poolConnection = await sql.connect(config);
-        const result = await poolConnection.request().query(
+        const result = await poolConnection.request()
+        .input('UserId', UserId)
+        .input('ProductId', ProductId)
+        .input('StarPoint', StarPoint)
+        .input('Content', Content)
+        .query(
             `INSERT INTO dbo.Feedback
                 (
                     UserId,
@@ -260,10 +271,10 @@ const addRating = async (UserId, ProductId, StarPoint, Content) => {
                     CreateAt
                 )
                 VALUES
-                (   ${UserId},    
-                    ${ProductId}, 
-                    ${StarPoint}, 
-                    '${Content}', 
+                (   @UserId,    
+                    @ProductId, 
+                    @StarPoint, 
+                    @Content, 
                     GETDATE() 
                     )
                     `
@@ -279,7 +290,10 @@ const paging = async (page, cate) => {
     try {
         const perPage = 15; // so phan tu hien thi trong 1 lan
         let poolConnection = await sql.connect(config);
-        const result = await poolConnection.request().query(
+        const result = await poolConnection.request()
+        .input('cate', cate)
+        .input('page', page)
+        .query(
             `
             SELECT p.*, i.Url, c.name AS Shape
             FROM Products p
@@ -288,9 +302,9 @@ const paging = async (page, cate) => {
                 FROM Image
             ) i ON i.ProductId = p.id AND i.RowNum = 1
             JOIN Category c ON p.Category = c.id
-            WHERE Category = '${cate}' AND material != 'Custom' AND p.isDeleted = 0
+            WHERE Category = @cate AND material != 'Custom' AND p.isDeleted = 0
             ORDER BY p.CreatedAt DESC
-            OFFSET ${(page - 1) * perPage} ROWS
+            OFFSET (@page - 1) * ${perPage} ROWS
                 FETCH NEXT ${perPage} ROWS ONLY
         `
         );
@@ -304,7 +318,7 @@ const paging = async (page, cate) => {
                 FROM Image
             ) i ON i.ProductId = p.id AND i.RowNum = 1
             JOIN Category c ON p.Category = c.id
-            WHERE Category = '${cate}' AND material != 'Custom' AND p.isDeleted = 0
+            WHERE Category = @cate AND material != 'Custom' AND p.isDeleted = 0
         `;
 
         const linesResult = await poolConnection.request().query(linesQuery);
@@ -370,30 +384,31 @@ const filterProduct = async (id, name, category, upper_price, lower_price, upper
     }
 };
 
-const pagingSearchBar = async(name, page) => {
-  try {
-    const perPage = 15;
-    let poolConnection = await sql.connect(config);
-    const result = await poolConnection.request().input('Name',sql.NVarChar, name).
-        query(
-        `
-            SELECT p.*, i.Url, c.name AS Shape
-            FROM Products p
-            JOIN (
-                SELECT Image.*, ROW_NUMBER() OVER (PARTITION BY ProductId ORDER BY Id) AS RowNum
-                FROM Image
-            ) i ON i.ProductId = p.id AND i.RowNum = 1
-            JOIN Category c ON p.Category = c.id
-            WHERE material != 'Custom'
-            AND p.Name LIKE '%' + @Name + '%' AND p.isDeleted = 0 
-            ORDER BY p.createdAt DESC
-            OFFSET ${(page - 1) * perPage} ROWS
-             FETCH NEXT ${perPage} ROWS ONLY
-        `
-      )
-      const json = { data: result.recordset };
+const pagingSearchBar = async (name, page) => {
+    try {
+        const perPage = 15;
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+            .input('Name', sql.NVarChar, name)
+            .input('Page', sql.Int, page)
+            .query(`
+                SELECT p.*, i.Url, c.name AS Shape
+                FROM Products p
+                JOIN (
+                    SELECT Image.*, ROW_NUMBER() OVER (PARTITION BY ProductId ORDER BY Id) AS RowNum
+                    FROM Image
+                ) i ON i.ProductId = p.id AND i.RowNum = 1
+                JOIN Category c ON p.Category = c.id
+                WHERE material != 'Custom'
+                AND p.Name LIKE '%' + @Name + '%' AND p.isDeleted = 0
+                ORDER BY p.createdAt DESC
+                OFFSET (@Page - 1) * ${perPage} ROWS
+                FETCH NEXT ${perPage} ROWS ONLY
+            `);
 
-      const linesQuery = `
+        const json = { data: result.recordset };
+
+        const linesQuery = `
             SELECT COUNT(*) AS Count
             FROM Products p
             JOIN (
@@ -405,14 +420,17 @@ const pagingSearchBar = async(name, page) => {
             AND p.Name LIKE '%' + @Name + '%' AND p.isDeleted = 0
         `;
 
-      const linesResult = await poolConnection.request().input('Name',sql.NVarChar, name).query(linesQuery);
-      json.lines = linesResult.recordset[0];
-       return json;
-  } catch (error) {
-    console.log("error: ", error);
-  }
+        const linesResult = await poolConnection.request()
+            .input('Name', sql.NVarChar, name)
+            .query(linesQuery);
 
+        json.lines = linesResult.recordset[0];
+        return json;
+    } catch (error) {
+        console.log("error: ", error);
+    }
 }
+
 
 module.exports = {
     getAllProducts,
