@@ -1,9 +1,9 @@
 ﻿import { Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material'
 import React, { useState , useEffect} from 'react'
 import MenuItem from '@mui/material/MenuItem'
-import { DataGrid } from '@mui/x-data-grid'
+import {    DataGrid} from '@mui/x-data-grid'
 import axios from 'axios'
-
+import Popup from 'reactjs-popup'
 
 
 const columns = [
@@ -32,8 +32,23 @@ const columns = [
 ]
 
 export default function Order() {
+    const [openPopup, setOpenPopup] = useState(false);
     const [cards, setCards] = useState([])
+    const [order, setOrder] = useState('')
+    const [orderItem, setOrderItem] = useState([])
     const [rows, setRows] = useState([])
+
+    const handleRowClick = async (params) => {
+        const order = await getAnOrder(params.row.id)
+        const detail = await fetchOrderItems(params.row.id)
+        setOrder(order)
+        setOrderItem(detail)
+        setOpenPopup(true);
+    }
+    async function getAnOrder(id) {
+        const response = await axios.get(`http://localhost:3000/order/${id}`)
+        return response.data
+    }
     async function fetchOrderItems(id) {
         const response = await axios.get(`http://localhost:3000/order/list/${id}`)
         return response.data
@@ -73,7 +88,7 @@ export default function Order() {
             });
         });
         setRows(data)
-    }, [cards,rows]);
+    }, [cards]);
 
     return (
         <div className=" w-full flex flex-col">
@@ -88,7 +103,65 @@ export default function Order() {
                         }
                     }}
                     pageSizeOptions={[10]}
+                    onRowClick={handleRowClick }
                 />
+                <Popup
+                    open={openPopup}
+                    onClose={() => setOpenPopup(false)}
+                    position="right center"
+                    closeOnDocumentClick={false}
+                    closeOnEscape={false}
+                    modal
+                >
+                    {(close) => (
+                        <>
+                            {order && (
+                                <div>
+                                    <div>
+                                        <TextField className="w-64" select label="Trạng thái" variant="filled">
+                                            <MenuItem value={'Chờ duyệt'}>Chờ Duyệt</MenuItem>
+                                            <MenuItem value={'Đang chuẩn bị'}>Đang chuẩn bị</MenuItem>
+                                            <MenuItem value={'Đang giao'}>Đang giao</MenuItem>
+                                            <MenuItem value={'Đã giao'}>Đã giao</MenuItem>
+                                        </TextField>
+                                    <div className="flex justify-end">
+                                        <Button onClick={close}>
+                                            Cancel
+                                        </Button>
+                                    </div>
+                                </div>
+                                <div className="flex">
+                                    <div className="px-2">Mã đơn hàng: {order.Id} </div>
+                                    <div>|</div>
+                                    <div className="px-2">Ngày đặt mua: {(order.CreateAt + '').substr(0, 10)} </div>
+                                </div>
+                                {orderItem.map((item) => (
+                                    <div key={item.Id}>
+                                        <div className="flex">
+                                            <img className="h-30 w-20 mx-4" src={item.Url} alt={item.Name} />
+                                            <div className="">
+                                                <div className="font-bold">{item.Name}</div>
+                                                <div className="pl-2">Phân loại: {item.Shape}</div>
+                                                <div className="pl-2">x{item.Quantity}</div>
+                                            </div>
+                                        </div>
+                                        <div className="">
+                                            <div className="mx-8 text-right text-red-500">
+                                                {item.Price.toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                <div className="text-right mx-8 my-4  text-red-500 text-2xl">
+                                    {order.TotalAmount.toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+                                </div>
+                            </div>
+                            )}
+                            
+                        </>
+                    )}
+                </Popup>
             </div>
         </div>
     )
