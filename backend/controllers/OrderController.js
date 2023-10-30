@@ -80,7 +80,8 @@ const loadUnSeen = async (req, res) => {
 const changetoSeen = async(req, res) => {
     try {
         const id = req.body.id;
-        const order = await Order.changetoSeen(id);
+        const userid = req.body.userid;
+        const order = await Order.changetoSeen(id, userid);
         res.json("Success");
     } catch (error) {
         res.status(500).json({message: error.message});

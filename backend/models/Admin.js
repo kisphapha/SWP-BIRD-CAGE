@@ -94,12 +94,46 @@ const deleteUser = async (userId, status, ReasonBlock) => {
     }
 }
 
+
+const loadUnSeen = async () => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('id', id)
+        .query(
+            `SELECT * FROM dbo.Orders 
+             WHERE View_Status = 0
+            `
+        )
+        return result.recordset;
+    } catch (error) {
+        console.log("Error: " , error)
+    }
+}
+
+const changetoSeen = async() => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('id', id)
+        .query(
+            ` 
+            UPDATE dbo.Orders
+            SET  View_Status = 1
+            `
+        )
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
+
 module.exports = {
     getOrderBy5Month,
     getBestSellingProducts,
     getAllUser,
     updateUser,
     newUser,
-    deleteUser
+    deleteUser,
+    loadUnSeen
 };
 

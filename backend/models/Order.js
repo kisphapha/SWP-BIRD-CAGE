@@ -93,6 +93,8 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                         N'Chờ duyệt',
                         'UnPaid'
                     );
+
+                
             `);
         Items.forEach(item => {
             poolConnection.request()
@@ -100,6 +102,10 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                 .input('Quantity', sql.Int, parseInt(item.quantity))
                 .input('Price', sql.Int, parseInt(item.price))
                 .query(`
+                UPDATE dbo.Products 
+                SET Stock = Stock - @Quantity
+                WHERE id = @ProductId
+
                 INSERT INTO OrderItem(
                     ProductId,
                     OrdersId,
@@ -117,9 +123,15 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                     @Quantity,
                     @Price,
                     GETDATE()
-                )               
+                )   
+                
+                
+
                 `)
         });
+        poolConnection.request()
+        
+        
         return result.recordset[0].Id;
     } catch (error) {
         console.log("error: ", error);
@@ -164,7 +176,7 @@ const loadUnSeen = async (id) => {
         .input('id', id)
         .query(
             `SELECT * FROM dbo.Orders 
-             WHERE id = @id AND View_Status = 0`
+             WHERE UserID = @id`
 
         )
         return result.recordset;
@@ -173,16 +185,18 @@ const loadUnSeen = async (id) => {
     }
 }
 
-const changetoSeen = async(id) => {
+const changetoSeen = async(id, userid) => {
     try {
         let poolConnection = await sql.connect(config);
         const result = await poolConnection.request()
         .input('id', id)
+        .input('userid', userid)
         .query(
             ` 
             UPDATE dbo.Orders
-            SET  View_Status = 1
-            WHERE id  = @id
+            SET View_Status = 1
+            WHERE UserID = @userid
+            AND Id = @id
             `
         )
     } catch (error) {

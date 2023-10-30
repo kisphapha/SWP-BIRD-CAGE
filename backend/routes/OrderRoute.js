@@ -19,7 +19,7 @@ OrderRouter.route("/paidstatus/:id").get(OrderController.changeStatus_Paid);
 
 OrderRouter.route("/loadUnseen/:id").get(OrderController.loadUnSeen);
 
-OrderRouter.route("/changetoSeen").patch(OrderController.changetoSeen);
+OrderRouter.route("/changeToSeen").patch(OrderController.changetoSeen);
 
 module.exports = OrderRouter;
 
