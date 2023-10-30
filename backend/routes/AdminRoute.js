@@ -14,5 +14,7 @@ AdminRouter.post("/deleteUser", AdminController.deleteUser);
 
 AdminRouter.get("/updateUser", AdminController.updateUser);
 
-AdminRouter.get("/")
+AdminRouter.route("/loadUnseen/:id").get(AdminController.loadUnSeen);
+
+AdminRouter.route("/changeToSeen").patch(AdminController.changetoSeen);
 module.exports = AdminRouter;
