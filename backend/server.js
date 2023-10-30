@@ -32,7 +32,7 @@ app.use("/users", userRoutes);
 app.use("/order", orderRoutes);
 app.use("/address", addressRoutes);
 app.use("/admin", adminRoutes);
-// app.use("/payment",paymentRoutes);
+app.use("/payment",paymentRoutes);
 app.use("/shipper", shipperRoutes);
 
 
