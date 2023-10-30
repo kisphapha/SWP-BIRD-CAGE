@@ -27,16 +27,18 @@ const getAddressOfUser = async (req, res) => {
 const updateAddress = async (req, res) => {
     try {
         const id = req.body.id;
-        const city = req.body.city;
-        const district = req.body.district;
-        const ward = req.body.ward;
         const location = req.body.location;
-        await Address.updateAddress(id, location, ward, district, city );
-        res.json({ message: "done" });
+        const ward = req.body.ward;
+        const district = req.body.district;
+        const city = req.body.city;
+        await Address.updateAddress(id, location, ward, district, city);
+        res.json({ message: "Address updated successfully" });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error("Error:", error);
+        res.status(500).json({ message: "Internal Server Error" });
     }
 };
+
 const deleteAddress = async (req, res) => {
     try {
         const id = req.params.id;

@@ -131,7 +131,7 @@ const changeStatus_Paid = async (id) => {
         let poolConnection = await sql.connect(config);
         const result = await poolConnection.request().query(
             ` UPDATE dbo.Orders
-              SET Status_Paid = 'Paid'
+              SET Status_Paid = 'Paid', View_Status = 0
               WHERE id = ${id}
               `
         )
@@ -157,11 +157,46 @@ const getAllOrderItemByOrderID = async (id) => {
 }
 
 
+const loadUnSeen = async (id) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('id', id)
+        .query(
+            `SELECT * FROM dbo.Orders 
+             WHERE id = @id AND View_Status = 0`
+
+        )
+        return result.recordset;
+    } catch (error) {
+        console.log("Error: " , error)
+    }
+}
+
+const changetoSeen = async(id) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('id', id)
+        .query(
+            ` 
+            UPDATE dbo.Orders
+            SET  View_Status = 1
+            WHERE id  = @id
+            `
+        )
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
+
 module.exports = {
     getAllOrder,
     getOrderById,
     addOrderToDB,
     changeStatus_Paid,
     getAllOrderItemByOrderID,
-    getOrderByUserId
+    getOrderByUserId,
+    loadUnSeen,
+    changetoSeen
 }
