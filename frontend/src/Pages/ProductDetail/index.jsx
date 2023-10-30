@@ -6,6 +6,7 @@ import { UserProvider } from '../../UserContext'
 import Header from '../../components/common/Header'
 import Navbar from '../../components/common/Navbar'
 import CategoryNav from '../../components/features/CategoryNav'
+import { useNavigate } from 'react-router-dom'
 import ArrowBack from '@mui/icons-material/ArrowBack';
 import ArrowForward from '@mui/icons-material/ArrowForward';
 
@@ -19,6 +20,7 @@ export default function ProductDetails() {
     const [product, setProduct] = useState([])
     const [ratingsData, setRatingsData] = useState([])
     const [focusUrl, setFocusUrl] = useState('')
+    const navigate = useNavigate();
 
 
     useEffect(() => {
@@ -102,6 +104,11 @@ export default function ProductDetails() {
         console.log(sessionStorage.getItem('cart'))
     }
 
+    const handleBuy = () => {
+        addToCart();
+        navigate('/cart')
+    }
+
     return (
         <div id="page-product">
             <UserProvider>
@@ -178,7 +185,7 @@ export default function ProductDetails() {
                             </div>
                         </div>
 
-                        <div className="buy">
+                        <div className="buy" onClick={handleBuy}>
                             <p className="t1">MUA NGAY</p>
                             <p className="t2">Gọi điện xác nhận và giao hàng tận nơi</p>
                         </div>

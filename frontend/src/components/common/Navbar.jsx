@@ -45,9 +45,11 @@ export default function Navbar() {
                     </div>
                 </NavLink>
 
-                <button className="cart-button" onClick={() => navigate(`/cart`)}>
-                    <ShoppingCartTwoToneIcon sx={{ fontSize: 30 }} />
-                </button>
+                <NavLink to="/cart" className="cart-button" acctiveClassName="active">
+                    <div className="nav-content">
+                        <ShoppingCartTwoToneIcon sx={{ fontSize: 30 }} />
+                    </div>
+                </NavLink>
             </nav>
         </div>
     )
