@@ -1,5 +1,5 @@
 const Category = require("../models/Category")
-const Admin = require("../models/Admin");
+
 
 const getAll = async (req, res) => {
     try {
