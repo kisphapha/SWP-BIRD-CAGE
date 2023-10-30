@@ -93,6 +93,8 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                         N'Chờ duyệt',
                         'UnPaid'
                     );
+
+                
             `);
         Items.forEach(item => {
             poolConnection.request()
@@ -100,6 +102,10 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                 .input('Quantity', sql.Int, parseInt(item.quantity))
                 .input('Price', sql.Int, parseInt(item.price))
                 .query(`
+                UPDATE dbo.Products 
+                SET Stock = Stock - @Quantity
+                WHERE id = @ProductId
+
                 INSERT INTO OrderItem(
                     ProductId,
                     OrdersId,
@@ -117,9 +123,15 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                     @Quantity,
                     @Price,
                     GETDATE()
-                )               
+                )   
+                
+                
+
                 `)
         });
+        poolConnection.request()
+        
+        
         return result.recordset[0].Id;
     } catch (error) {
         console.log("error: ", error);
