@@ -188,7 +188,7 @@ const Address = (props) => {
             <hr />
             <div className="address-list">
                 <h1>Address</h1>
-                <table>
+                <table className="address-table">
                     {addressList.map((address) => (
                         <tr key={address}>
                             <AddressCard

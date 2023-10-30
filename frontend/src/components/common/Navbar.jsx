@@ -4,6 +4,10 @@ import './Navbar.css'
 import { useNavigate } from 'react-router-dom'
 import ShoppingCartTwoToneIcon from '@mui/icons-material/ShoppingCartTwoTone'
 import HomeIcon from '@mui/icons-material/Home'
+import InfoIcon from '@mui/icons-material/Info'
+import PhoneIcon from '@mui/icons-material/Phone'
+import HandymanIcon from '@mui/icons-material/Handyman'
+
 export default function Navbar() {
     const navigate = useNavigate()
     return (
@@ -18,23 +22,34 @@ export default function Navbar() {
             <nav className="nav">
                 <NavLink to="/" acctiveClassName="active">
                     <div className="nav-content">
-                        <HomeIcon />
+                        <HomeIcon className="pb-1" />
                         Trang Chủ
                     </div>
                 </NavLink>
                 <NavLink to="/About" activeClassName="active">
-                    <div className="nav-content">Giới Thiệu</div>
+                    <div className="nav-content">
+                        <InfoIcon className="pb-1" />
+                        Giới Thiệu
+                    </div>
                 </NavLink>
                 <NavLink to="/Contact" acctiveClassName="active">
-                    <div className="nav-content">Liên Hệ</div>
+                    <div className="nav-content">
+                        <PhoneIcon className="pb-1" />
+                        Liên Hệ
+                    </div>
                 </NavLink>
                 <NavLink to="/Custom" acctiveClassName="active">
-                    <div className="nav-content">Lồng Tùy Chỉnh</div>
+                    <div className="nav-content">
+                        <HandymanIcon className="pb-1" />
+                        Lồng Tùy Chỉnh
+                    </div>
                 </NavLink>
 
-                <button className="cart-button" onClick={() => navigate(`/cart`)}>
-                    <ShoppingCartTwoToneIcon sx={{ fontSize: 30 }} />
-                </button>
+                <NavLink to="/cart" className="cart-button" acctiveClassName="active">
+                    <div className="nav-content">
+                        <ShoppingCartTwoToneIcon sx={{ fontSize: 30 }} />
+                    </div>
+                </NavLink>
             </nav>
         </div>
     )

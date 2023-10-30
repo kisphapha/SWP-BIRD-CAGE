@@ -4,6 +4,9 @@
     width: 100%;
     /* padding: 0px 300px; */
     justify-content: center;
+    position: sticky;
+    top: -1px;
+    z-index: 1;
 }
 
 #navbar > .menu {
@@ -23,12 +26,8 @@
     color: black;
     border: none;
     width: 100px;
-}
-#navbar > .nav > .cart-button:hover {
-    /* color: rgb(148, 201, 204); */
-    color: rgb(22, 234, 217);
-    background-color: darkgray;
-    height: 100%;
+    position: absolute;
+    right: 15%;
 }
 
 #navbar > .menu > .menu-list {
@@ -57,7 +56,13 @@
 }
 
 .nav-content {
-    padding: 10px 20px 10px 20px;
+    padding: 10px 20px 10px 10px;
+}
+
+#navbar >.nav >.cart-button > .nav-content{
+    padding: 7.725px 10px 7.725px 10px;
+    display: flex;
+    justify-content: center;
 }
 
 #navbar > .menu:hover > .menu-list {
@@ -72,5 +77,4 @@
 .nav .active {
     font-weight: bold;
     background-color: darkgray;
-    border-radius: 0 0 0 0;
 }
