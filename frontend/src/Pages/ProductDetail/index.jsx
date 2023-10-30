@@ -7,11 +7,10 @@ import Header from '../../components/common/Header'
 import Navbar from '../../components/common/Navbar'
 import CategoryNav from '../../components/features/CategoryNav'
 import { useNavigate } from 'react-router-dom'
-import ArrowBack from '@mui/icons-material/ArrowBack';
-import ArrowForward from '@mui/icons-material/ArrowForward';
+import ArrowBack from '@mui/icons-material/ArrowBack'
+import ArrowForward from '@mui/icons-material/ArrowForward'
 
 import { Button, TextField, Rating, Avatar } from '@mui/material'
-
 
 export default function ProductDetails() {
     const [imgList, setImgList] = useState([])
@@ -20,8 +19,7 @@ export default function ProductDetails() {
     const [product, setProduct] = useState([])
     const [ratingsData, setRatingsData] = useState([])
     const [focusUrl, setFocusUrl] = useState('')
-    const navigate = useNavigate();
-
+    const navigate = useNavigate()
 
     useEffect(() => {
         window.scrollTo(0, 0)
@@ -43,8 +41,6 @@ export default function ProductDetails() {
         fetchRatings()
         fetchImage()
     }, [productId])
-
-
 
     const getFeedback = () => {
         if (sessionStorage.loginedUser != null) {
@@ -105,7 +101,7 @@ export default function ProductDetails() {
     }
 
     const handleBuy = () => {
-        addToCart();
+        addToCart()
         navigate('/cart')
     }
 
@@ -122,18 +118,18 @@ export default function ProductDetails() {
                 ]}
                 current={product.Name}
             ></CategoryNav>
-            
+
             <div className="product-container">
                 <div className="product">
                     <div className="img-container">
                         <div className="img-main">
                             <img src={focusUrl} />
                         </div>
-                        <div className="img-more">
+                        <div className="img-more ">
                             {imgList.map((image) => (
-                                    // eslint-disable-next-line react/jsx-key
-                                <img onClick={() => setFocusUrl(image.Url) } className="img" src={image.Url} />
-                            )) }
+                                // eslint-disable-next-line react/jsx-key
+                                <img onClick={() => setFocusUrl(image.Url)} className="img" src={image.Url} />
+                            ))}
                         </div>
                     </div>
                     <div className="product-detail">
