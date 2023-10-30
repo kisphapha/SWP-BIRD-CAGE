@@ -6,13 +6,46 @@ import { UserProvider } from '../../UserContext'
 import Header from '../../components/common/Header'
 import Navbar from '../../components/common/Navbar'
 import CategoryNav from '../../components/features/CategoryNav'
+import { useNavigate } from 'react-router-dom'
+import ArrowBack from '@mui/icons-material/ArrowBack';
+import ArrowForward from '@mui/icons-material/ArrowForward';
+
 import { Button, TextField, Rating, Avatar } from '@mui/material'
 
+
 export default function ProductDetails() {
+    const [imgList, setImgList] = useState([])
     const { productId } = useParams()
     const [quantity, setQuantity] = useState(1)
     const [product, setProduct] = useState([])
     const [ratingsData, setRatingsData] = useState([])
+    const [focusUrl, setFocusUrl] = useState('')
+    const navigate = useNavigate();
+
+
+    useEffect(() => {
+        window.scrollTo(0, 0)
+        const fetchProduct = async () => {
+            const response = await axios.get(`http://localhost:3000/products/${productId}`)
+            setProduct(response.data)
+        }
+        const fetchRatings = async () => {
+            const response = await axios.get(`http://localhost:3000/products/rating/${productId}`)
+            setRatingsData(response.data)
+        }
+        const fetchImage = async () => {
+            const response = await axios.get(`http://localhost:3000/products/img/${productId}`)
+            setImgList(response.data)
+            setFocusUrl(response.data[0].Url)
+        }
+
+        fetchProduct()
+        fetchRatings()
+        fetchImage()
+    }, [productId])
+
+
+
     const getFeedback = () => {
         if (sessionStorage.loginedUser != null) {
             const user = JSON.parse(sessionStorage.loginedUser)
@@ -26,20 +59,6 @@ export default function ProductDetails() {
             }
         }
     }
-    useEffect(() => {
-        window.scrollTo(0, 0)
-        const fetchProduct = async () => {
-            const response = await axios.get(`http://localhost:3000/products/${productId}`)
-            setProduct(response.data)
-        }
-        const fetchRatings = async () => {
-            const response = await axios.get(`http://localhost:3000/products/rating/${productId}`)
-            setRatingsData(response.data)
-        }
-
-        fetchProduct()
-        fetchRatings()
-    }, [productId])
 
     const handleDecrement = () => {
         if (quantity > 1) {
@@ -85,6 +104,11 @@ export default function ProductDetails() {
         console.log(sessionStorage.getItem('cart'))
     }
 
+    const handleBuy = () => {
+        addToCart();
+        navigate('/cart')
+    }
+
     return (
         <div id="page-product">
             <UserProvider>
@@ -98,16 +122,18 @@ export default function ProductDetails() {
                 ]}
                 current={product.Name}
             ></CategoryNav>
+            
             <div className="product-container">
                 <div className="product">
                     <div className="img-container">
                         <div className="img-main">
-                            <img src={product.Url} />
+                            <img src={focusUrl} />
                         </div>
                         <div className="img-more">
-                            <img className="img" src={product.Url} />
-                            <img className="img" src={product.Url} />
-                            <img className="img" src={product.Url} />
+                            {imgList.map((image) => (
+                                    // eslint-disable-next-line react/jsx-key
+                                <img onClick={() => setFocusUrl(image.Url) } className="img" src={image.Url} />
+                            )) }
                         </div>
                     </div>
                     <div className="product-detail">
@@ -159,7 +185,7 @@ export default function ProductDetails() {
                             </div>
                         </div>
 
-                        <div className="buy">
+                        <div className="buy" onClick={handleBuy}>
                             <p className="t1">MUA NGAY</p>
                             <p className="t2">Gọi điện xác nhận và giao hàng tận nơi</p>
                         </div>

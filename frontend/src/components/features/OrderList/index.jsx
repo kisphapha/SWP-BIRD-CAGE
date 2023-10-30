@@ -27,6 +27,10 @@ const OrderList = (props) => {
     const handleRebuy = (productId) => {
         navigate('/products/' + productId)
     }
+
+    const getActiveStep = (status) => {
+        return steps.indexOf(status);
+    }
     async function fetchOrderItems(id) {
         const response = await axios.get(`http://localhost:3000/order/list/${id}`)
         return response.data
@@ -39,10 +43,14 @@ const OrderList = (props) => {
             Content : feedbackContent
         }
         console.log(json)
-
-        const response = await axios.post(`http://localhost:3000/products/rating/`,json)
-        alert("Chúng tôi đã ghi nhận. Chân thành cảm ơn bạn!")
-        close()
+        if (json.StarPoint > 0) {
+            await axios.post(`http://localhost:3000/products/rating/`, json)
+            alert("Chúng tôi đã ghi nhận. Chân thành cảm ơn bạn!")
+            close()
+        } else {
+            alert("Xin vui lòng đánh giá số sao")
+        }
+        
     }
     async function fetchOrder() {
         const response = await axios.get(`http://localhost:3000/order/user/${props.user.Id}`);
@@ -64,7 +72,6 @@ const OrderList = (props) => {
         fetchOrder()       
     },[])
 
-    const [activeStep, setActiveStep] = React.useState(1)
     return (
         <>
             <div className="form-header">
@@ -83,7 +90,7 @@ const OrderList = (props) => {
                             <div className="px-2">Ngày đặt mua: {(card.CreateAt + '').substr(0, 10)} </div>
                         </div>
                         <div className="flex">
-                            <Stepper activeStep={activeStep}>
+                            <Stepper activeStep={getActiveStep(card.Status_Shipping)}>
                                 {steps.map((label, index) => {
                                     const stepProps = {}
                                     const labelProps = {}
@@ -116,11 +123,13 @@ const OrderList = (props) => {
                                     </div>
                                     <div className="">
                                         <div className="mx-8 my-4 text-right line-through text-gray-400 ">
-                                            {item.Price.toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+                                            {parseInt((item.Price * 100)/(100-item.discount)).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+
                                         </div>
                                         <div className="mx-8 text-right  text-red-500 ">
                                             {' '}
-                                            {parseInt(item.Price * (100 - item.discount)/100).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+                                            {item.Price.toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+
                                         </div>
                                     </div>
                                     <div className="flex  justify-end gap-4">
@@ -140,7 +149,7 @@ const OrderList = (props) => {
                                                     <h2>ĐÁNH GIÁ SẢN PHẨM</h2>
                                                     <h3>{item.Name}</h3>
                                                     <div>
-                                                        <Rating name="hover-feedback" precision={1} onChange={handleStarPoint} />
+                                                        <Rating name="hover-feedback" precision={1} onChange={handleStarPoint} defaultValue={0 } />
 
                                                         <TextField className="text-left" fullWidth variant="standard"
                                                             label="Hãy cho chúng tôi biết cảm nghĩ của bạn về sản phẩm"

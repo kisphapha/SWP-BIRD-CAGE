@@ -15,13 +15,36 @@ const getAllProducts = async () => {
     }
 }
 
+
+const getImgsOfProduct = async (id) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const query = `
+            SELECT *
+            FROM Image 
+            WHERE productID = @Id
+            `;
+        const result = await poolConnection.request()
+            .input('Id', sql.Int, id)
+            .query(query);
+        return result.recordset;
+    } catch (error) {
+        console.log("error: ", error);
+    }
+};
+
 const getProductsByCategory = async (code) => {
     try {
         let poolConnection = await sql.connect(config);
         const result = await poolConnection.request().query(
-            `SELECT DISTINCT p.*,i.Url,c.name as Shape
-            FROM Products p, Image i, Category c
-            WHERE i.ProductId = p.id AND p.Category = c.id AND Category = '${code}' AND material != 'Custom' AND p.isDeleted = 0`
+            `SELECT p.*, i.Url, c.name AS Shape
+            FROM Products p
+            JOIN (
+                SELECT Image.*, ROW_NUMBER() OVER (PARTITION BY ProductId ORDER BY Id) AS RowNum
+                FROM Image
+            ) i ON i.ProductId = p.id AND i.RowNum = 1
+            JOIN Category c ON p.Category = c.id
+            WHERE Category = '${code}' AND material != 'Custom' AND p.isDeleted = 0`
         );
         return result.recordset;
     } catch (error) {
@@ -33,9 +56,14 @@ const getProductById = async (id) => {
     try {
         let poolConnection = await sql.connect(config);
         const result = await poolConnection.request().query(
-            `SELECT p.*,i.Url,c.name as Shape
-            FROM Products p, Image i, Category c
-            WHERE i.ProductId = p.id AND p.Category = c.id AND i.ProductId = ${id}`
+            `SELECT p.*, i.Url, c.name AS Shape
+            FROM Products p
+            JOIN (
+                SELECT Image.*, ROW_NUMBER() OVER (PARTITION BY ProductId ORDER BY Id) AS RowNum
+                FROM Image
+            ) i ON i.ProductId = p.id AND i.RowNum = 1
+            JOIN Category c ON p.Category = c.id
+            WHERE i.ProductId = ${id}`
         );
         return result.recordset[0];
     } catch (error) {
@@ -46,33 +74,43 @@ const getProductById = async (id) => {
 const getProductByName = async (name) => {
     try {
         let poolConnection = await sql.connect(config);
-        const result = await poolConnection.request().query(
-            `SELECT DISTINCT p.*, i.Url, c.name as Shape
-          FROM [dbo].[Products] p, image i, Category c
-          WHERE i.ProductId = p.id AND p.Category = c.Id
-          AND p.Name LIKE N'%${name}%' AND p.isDeleted = 0`
-        );
+        const query = `
+            SELECT p.*, i.Url, c.name AS Shape
+            FROM Products p
+            JOIN (
+                SELECT Image.*, ROW_NUMBER() OVER (PARTITION BY ProductId ORDER BY Id) AS RowNum
+                FROM Image
+            ) i ON i.ProductId = p.id AND i.RowNum = 1
+            JOIN Category c ON p.Category = c.id
+            WHERE material != 'Custom'
+            WHERE p.Name LIKE '%' + @Name + '%' AND p.isDeleted = 0
+        `;
+        const result = await poolConnection.request()
+            .input('Name', sql.NVarChar, name)
+            .query(query);
         return result.recordset;
     } catch (error) {
         console.log("error: ", error);
     }
-}
+};
 
 const addNewProductToDB = async (Name, Description, Price, Category, Material, SuitableBird, Discount, Size, Stock, Status, Url) => {
     try {
         let poolConnection = await sql.connect(config);
-        const result = await poolConnection.request()
-            .input('Name', sql.NVarChar, Name)
-            .input('Description', sql.NVarChar, Description)
-            .input('Price', sql.Int, Price)
-            .input('Stock', sql.Int, Stock)
-            .input('Status', sql.NVarChar, Status)
-            .input('Category', sql.NVarChar, Category)
-            .input('Size', sql.NVarChar, Size)
-            .input('Material', sql.NVarChar, Material)
-            .input('SuitableBird', sql.NVarChar, SuitableBird)
-            .input('Discount', sql.NVarChar, Discount)
-            .query(`
+        const request = poolConnection.request();
+
+        request.input('Name', sql.NVarChar, Name);
+        request.input('Description', sql.NVarChar, Description);
+        request.input('Price', sql.Int, Price);
+        request.input('Stock', sql.Int, Stock);
+        request.input('Status', sql.NVarChar, Status);
+        request.input('Category', sql.NVarChar, Category);
+        request.input('Size', sql.NVarChar, Size);
+        request.input('Material', sql.NVarChar, Material);
+        request.input('SuitableBird', sql.NVarChar, SuitableBird);
+        request.input('Discount', sql.NVarChar, Discount);
+
+        const result = await request.query(`
             INSERT INTO dbo.Products
             (
             [Name]
@@ -106,13 +144,21 @@ const addNewProductToDB = async (Name, Description, Price, Category, Material, S
                 @Discount
             );
         `);
-        await poolConnection.request().query(`
+
+        const imageRequest = poolConnection.request();
+        imageRequest.input('Url', sql.NVarChar, Url);
+        const productIdQuery = `SELECT TOP 1 Id FROM Products ORDER BY Id DESC`;
+        const productIdResult = await imageRequest.query(productIdQuery);
+        const productId = productIdResult.recordset[0].Id;
+
+        await imageRequest.query(`
             INSERT INTO Image (ProductId,Url,isDeleted)
-            VALUES (
-                (SELECT TOP 1 Id FROM Products ORDER BY Id DESC),
-                '${Url}',0
-            )
-        `)
+            VALUES (@ProductId, @Url, 0)
+        `, {
+            ProductId: productId,
+            Url: Url
+        });
+
         return result.recordset;
     } catch (error) {
         console.log("error: ", error);
@@ -235,9 +281,14 @@ const paging = async (page, cate) => {
         let poolConnection = await sql.connect(config);
         const result = await poolConnection.request().query(
             `
-            SELECT DISTINCT p.*,i.Url,c.name as Shape
-            FROM Products p, Image i, Category c
-            WHERE i.ProductId = p.id AND p.Category = c.id AND Category = '${cate}' AND material != 'Custom' AND p.isDeleted = 0
+            SELECT p.*, i.Url, c.name AS Shape
+            FROM Products p
+            JOIN (
+                SELECT Image.*, ROW_NUMBER() OVER (PARTITION BY ProductId ORDER BY Id) AS RowNum
+                FROM Image
+            ) i ON i.ProductId = p.id AND i.RowNum = 1
+            JOIN Category c ON p.Category = c.id
+            WHERE Category = '${cate}' AND material != 'Custom' AND p.isDeleted = 0
             ORDER BY p.CreatedAt DESC
             OFFSET ${(page - 1) * perPage} ROWS
                 FETCH NEXT ${perPage} ROWS ONLY
@@ -247,8 +298,13 @@ const paging = async (page, cate) => {
 
         const linesQuery = `
             SELECT COUNT(*) AS Count
-            FROM Products p, Image i, Category c
-            WHERE i.ProductId = p.id AND p.Category = c.id AND Category = '${cate}' AND material != 'Custom' AND p.isDeleted = 0
+            FROM Products p
+            JOIN (
+                SELECT Image.*, ROW_NUMBER() OVER (PARTITION BY ProductId ORDER BY Id) AS RowNum
+                FROM Image
+            ) i ON i.ProductId = p.id AND i.RowNum = 1
+            JOIN Category c ON p.Category = c.id
+            WHERE Category = '${cate}' AND material != 'Custom' AND p.isDeleted = 0
         `;
 
         const linesResult = await poolConnection.request().query(linesQuery);
@@ -278,8 +334,11 @@ const filterProduct = async (id, name, category, upper_price, lower_price, upper
         const query = `
             SELECT DISTINCT p.*, i.Url, c.name as Shape
             FROM Products p
-            JOIN Image i ON i.ProductId = p.id
-            JOIN Category c ON p.Category = c.Id
+            JOIN (
+                SELECT Image.*, ROW_NUMBER() OVER (PARTITION BY ProductId ORDER BY Id) AS RowNum
+                FROM Image
+            ) i ON i.ProductId = p.id AND i.RowNum = 1
+            JOIN Category c ON p.Category = c.id
             ${conditionString}
             AND p.isDeleted = 0
             ORDER BY p.Id ASC
@@ -293,8 +352,11 @@ const filterProduct = async (id, name, category, upper_price, lower_price, upper
         const linesQuery = `
             SELECT COUNT(*) AS Count
             FROM Products p
-            JOIN Image i ON i.ProductId = p.id
-            JOIN Category c ON p.Category = c.Id
+            JOIN (
+                SELECT Image.*, ROW_NUMBER() OVER (PARTITION BY ProductId ORDER BY Id) AS RowNum
+                FROM Image
+            ) i ON i.ProductId = p.id AND i.RowNum = 1
+            JOIN Category c ON p.Category = c.id
             ${conditionString}
             AND p.isDeleted = 0;
         `;
@@ -312,12 +374,18 @@ const pagingSearchBar = async(name, page) => {
   try {
     const perPage = 15;
     let poolConnection = await sql.connect(config);
-    const result = await poolConnection.request().query(
+    const result = await poolConnection.request().input('Name',sql.NVarChar, name).
+        query(
         `
-            SELECT DISTINCT p.*, i.Url, c.name as Shape
-            FROM [dbo].[Products] p, image i, Category c
-            WHERE i.ProductId = p.id AND p.Category = c.Id
-            AND p.Name LIKE N'%${name}%' AND p.isDeleted = 0 
+            SELECT p.*, i.Url, c.name AS Shape
+            FROM Products p
+            JOIN (
+                SELECT Image.*, ROW_NUMBER() OVER (PARTITION BY ProductId ORDER BY Id) AS RowNum
+                FROM Image
+            ) i ON i.ProductId = p.id AND i.RowNum = 1
+            JOIN Category c ON p.Category = c.id
+            WHERE material != 'Custom'
+            AND p.Name LIKE '%' + @Name + '%' AND p.isDeleted = 0 
             ORDER BY p.createdAt DESC
             OFFSET ${(page - 1) * perPage} ROWS
              FETCH NEXT ${perPage} ROWS ONLY
@@ -327,12 +395,17 @@ const pagingSearchBar = async(name, page) => {
 
       const linesQuery = `
             SELECT COUNT(*) AS Count
-             FROM [dbo].[Products] p, image i, Category c
-            WHERE i.ProductId = p.id AND p.Category = c.Id
-            AND p.Name LIKE N'%${name}%' AND p.isDeleted = 0
+            FROM Products p
+            JOIN (
+                SELECT Image.*, ROW_NUMBER() OVER (PARTITION BY ProductId ORDER BY Id) AS RowNum
+                FROM Image
+            ) i ON i.ProductId = p.id AND i.RowNum = 1
+            JOIN Category c ON p.Category = c.id
+            WHERE material != 'Custom'
+            AND p.Name LIKE '%' + @Name + '%' AND p.isDeleted = 0
         `;
 
-      const linesResult = await poolConnection.request().query(linesQuery);
+      const linesResult = await poolConnection.request().input('Name',sql.NVarChar, name).query(linesQuery);
       json.lines = linesResult.recordset[0];
        return json;
   } catch (error) {
@@ -353,6 +426,7 @@ module.exports = {
     deleteProduct,
     paging,
     filterProduct,
-    pagingSearchBar
+    pagingSearchBar,
+    getImgsOfProduct
 }
 

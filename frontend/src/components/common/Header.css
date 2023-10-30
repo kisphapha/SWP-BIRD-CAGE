@@ -126,13 +126,13 @@
 
 #header > .header-top > .user-info > .user-info-list > .user-info-suboptions:first-child {
     padding: 10px;
-    border-radius: 10px 10px 0px 0;
+    border-radius: 10px 10px 0 0;
     transition: background-color 0.5s;
 }
 
 #header > .header-top > .user-info > .user-info-list > .user-info-suboptions:last-child {
     padding: 10px;
-    border-radius: 0px 0px 10px 10px;
+    border-radius: 0 0 10px 10px;
     transition: background-color 0.5s;
 }
 
@@ -141,12 +141,12 @@
 }
 
 #header > .header-top > .user-info:hover > .user-info-list > .user-info-suboptions:hover:first-child {
-    border-radius: 10px 10px 0px 0;
+    border-radius: 10px 10px 0 0;
     background-color: #2fc8c4;
 }
 
 #header > .header-top > .user-info:hover > .user-info-list > .user-info-suboptions:hover:last-child {
-    border-radius: 0px 0px 10px 10px;
+    border-radius: 0 0 10px 10px;
     background-color: #2fc8c4;
 }
 

@@ -234,20 +234,20 @@ export default function Products() {
                     ))}
                 </tbody>
             </table>
-            <table>
-                <tr className="page-stuff">
-                    {pageList.map((pg, index) => (
-                        <td key={index}>
+            <div className="flex justify-center">
+                {pageList.map((pg, index) => (
+                    <td key={index}>
+                        <div className="items-center">
                             <Button
                                 variant={index + 1 === page ? "contained" : "outlined"}
                                 onClick={() => handleSwitchPage(index + 1)}
                             >
                                 {index + 1}
                             </Button>
-                        </td>
-                    ))}
-                </tr>
-            </table>
+                        </div>
+                    </td>
+                ))}
+            </div>          
         </div>
     )
 }
