@@ -22,6 +22,11 @@ export default function Cart() {
         }
         setLoading(false)
     }
+    const clearCart = () => {
+        const emptyCart = { products: [] }
+        setCartData(emptyCart)
+        sessionStorage.setItem('cart', JSON.stringify(emptyCart))
+    }
 
     useEffect(() => {
         loadCartData()
@@ -122,6 +127,9 @@ export default function Cart() {
             console.log(sessionStorage.getItem('cart'))
             setCartData(updatedCart)
         }
+    }
+    const handleButtonClick = (path) => {
+        navigate(path)
     }
 
     return (
@@ -247,8 +255,12 @@ export default function Cart() {
                         </tr>
                     </table>
                     <div className="flex justify-end gap-4 mx-4 my-2 ">
-                        <Button variant="contained">Tiếp tục mua hàng</Button>
-                        <Button variant="contained">Xóa tất cả</Button>
+                        <Button variant="contained" onClick={() => handleButtonClick('/')}>
+                            Tiếp tục mua hàng
+                        </Button>
+                        <Button variant="contained" onClick={clearCart} sx={{ '&.MuiButton-root:hover': { bgcolor: 'transparent' } }}>
+                            Xóa tất cả
+                        </Button>
                     </div>
                 </div>
             )}

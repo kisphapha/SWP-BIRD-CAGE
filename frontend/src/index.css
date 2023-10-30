@@ -72,3 +72,20 @@ h6 {
     font-family: 'Montserrat', sans-serif;
     font-family: 'Nunito', sans-serif;
 }
+
+.my-button {
+    /* Normal state styles */
+    background-color: #007bff; /* Your button's normal background color */
+    color: #ffffff; /* Your button's normal text color */
+
+    /* Style for the focused state */
+    &:focus {
+        outline: none; /* Remove the default focus outline */
+        /* Add specific styling for the focused state, if needed */
+    }
+
+    /* Style for the active state (when clicked) */
+    &:active {
+        /* Add specific styling for the active state, if needed */
+    }
+}
