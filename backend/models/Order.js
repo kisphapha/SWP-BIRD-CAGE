@@ -164,7 +164,7 @@ const loadUnSeen = async (id) => {
         .input('id', id)
         .query(
             `SELECT * FROM dbo.Orders 
-             WHERE id = @id AND View_Status = 0`
+             WHERE UserID = @id`
 
         )
         return result.recordset;
@@ -173,16 +173,18 @@ const loadUnSeen = async (id) => {
     }
 }
 
-const changetoSeen = async(id) => {
+const changetoSeen = async(id, userid) => {
     try {
         let poolConnection = await sql.connect(config);
         const result = await poolConnection.request()
         .input('id', id)
+        .input('userid', userid)
         .query(
             ` 
             UPDATE dbo.Orders
-            SET  View_Status = 1
-            WHERE id  = @id
+            SET View_Status = 1
+            WHERE UserID = @userid
+            AND Id = @id
             `
         )
     } catch (error) {
