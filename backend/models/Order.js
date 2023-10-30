@@ -164,7 +164,7 @@ const loadUnSeen = async (id) => {
         .input('id', id)
         .query(
             `SELECT * FROM dbo.Orders 
-             WHERE id = @id AND View_Status = 0`
+             WHERE UserId = @id AND View_Status = 0`
 
         )
         return result.recordset;
@@ -182,7 +182,7 @@ const changetoSeen = async(id) => {
             ` 
             UPDATE dbo.Orders
             SET  View_Status = 1
-            WHERE id  = @id
+            WHERE UserID  = @id
             `
         )
     } catch (error) {
