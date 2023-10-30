@@ -47,6 +47,7 @@ export default function Navbar() {
 
                 <NavLink to="/cart" className="cart-button" acctiveClassName="active">
                     <div className="nav-content">
+                        <div></div>
                         <ShoppingCartTwoToneIcon sx={{ fontSize: 30 }} />
                     </div>
                 </NavLink>
