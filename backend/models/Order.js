@@ -51,7 +51,46 @@ const getOrderById = async (id) => {
 const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentMethod, Status, Items) => {
     try {
         let poolConnection = await sql.connect(config);
-        const result = await poolConnection.request()
+        const orderQuery = `
+            INSERT INTO dbo.Orders
+            (
+                [UserID],
+                [OrderDate],
+                [PaymentDate],
+                [AddressID],
+                [PhoneNumber],
+                [Note],
+                [TotalAmount],
+                [PaymentMethod],
+                [IsDeleted],
+                [CreateAt],
+                [UpdateAt],
+                [Status],
+                [View_Status],
+                [Status_Shipping],
+                [Status_Paid]
+            )
+            OUTPUT INSERTED.Id
+            VALUES
+            (
+                @UserID,
+                @OrderDate,
+                @PaymentDate,
+                @AddressID,
+                @PhoneNumber,
+                @Note,
+                @TotalAmount,
+                @PaymentMethod,
+                0,
+                GETDATE(),
+                GETDATE(),
+                @Status,
+                0,
+                N'Chờ duyệt',
+                'UnPaid'
+            );
+        `;
+        const orderRequest = poolConnection.request()
             .input('UserID', sql.Int, UserID)
             .input('OrderDate', sql.DateTime, OrderDate)
             .input('PaymentDate', sql.DateTime, PaymentDate)
@@ -60,56 +99,11 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
             .input('Note', sql.NVarChar, Note)
             .input('TotalAmount', sql.Int, TotalAmount)
             .input('PaymentMethod', sql.NVarChar, PaymentMethod)
-            .input('Status', sql.NVarChar, Status)
-            .query(`
-                INSERT INTO dbo.Orders
-                (
-                    [UserID],
-                    [OrderDate],
-                    [PaymentDate],
-                    [AddressID],
-                    [PhoneNumber],
-                    [Note],
-                    [TotalAmount],
-                    [PaymentMethod],
-                    [IsDeleted],
-                    [UpdateAt],
-                    [Status],
-                    [View_Status],
-                    [Status_Shipping],
-                    [Status_Paid]
-                    )
-                OUTPUT INSERTED.Id
-                VALUES
-                    (
-                        @UserID,
-                        @OrderDate,
-                        @PaymentDate,
-                        @AddressID,
-                        @PhoneNumber,
-                        @Note,
-                        @TotalAmount,
-                        @PaymentMethod,
-                        0,
-                        GETDATE(),
-                        @Status,
-                        0,
-                        N'Chờ duyệt',
-                        'UnPaid'
-                    );
-
-                
-            `);
-        Items.forEach(item => {
-            poolConnection.request()
-                .input('ProductId', sql.Int, item.id)
-                .input('Quantity', sql.Int, parseInt(item.quantity))
-                .input('Price', sql.Int, parseInt(item.price))
-                .query(`
-                UPDATE dbo.Products 
-                SET Stock = Stock - @Quantity
-                WHERE id = @ProductId
-
+            .input('Status', sql.NVarChar, Status);
+        const orderResult = await orderRequest.query(orderQuery);
+        const orderId = orderResult.recordset[0].Id;
+        for (const item of Items) {
+            const itemQuery = `
                 INSERT INTO OrderItem(
                     ProductId,
                     OrdersId,
@@ -140,10 +134,12 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
 const changeStatus_Paid = async (id) => {
     try {
         let poolConnection = await sql.connect(config);
-        const result = await poolConnection.request().query(
+        const result = await poolConnection.request()
+        .input('id', id)
+        .query(
             ` UPDATE dbo.Orders
               SET Status_Paid = 'Paid', View_Status = 0
-              WHERE id = ${id}
+              WHERE id = @id
               `
         )
     } catch (e) {
@@ -154,12 +150,21 @@ const changeStatus_Paid = async (id) => {
 const getAllOrderItemByOrderID = async (id) => {
     try {
         let poolConnection = await sql.connect(config);
-        const result = await poolConnection.request().query(`
-           SELECT p.Id,p.Name, oi.CreatedAt, oi.Price, oi.Quantity, i.Url, o.Status, c.name AS Shape, p.discount
-         FROM OrderItem oi, Orders o, Products p, Image i, Category c
-         WHERE o.Id = ${id} AND o.Id = oi.OrdersId AND oi.ProductId = p.id AND i.ProductId = p.Id AND p.Category = c.Id
-
-        `)
+        const query = `
+            SELECT p.Id, p.Name, oi.CreatedAt, oi.Price, oi.Quantity, i.Url, o.Status, c.name AS Shape, p.discount
+            FROM OrderItem oi
+            INNER JOIN Orders o ON o.Id = oi.OrdersId
+            INNER JOIN Products p ON oi.ProductId = p.id
+            INNER JOIN Category c ON p.Category = c.Id
+            JOIN (
+                SELECT Image.*, ROW_NUMBER() OVER (PARTITION BY ProductId ORDER BY Id) AS RowNum
+                FROM Image
+            ) i ON i.ProductId = p.id AND i.RowNum = 1
+            WHERE o.Id = @OrderId;
+        `;
+        const result = await poolConnection.request()
+            .input('OrderId', sql.Int, id)
+            .query(query);
         return result.recordset;
     } catch (error) {
         console.log("error: ", error);

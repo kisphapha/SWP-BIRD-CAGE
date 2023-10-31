@@ -102,24 +102,6 @@ const deleteJunkData = async (req, res) => {
 }
 
 
-const getMonthLyIncome = async (req, res) => {
-    try {
-        const admin = await Admin.getMonthLyIncome();
-        res.json(admin);
-    } catch (error) {
-        res.status(500).json({message: error.message})
-    }
-}
-
-const deleteJunkData = async (req, res) => {
-    try {
-        const admin = await Admin.deleteJunkData();
-        res.json("Success");
-    } catch (error) {
-        res.status(500).json({message: error.message})
-    }
-}
-
 
 const orderStatisticByMonth = async (req, res) => {
     try {
@@ -142,7 +124,7 @@ module.exports = {
     deleteUser,
     loadUnSeen,
     changetoSeen,
-    orderStatisticByMonth,
     getMonthLyIncome,
-    deleteJunkData
+    deleteJunkData,
+    orderStatisticByMonth
 }
