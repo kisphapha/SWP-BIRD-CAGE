@@ -5,9 +5,11 @@ const getAllCategory = async () => {
     try {
         let poolConnection = await sql.connect(config);
         const result = await poolConnection.request().query(
-            `SELECT c.id,c.name,c.imageUrl,c.Allow_customize from Category c, Products p WHERE p.Category = c.id  
-            GROUP BY c.id, c.name,c.imageUrl,c.Allow_customize
-            ORDER BY c.id`
+            `SELECT c.id, c.name, c.imageUrl, c.Allow_customize
+            FROM Category c
+            LEFT JOIN Products p ON p.Category = c.id
+            GROUP BY c.id, c.name, c.imageUrl, c.Allow_customize
+            ORDER BY c.id;`
         );
         return result.recordset;
     } catch (error) {
