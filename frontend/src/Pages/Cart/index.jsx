@@ -269,6 +269,8 @@ export default function Cart() {
                                     <Button variant="contained" onClick={() => navigate('/')}>
                                         Tiếp tục mua hàng
                                     </Button>
+
+                                    {/* // */}
                                 </div>
                             </div>
                         </div>
