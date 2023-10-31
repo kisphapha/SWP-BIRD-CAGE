@@ -263,14 +263,16 @@ export default function Cart() {
                                             </div>
                                         )}
                                     </Popup>
-                                    <Button variant="contained" onClick={clearCart} disableRipple>
-                                        Xóa tất cả
-                                    </Button>
-                                    <Button variant="contained" onClick={() => navigate('/')}>
-                                        Tiếp tục mua hàng
-                                    </Button>
-
-                                    {/* // */}
+                                    <div className="w-fit">
+                                        <Button variant="contained" onClick={clearCart} disableRipple>
+                                            Xóa tất cả
+                                        </Button>
+                                    </div>
+                                    <div className="w-fit">
+                                        <Button variant="contained" onClick={() => navigate('/')}>
+                                            Tiếp tục mua hàng
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

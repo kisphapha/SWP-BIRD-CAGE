@@ -127,6 +127,36 @@ const changetoSeen = async() => {
     }
 }
 
+const getMonthLyIncome = async() => {
+    try {
+       let poolConnection= await sql.connect(config);
+       const result = await poolConnection.request().query(`
+       SELECT DISTINCT DATEPART(MONTH, PaymentDate) AS Month, SUM(TotalAmount) AS revenue
+       FROM dbo.Orders
+       WHERE Status_Paid = 'Paid' 
+       GROUP BY  DATEPART(MONTH, PaymentDate)
+       `) 
+        return result.recordset;
+    } catch (error) {
+        console.log("error: ", error)
+    }
+}
+
+const deleteJunkData = async() => {
+    try {
+        let poolConnection= await sql.connect(config);
+        const result = await poolConnection.request().query(`
+            DELETE dbo.OrderItem WHERE OrdersId IN (  SELECT id FROM dbo.Orders
+            WHERE PaymentDate IS NULL AND AddressID IS NULL )
+            DELETE dbo.Orders
+            WHERE PaymentDate IS NULL AND AddressID IS NULL a
+          
+        `) 
+    } catch (error) {
+        console.log("error: ", error);
+    }
+} 
+
 const orderStatisticByMonth = async (month,year) => {
     try {
         let poolConnection = await sql.connect(config);
@@ -169,7 +199,9 @@ module.exports = {
     newUser,
     deleteUser,
     loadUnSeen,
-    changetoSeen,
-    orderStatisticByMonth
+    deleteJunkData,
+    orderStatisticByMonth,
+    getMonthLyIncome,
+    changetoSeen
 };
 

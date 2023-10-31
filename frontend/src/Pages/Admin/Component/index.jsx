@@ -21,13 +21,14 @@ import React, { useEffect, useState } from 'react'
 import MenuItem from '@mui/material/MenuItem'
 import Axios from 'axios'
 import Popup from 'reactjs-popup'
-import EditProductForm from '../EditProductForm/index'
+// import EditProductForm from '../EditProductForm/index'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import axios from 'axios'
+import EditComponentForm from '../EditComponentForm'
 
-export default function Products() {
-    const [products, setProducts] = useState([])
+export default function Components() {
+    const [Components, setComponents] = useState([])
     const [page, setPage] = useState(1)
     const [maxPage, setMaxPage] = useState(1)
     const [pageList, setPageList] = useState([])
@@ -76,8 +77,8 @@ export default function Products() {
         setPage(page)
     }
     async function handleDelete(id) {
-        await axios.delete(`http://localhost:3000/products/` + id)
-        alert('Product deleted')
+        await axios.delete(`http://localhost:3000/Components/` + id)
+        alert('Component deleted')
         handleFilter()
     }
 
@@ -93,9 +94,9 @@ export default function Products() {
             status: prostatus,
             page: page
         }
-        Axios.post('http://localhost:3000/products/filter/', json)
+        Axios.post('http://localhost:3000/Components/filter/', json)
             .then((response) => {
-                setProducts(response.data.data)
+                setComponents(response.data.data)
                 setMaxPage(Math.ceil(response.data.lines.Count / 10))
             })
             .catch((error) => {
@@ -138,8 +139,8 @@ export default function Products() {
     return (
         <div className="px-2 py-2 w-full  mb-96">
             <div className="flex-col">
-                <div className="my-5">Product</div>
-                {/* <Button onClick={() => '/admin/NewProduct'}>New Product</Button> */}
+                <div className="my-5">Component</div>
+                {/* <Button onClick={() => '/admin/NewComponent'}>New Component</Button> */}
             </div>
 
             <TableContainer component={Paper}>
@@ -157,7 +158,7 @@ export default function Products() {
                             <TableCell>
                                 <div>
                                     <div>Image</div>
-                                    <div>.</div>
+                                    {/* <div>Hình ảnh</div> */}
                                 </div>
                             </TableCell>
                             <TableCell>
@@ -262,17 +263,17 @@ export default function Products() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {products.map((product) => (
+                        {Components.map((Component) => (
                             <TableRow>
-                                <TableCell>{product.Id}</TableCell>
+                                <TableCell>{Component.Id}</TableCell>
                                 <TableCell>
-                                    <img className="w-16 h-16   " src={product.Url} />
+                                    <img className="w-16 h-16   " src={Component.Url} />
                                 </TableCell>
-                                <TableCell>{product.Name}</TableCell>
-                                <TableCell>{product.Price.toLocaleString('vi', { style: 'currency', currency: 'VND' })}</TableCell>
-                                <TableCell>{product.Stock}</TableCell>
-                                <TableCell>{product.Shape}</TableCell>
-                                <TableCell>{product.Status}</TableCell>
+                                <TableCell>{Component.Name}</TableCell>
+                                <TableCell>{Component.Price.toLocaleString('vi', { style: 'currency', currency: 'VND' })}</TableCell>
+                                <TableCell>{Component.Stock}</TableCell>
+                                <TableCell>{Component.Shape}</TableCell>
+                                <TableCell>{Component.Status}</TableCell>
                                 <TableCell>
                                     {' '}
                                     <div className="flex justify-end">
@@ -297,11 +298,11 @@ export default function Products() {
                                                             </Button>
                                                         </div>
                                                     </div>
-                                                    <EditProductForm productId={product.Id} close={close} handleFilter={handleFilter} />
+                                                    <EditComponentForm ComponentId={Component.Id} close={close} handleFilter={handleFilter} />
                                                 </div>
                                             )}
                                         </Popup>
-                                        <button onClick={() => handleDelete(product.Id)}>
+                                        <button onClick={() => handleDelete(Component.Id)}>
                                             <DeleteIcon fontSize="medium" />
                                         </button>
                                     </div>
