@@ -14,30 +14,28 @@ import MenuItem from '@mui/material/MenuItem'
 import { Button } from '@mui/material'
 import IconButton from '@mui/material/IconButton'
 import { Badge } from '@mui/material'
-import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive'
 import axios from 'axios'
 // import banner from '../../image/banner/banner.png'
 
-
 function Header() {
-    const [seenMessage, setSeenMessage] = useState([]);
-    const [unseenMessage, setUnseenMessage] = useState([]);
+    const [seenMessage, setSeenMessage] = useState([])
+    const [unseenMessage, setUnseenMessage] = useState([])
 
     useEffect(() => {
         async function fetchOrders() {
-            const userId = JSON.parse(sessionStorage.loginedUser).Id;
-            const response = await fetch(`http://localhost:3000/order/loadUnseen/${userId}`);
-            const orders = await response.json();
+            const userId = JSON.parse(sessionStorage.loginedUser).Id
+            const response = await fetch(`http://localhost:3000/order/loadUnseen/${userId}`)
+            const orders = await response.json()
 
-            const seen = orders.filter(order => order.View_Status);
-            const unseen = orders.filter(order => !order.View_Status);
-            setSeenMessage(seen);
-            setUnseenMessage(unseen);
+            const seen = orders.filter((order) => order.View_Status)
+            const unseen = orders.filter((order) => !order.View_Status)
+            setSeenMessage(seen)
+            setUnseenMessage(unseen)
         }
 
-        fetchOrders();
-    }, []);
-
+        fetchOrders()
+    }, [])
 
     const { user } = useContext(UserContext)
     const [email, setEmail] = useState('')
@@ -84,21 +82,17 @@ function Header() {
         setAnchorEl(event.currentTarget)
     }
     const handleClose = async () => {
-        setAnchorEl(null);
+        setAnchorEl(null)
     }
 
     const handleSeen = async (id) => {
-
-        await axios.patch(`http://localhost:3000/order/changetoSeen`, {
-            id: id,
-            userid: JSON.parse(sessionStorage.loginedUser).Id
-        });
-
-        const orders = await fetchOrders();
-
-        setUnseenMessage(orders.filter(o => !o.View_Status));
-
-        setSeenMessage(orders.filter(o => o.View_Status));
+        // await axios.patch(`http://localhost:3000/order/changetoSeen`, {
+        //     id: id,
+        //     userid: JSON.parse(sessionStorage.loginedUser).Id
+        // });
+        // const orders = await fetchOrders();
+        // setUnseenMessage(orders.filter(o => !o.View_Status));
+        // setSeenMessage(orders.filter(o => o.View_Status));
     }
     return (
         <div id="header">
@@ -177,9 +171,8 @@ function Header() {
                         onClick={handleClick}
                     >
                         <div className="text-white">
-                            <Badge badgeContent={unseenMessage.length} color='error'>
+                            <Badge badgeContent={unseenMessage.length} color="error">
                                 <NotificationsNoneIcon fontSize="large" />
-
                             </Badge>
                         </div>
                         {/* <MoreVertIcon /> */}
@@ -193,35 +186,32 @@ function Header() {
                         open={open}
                         onClose={handleClose}
                     >
-                        {
-                            unseenMessage.map((option) => (
-                                <MenuItem key={option.Id} onClick={handleSeen(option.Id)} sx={{ backgroundColor: 'white' }}>
-                                    <div className='flex'>
-                                        <div className='w-12 '>
-                                            <NotificationsActiveIcon></NotificationsActiveIcon>
-                                        </div>
-                                        <div>
-                                            Đơn hàng có mã số #{option.Id} {option.Status_Paid.trim() == "UnPaid" ? "chưa được thanh toán" : "đã thanh toán"} đang {option.Status_Shipping}
-                                        </div>
+                        {unseenMessage.map((option) => (
+                            <MenuItem key={option.Id} onClick={handleSeen(option.Id)} sx={{ backgroundColor: 'white' }}>
+                                <div className="flex">
+                                    <div className="w-12 ">
+                                        <NotificationsActiveIcon></NotificationsActiveIcon>
                                     </div>
-                                </MenuItem>
-                            ))
-
-                        }
-                        {
-                            seenMessage.map((option) => (
-                                <MenuItem key={option} sx={{ backgroundColor: '#e0e0e0' }}>
-                                    <div className='flex'>
-                                        <div className='w-12 '>
-                                            {/* <NotificationsActiveIcon></NotificationsActiveIcon> */}
-                                        </div>
-                                        <div>
-                                            Đơn hàng có mã số #{option.Id} {option.Status_Paid.trim() == "UnPaid" ? "chưa được thanh toán" : "đã thanh toán"} đang {option.Status_Shipping}
-                                        </div>
+                                    <div>
+                                        Đơn hàng có mã số #{option.Id}{' '}
+                                        {option.Status_Paid.trim() == 'UnPaid' ? 'chưa được thanh toán' : 'đã thanh toán'} đang{' '}
+                                        {option.Status_Shipping}
                                     </div>
-                                </MenuItem>
-                            ))
-                        }
+                                </div>
+                            </MenuItem>
+                        ))}
+                        {seenMessage.map((option) => (
+                            <MenuItem key={option} sx={{ backgroundColor: '#e0e0e0' }}>
+                                <div className="flex">
+                                    <div className="w-12 ">{/* <NotificationsActiveIcon></NotificationsActiveIcon> */}</div>
+                                    <div>
+                                        Đơn hàng có mã số #{option.Id}{' '}
+                                        {option.Status_Paid.trim() == 'UnPaid' ? 'chưa được thanh toán' : 'đã thanh toán'} đang{' '}
+                                        {option.Status_Shipping}
+                                    </div>
+                                </div>
+                            </MenuItem>
+                        ))}
                     </Menu>
                 </div>
             </section>
