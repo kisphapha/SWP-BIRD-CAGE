@@ -79,15 +79,17 @@ export default function Cart() {
                         phoneNumber: JSON.parse(sessionStorage.loginedUser).PhoneNumber,
                         orderid: res.data.orderid
                     })
-                    setTimeout(() => {
-                        alert('Đang chuyển tiếp đến VNPay')
-                    }, 2000)
+                    // setTimeout(() => {
+                    //     alert('Đang chuyển tiếp đến VNPay')
+                    // }, 2000)
+                    console.log(response.data.url)
                     window.location.href = response.data.url
                 } else {
                     alert('Đặt hàng thành công')
+                    sessionStorage.setItem('cart', '{"products":[]}')
+                    window.location.reload(false)
                 }
                 sessionStorage.setItem('cart', '{"products":[]}')
-                window.location.reload(false)
             } else {
                 alert('Đăng nhập để tiến hành thanh toán')
             }
@@ -131,6 +133,12 @@ export default function Cart() {
             console.log(sessionStorage.getItem('cart'))
             setCartData(updatedCart)
         }
+    }
+    //clear cart
+    const clearCart = () => {
+        const emptyCart = { products: [] }
+        setCartData(emptyCart)
+        sessionStorage.setItem('cart', JSON.stringify(emptyCart))
     }
 
     return (
@@ -202,15 +210,17 @@ export default function Cart() {
                         )}
                     </table>
                     <div className=" flex w-full justify-end">
-                        <div className="Totail text-right w-2/6 mr-4 my-4    ">
-                            <div className="font-bold flex place-content-between">
-                                <div className="ml-32">Tổng cộng:</div>
-                                <div>{calculateTotalPrice().toLocaleString('vi', { style: 'currency', currency: 'VND' })}</div>
-                            </div>
+                        <div className=" w-2/6 mr-4 my-4   ">
+                            <div className="border border-gray-300 rounded p-4 w-4/5 ml-24">
+                                <div className="font-bold flex place-content-between ">
+                                    <div className="">Tổng cộng:</div>
+                                    <div>{calculateTotalPrice().toLocaleString('vi', { style: 'currency', currency: 'VND' })}</div>
+                                </div>
 
-                            <div className="font-bold flex place-content-between">
-                                <div className="ml-32">Số điểm bonus sẽ tích được:</div>
-                                <div>{calculateBonus()}</div>
+                                <div className="font-bold flex place-content-between">
+                                    <div className="">Số điểm bonus sẽ tích được:</div>
+                                    <div>{calculateBonus()}</div>
+                                </div>
                             </div>
 
                             <div className=" font-bold ">
@@ -253,8 +263,16 @@ export default function Cart() {
                                             </div>
                                         )}
                                     </Popup>
-                                    <Button variant="contained">Xóa tất cả</Button>
-                                    <Button variant="contained">Tiếp tục mua hàng</Button>
+                                    <div className="w-fit">
+                                        <Button variant="contained" onClick={clearCart} disableRipple>
+                                            Xóa tất cả
+                                        </Button>
+                                    </div>
+                                    <div className="w-fit">
+                                        <Button variant="contained" onClick={() => navigate('/')}>
+                                            Tiếp tục mua hàng
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -329,6 +329,8 @@ const paging = async (page, cate) => {
         console.log("error: ", e)
     }
 }
+
+
 const filterProduct = async (id, name, category, upper_price, lower_price, upper_stock, lower_stock, status, page) => {
     try {
         const perPage = 10;

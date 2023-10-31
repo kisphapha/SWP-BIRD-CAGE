@@ -22,7 +22,8 @@ const getOrderByUserId = async (id) => {
             .query(
             `select *
              from Orders
-             where Orders.UserID = @Id`
+             where Orders.UserID = @Id
+             order by Id DESC`
         );
         return result.recordset;
     } catch (error) {
@@ -133,14 +134,14 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
 const changeStatus_Paid = async (id) => {
     try {
         let poolConnection = await sql.connect(config);
-        const query = `
-            UPDATE dbo.Orders
-            SET Status_Paid = 'Paid'
-            WHERE id = @Id;
-        `;
         const result = await poolConnection.request()
-            .input('Id', sql.Int, id)
-            .query(query);
+        .input('id', id)
+        .query(
+            ` UPDATE dbo.Orders
+              SET Status_Paid = 'Paid', View_Status = 0
+              WHERE id = @id
+              `
+        )
     } catch (e) {
         console.log("error: ", e);
     }
@@ -205,7 +206,7 @@ const changetoSeen = async(id, userid) => {
         console.log("error: ", error);
     }
 }
-
+// dasda
 module.exports = {
     getAllOrder,
     getOrderById,

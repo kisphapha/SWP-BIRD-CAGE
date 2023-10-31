@@ -107,7 +107,7 @@ export default function Order() {
     }, [cards])
 
     //step
-    const buttonState = ["Duyệt", "Đã bàn giao cho Shipper"]
+    const buttonState = ['Duyệt', 'Đã bàn giao cho Shipper']
     const steps = ['Chờ duyệt', 'Đang chuẩn bị', 'Đang giao', 'Đã giao']
     const getActiveStep = (status) => {
         return steps.indexOf(status)
@@ -116,7 +116,6 @@ export default function Order() {
     function getButtonStatus(status) {
         return buttonState[steps.indexOf(status)]
     }
-
 
     useEffect(() => {
         fetchOrder()
@@ -214,23 +213,23 @@ export default function Order() {
                                     </div>
                                     <div className="flex mx-2 place-content-between">
                                         <div className="flex gap-4">
-
-                                        {
-                                                getActiveStep(order.Status_Shipping) < 2 && (
-                                                    <Button variant="outlined" onClick={() => {
+                                            {getActiveStep(order.Status_Shipping) < 2 && (
+                                                <Button
+                                                    variant="outlined"
+                                                    onClick={() => {
                                                         changeState(order.Id, steps[parseInt(getActiveStep(order.Status_Shipping)) + 1])
-                                                            close()
-                                                        }
-                                                    }>
-                                                        {getButtonStatus(order.Status_Shipping)}
-                                                    </Button>
-                                            )
-                                        }
+                                                        close()
+                                                    }}
+                                                >
+                                                    {getButtonStatus(order.Status_Shipping)}
+                                                </Button>
+                                            )}
                                         </div>
 
                                         <div>
                                             <Button variant="contained" onClick={close}>
                                                 Cancel
+                                                {/* asa */}
                                             </Button>
                                         </div>
                                     </div>

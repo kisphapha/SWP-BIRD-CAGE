@@ -1,25 +1,27 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import { useParams } from 'react-router-dom'
 import './styles.css'
-import { UserProvider } from '../../UserContext'
+import Popup from 'reactjs-popup'
+import 'reactjs-popup/dist/index.css'
+import { UserContext, UserProvider } from '../../UserContext'
 import Header from '../../components/common/Header'
 import Navbar from '../../components/common/Navbar'
 import CategoryNav from '../../components/features/CategoryNav'
 import { useNavigate } from 'react-router-dom'
-import ArrowBack from '@mui/icons-material/ArrowBack'
-import ArrowForward from '@mui/icons-material/ArrowForward'
-
 import { Button, TextField, Rating, Avatar } from '@mui/material'
+import AddressPopup from '../../components/features/AddressPopup/AddressPopup'
 
 export default function ProductDetails() {
+    const { user } = useContext(UserContext)
     const [imgList, setImgList] = useState([])
     const { productId } = useParams()
     const [quantity, setQuantity] = useState(1)
     const [product, setProduct] = useState([])
     const [ratingsData, setRatingsData] = useState([])
     const [focusUrl, setFocusUrl] = useState('')
-    const navigate = useNavigate()
+    const [addressList, setAddressList] = useState([])
+    const [orderAddress, setOrderAddress] = useState([])
 
     useEffect(() => {
         window.scrollTo(0, 0)
@@ -41,6 +43,13 @@ export default function ProductDetails() {
         fetchRatings()
         fetchImage()
     }, [productId])
+
+    async function fetchAddresses() {
+        const response = await axios.get(`http://localhost:3000/address/${user.Id}`)
+        console.log(response.data)
+        setAddressList(response.data)
+        console.log(addressList)
+    }
 
     const getFeedback = () => {
         if (sessionStorage.loginedUser != null) {
@@ -98,11 +107,6 @@ export default function ProductDetails() {
         sessionStorage.setItem('cart', JSON.stringify(cart))
 
         console.log(sessionStorage.getItem('cart'))
-    }
-
-    const handleBuy = () => {
-        addToCart()
-        navigate('/cart')
     }
 
     return (
@@ -180,10 +184,63 @@ export default function ProductDetails() {
                             </div>
                         </div>
 
-                        <div className="buy" onClick={handleBuy}>
-                            <p className="t1">MUA NGAY</p>
-                            <p className="t2">Gọi điện xác nhận và giao hàng tận nơi</p>
-                        </div>
+                        <Popup
+                            trigger={
+                                <div className="buy">
+                                    <p className="t1">MUA NGAY</p>
+                                    <p className="t2">Gọi điện xác nhận và giao hàng tận nơi</p>
+                                </div>
+                            }
+                            onOpen={fetchAddresses}
+                            position="right center"
+                            modal
+                            closeOnDocumentClick={false}
+                            // closeOnEscape={false}
+                        >
+                            {(close) => (
+                                <div className="popup-order">
+                                    {/* <AddressPopup user={user} close={close} /> */}
+                                    <div className="adr-container">
+                                        <TextField
+                                            select
+                                            required
+                                            fullWidth
+                                            label="Chọn địa chỉ của bạn"
+                                            className="user-address"
+                                            id="adrress"
+                                            size="small"
+                                            SelectProps={{
+                                                native: true
+                                            }}
+                                            onChange={(event) => {
+                                                //setOrderAddress(event.target.selectedIndex)
+                                            }}
+                                        >
+                                            <option value="" selected></option>
+                                            {addressList.map((adr) => (
+                                                <option key={adr}>
+                                                    {adr.SoNha + ', ' + adr.PhuongXa + ', ' + adr.QuanHuyen + ', ' + adr.TinhTP}
+                                                </option>
+                                            ))}
+                                        </TextField>
+                                    </div>
+                                    <div className="add-address-btn">
+                                        <Popup
+                                            trigger={<Button variant="contained">Thêm</Button>}
+                                            position="right center"
+                                            modal
+                                            >
+                                            {(close) => (
+                                                <div className="popup-address">
+                                                    <h1>Thêm địa chỉ</h1>
+                                                    <AddressPopup user={user} fetchAddresses={fetchAddresses} close={close} />
+                                                </div>
+                                            )}
+                                        </Popup>
+                                    </div>
+                                </div>
+                            )}
+                        </Popup>
                     </div>
                 </div>
                 <div className="description">

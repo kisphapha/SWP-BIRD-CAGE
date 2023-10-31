@@ -9,8 +9,7 @@ const getAllCategory = async () => {
             FROM Category c
             LEFT JOIN Products p ON p.Category = c.id
             GROUP BY c.id, c.name, c.imageUrl, c.Allow_customize
-            ORDER BY c.id;
-            `
+            ORDER BY c.id;`
         );
         return result.recordset;
     } catch (error) {

@@ -14,25 +14,22 @@ const UserUtilities = (props) => {
             <div className="utilities">
                 <NavLink to="/user/profile" activeClassName="active">
                     <div className="ult-txt">
-                        <Person /> My Profile
+                        <Person /> Hồ sơ
                     </div>
                 </NavLink>
                 <NavLink to="/user/purchase" activeClassName="active">
                     <div className="ult-txt">
-                        <Assignment />
-                        Purchased
+                        <Assignment /> Đơn mua
                     </div>
                 </NavLink>
                 <NavLink to="/user/address" activeClassName="active">
                     <div className="ult-txt">
-                        <LocationOn />
-                        Address
+                        <LocationOn /> Địa chỉ
                     </div>
                 </NavLink>
                 <NavLink to="/" activeClassName="active">
                     <div className="ult-txt">
-                        <CurrencyBitcoin />
-                        BiCa Coin
+                        <CurrencyBitcoin /> BiCaCoin
                     </div>
                 </NavLink>
             </div>
