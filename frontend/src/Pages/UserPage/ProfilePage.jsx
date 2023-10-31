@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+﻿import React, { useContext } from 'react'
 import Profile from "../../components/common/Profile";
 import UserUtilities from "../../components/common/UserUtilities";
 import { UserContext } from '../../UserContext';
@@ -21,9 +21,10 @@ function ProfilePage() {
                 <Navbar />
                 <CategoryNav
                     parents={[
-                        { "name": "Home", "link": "/" }
+                        { "name": "Trang chủ", "link": "/" }
                     ]}
-                    current="User Profile"></CategoryNav>            <div className="user-container">
+                    current="Hồ sơ"></CategoryNav>
+                <div className="user-container">
                 {user != null ?(<UserUtilities user={user} />) : (<div>Loading...</div>)}
                 <div className="user-view">
                         {user != null ? (<Profile user={user} />) : (navigate("/login"))}

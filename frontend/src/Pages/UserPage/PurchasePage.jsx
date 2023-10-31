@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+﻿import React, { useContext, useEffect, useState } from 'react'
 import UserUtilities from "../../components/common/UserUtilities";
 import "./styles.css"
 import { UserContext } from '../../UserContext';
@@ -20,9 +20,9 @@ const PurchasePage = () => {
             </UserProvider>
             <CategoryNav
                 parents={[
-                    { "name": "Home", "link": "/" }
+                    { "name": "Trang chủ", "link": "/" }
                 ]}
-                current="User Profile"></CategoryNav>
+                current="Hồ sơ"></CategoryNav>
             <div className="user-container">
                 {user != null ? (<UserUtilities user={user} />) : (<div>Loading...</div>)}
                 <div className="user-view">

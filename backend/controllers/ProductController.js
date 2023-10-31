@@ -27,6 +27,15 @@ const getProductByName = async (req, res) => {
     }
 };
 
+const getImgsOfProduct = async (req, res) => {
+    try {
+        const response = await Product.getImgsOfProduct(req.params.code);
+        res.json(response);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 const getProductsByCategory = async (req, res) => {
     try {
         const products = await Product.getProductsByCategory(req.params.code);
@@ -99,10 +108,10 @@ const getRatingByProductId = async (req, res) => {
 const addRating = async (req, res) => {
     try {
 
-        const UserId = req.query.UserId;
-        const ProductId  = req.query.ProductId;
-        const StarPoint = req.query.StarPoint;
-        const Content = req.query.Content;
+        const UserId = req.body.UserId;
+        const ProductId = req.body.ProductId;
+        const StarPoint = req.body.StarPoint;
+        const Content = req.body.Content;
 
         await Product.addRating(UserId, ProductId, StarPoint, Content);
         res.json({message: "done"});
@@ -114,7 +123,7 @@ const addRating = async (req, res) => {
 
 const paging = async (req, res) => {
     try {
-        const products = await Product.paging(req.query.page, req.query.cate);
+        const products = await Product.paging(req.body.page, req.body.cate);
         res.json(products);
     }catch (e) {
         res.status(500).json({message: e.message})
@@ -169,5 +178,6 @@ module.exports = {
     deleteProduct,
     paging,
     filterProduct,
-    pagingSearchBar 
+    pagingSearchBar,
+    getImgsOfProduct
 };

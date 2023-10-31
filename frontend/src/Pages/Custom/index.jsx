@@ -11,9 +11,9 @@ export default function Custom() {
     const [categories, setCategories] = useState([])
     const [tmpName, setTempName] = useState('')
     const [tmpMaterial, setMaterial] = useState('')
-    // const [tmpCate, setCate] = useState('')
+    const [tmpCate, setCate] = useState('')
     const [tmpDescription, setTempDescription] = useState('')
-    const [selectedImage, setSelectedImage] = useState(null);
+    const [selectedImage, setSelectedImage] = useState(null)
 
     const handleCategoryChange = (event) => {
         setCategories(event.target.value.trim())
@@ -38,8 +38,8 @@ export default function Custom() {
         fetchCategories()
     }, [])
 
-    const defaultImageClass = 'h-40 w-40 m-4 transition-transform transform-gpu rounded-lg';
-    const selectedImageClass = 'h-52 w-52 m-4 hover:scale-105 border-2 border-blue-500';
+    const defaultImageClass = 'h-64 w-64 m-2 transition-transform transform-gpu rounded-lg'
+    const selectedImageClass = 'h-52<w-52></w-52> <w-52></w-52> m-2 hover:scale-105 border-2 border-blue-500'
 
     return (
         <form action="">
@@ -50,46 +50,31 @@ export default function Custom() {
                 </UserProvider>
                 <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }]} current="Lồng tùy chỉnh"></CategoryNav>
                 <div className="flex-row bg-slate-50 my-8 mx-32">
-                    <div>Chọn kiểu lồng</div>
-                    <div className="grid grid-cols-3 place-items-center">
+                    <div className="px-8 py-4 font-bold text-red-500"> Chọn kiểu lồng</div>
+                    <div className="grid grid-cols-4 place-items-center h">
                         {categories.map((category, index) => {
                             if (category.Allow_customize == true) {
                                 return (
-                                    <div className={selectedImage === index + 1 ? selectedImageClass : defaultImageClass} onClick={() => setSelectedImage(index + 1)}>
-                                        <img className='max-h-52' src={category.imageUrl} alt="" />
+                                    <div
+                                        className={selectedImage === index + 1 ? selectedImageClass : defaultImageClass}
+                                        onClick={() => setSelectedImage(index + 1)}
+                                    >
+                                        <img className="max-h-52" src={category.imageUrl} alt="" />
                                         <div className="text-center">
-                                            <h1>{category.name}</h1>
+                                            <h1 className="font-bold my-2">{category.name}</h1>
                                         </div>
                                     </div>
                                 )
                             }
                         })}
-
                     </div>
                     <div className="flex my-12 place-content-between m-8">
-                        <div className="w-2/5 mx-4 pr-20 flex-row space-y-4">
+                        <div className="w-2/5 mx-4 pr-20 flex-row space-y-4 pb-8 mb-16">
                             <div className="w-3/4">
                                 {/* <div>name</div> */}
                                 <TextField fullWidth label={'Tên sản phẩm'} variant="standard" onChange={handleNameChange} value={tmpName} />
                             </div>
-                            <div className="w-3/4">
-                                {/* <div>material</div> */}
-                                <TextField fullWidth label={'Chất Liệu'} variant="standard" onChange={handleMaterialChange} value={tmpMaterial} />
-                            </div>
-                            <TextField
-                                fullWidth
-                                select
-                                label="Phân loại"
-                                helperText="Chọn phân Loại"
-                                variant="filled"
-                                onChange={handleCategoryChange}
-                            >
-                                {categories.map((option) => (
-                                    <MenuItem key={option.id} value={option.id}>
-                                        {option.name}
-                                    </MenuItem>
-                                ))}
-                            </TextField>
+
                             <TextField fullWidth select label="Móc" helperText="Chọn móc" variant="filled" onChange={handleCategoryChange}>
                                 {categories.map((option) => (
                                     <MenuItem key={option.id} value={option.id}>
@@ -158,7 +143,7 @@ export default function Custom() {
                                 </TextField>
                             </div>
                             <div className=" my-4 w-full">
-                                <TextField fullWidth select label="Đáy" helperText="Chọn đáy " variant="filled" onChange={handleCategoryChange}>
+                                <TextField fullWidth select label="Size" helperText="Kích thước " variant="filled" onChange={handleCategoryChange}>
                                     {categories.map((option) => (
                                         <MenuItem key={option.id} value={option.id}>
                                             {option.name}
@@ -178,6 +163,28 @@ export default function Custom() {
                                     </div>
                                 </div>
                             </div>
+                            <div className=" my-4 w-full">
+                                <TextField fullWidth select label="Size" helperText="Kích thước " variant="filled" onChange={handleCategoryChange}>
+                                    {categories.map((option) => (
+                                        <MenuItem key={option.id} value={option.id}>
+                                            {option.name}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                                <div className="flex w-full">
+                                    {/* <div className="w-20 h-20">
+                                        <img src="https://mengjinblog.files.wordpress.com/2021/06/17.jpg" alt="" />
+                                    </div> */}
+                                    <div className="w-full ml-4">
+                                        <div>Mô tả :Phù hợp chim ........</div>
+                                        <div className="flex place-content-between">
+                                            <div>40x60x80 </div>
+                                            <div>Thời gian chế tạo: </div>
+                                            <div> Giá tiền: 3000</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <TextField
                                 fullWidth
                                 label={'Mô tả'}
@@ -188,7 +195,7 @@ export default function Custom() {
                                 rows={6}
                             />
 
-                            <div>Giá dự tính:</div>
+                            <div>Tổng cộng:</div>
                             <div>Thời gian hoàn thành dự kiến:</div>
                             <div className="my-8 text-center">
                                 <Button variant="contained" className="">

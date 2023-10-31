@@ -67,12 +67,35 @@ const changeStatus_Paid = async (req, res) => {
     }
 }
 
+const loadUnSeen = async (req, res) => {
+    try {
+        const order = await Order.loadUnSeen(req.params.id);
+        res.json(order);
+    } catch (error) {
+        res.status(500).json({message: e.message})
+    }
+}
+
+// cach dung cho tui frontend (luc user bam vao cai chuong thi no gui 2 tham so la id vs status = 1 xuong)
+const changetoSeen = async(req, res) => {
+    try {
+        const id = req.body.id;
+        const userid = req.body.userid;
+        const order = await Order.changetoSeen(id, userid);
+        res.json("Success");
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+}
+
 module.exports = {
     getAllOrder,
     getOrderById,
     addOrderToDB,
     getOrderItemByOrderID,
     getOrderByUserId,
-    changeStatus_Paid
+    changeStatus_Paid,
+    loadUnSeen,
+    changetoSeen
 }
 

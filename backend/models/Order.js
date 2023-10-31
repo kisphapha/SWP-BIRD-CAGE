@@ -1,4 +1,4 @@
-const config = require("../config/db.config")
+﻿const config = require("../config/db.config")
 const sql = require("mssql");
 
 const getAllOrder = async () => {
@@ -49,7 +49,7 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
             .input('UserID', sql.Int, UserID)
             .input('OrderDate', sql.DateTime, OrderDate)
             .input('PaymentDate', sql.DateTime, PaymentDate)
-            .input('ShippingAddress', sql.NVarChar, ShippingAddress)
+            .input('AddressID', sql.Int, ShippingAddress)
             .input('PhoneNumber', sql.NVarChar, PhoneNumber)
             .input('Note', sql.NVarChar, Note)
             .input('TotalAmount', sql.Int, TotalAmount)
@@ -61,7 +61,7 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                     [UserID],
                     [OrderDate],
                     [PaymentDate],
-                    [ShippingAddress],
+                    [AddressID],
                     [PhoneNumber],
                     [Note],
                     [TotalAmount],
@@ -80,7 +80,7 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                         @UserID,
                         @OrderDate,
                         @PaymentDate,
-                        @ShippingAddress,
+                        @AddressID,
                         @PhoneNumber,
                         @Note,
                         @TotalAmount,
@@ -90,9 +90,11 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                         GETDATE(),
                         @Status,
                         0,
-                        'Pending',
+                        N'Chờ duyệt',
                         'UnPaid'
                     );
+
+                
             `);
         Items.forEach(item => {
             poolConnection.request()
@@ -100,6 +102,10 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                 .input('Quantity', sql.Int, parseInt(item.quantity))
                 .input('Price', sql.Int, parseInt(item.price))
                 .query(`
+                UPDATE dbo.Products 
+                SET Stock = Stock - @Quantity
+                WHERE id = @ProductId
+
                 INSERT INTO OrderItem(
                     ProductId,
                     OrdersId,
@@ -117,9 +123,15 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                     @Quantity,
                     @Price,
                     GETDATE()
-                )               
+                )   
+                
+                
+
                 `)
         });
+        poolConnection.request()
+        
+        
         return result.recordset[0].Id;
     } catch (error) {
         console.log("error: ", error);
@@ -131,7 +143,7 @@ const changeStatus_Paid = async (id) => {
         let poolConnection = await sql.connect(config);
         const result = await poolConnection.request().query(
             ` UPDATE dbo.Orders
-              SET Status_Paid = 'Paid'
+              SET Status_Paid = 'Paid', View_Status = 0
               WHERE id = ${id}
               `
         )
@@ -157,11 +169,48 @@ const getAllOrderItemByOrderID = async (id) => {
 }
 
 
+const loadUnSeen = async (id) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('id', id)
+        .query(
+            `SELECT * FROM dbo.Orders 
+             WHERE UserID = @id`
+
+        )
+        return result.recordset;
+    } catch (error) {
+        console.log("Error: " , error)
+    }
+}
+
+const changetoSeen = async(id, userid) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('id', id)
+        .input('userid', userid)
+        .query(
+            ` 
+            UPDATE dbo.Orders
+            SET View_Status = 1
+            WHERE UserID = @userid
+            AND Id = @id
+            `
+        )
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
+
 module.exports = {
     getAllOrder,
     getOrderById,
     addOrderToDB,
     changeStatus_Paid,
     getAllOrderItemByOrderID,
-    getOrderByUserId
+    getOrderByUserId,
+    loadUnSeen,
+    changetoSeen
 }
