@@ -24,11 +24,9 @@ export default function Cart() {
         setLoading(false)
     }
 
-
     useEffect(() => {
         loadCartData()
     }, [])
-
 
     const handleDecrement = (productId) => {
         const updatedCart = { ...cartData }
@@ -65,7 +63,7 @@ export default function Cart() {
                     TotalAmount: calculateTotalPrice(),
                     PaymentMethod: paymentMethod,
                     Status: 'UNPAID',
-                    Items: JSON.parse(sessionStorage.cart).products,
+                    Items: JSON.parse(sessionStorage.cart).products
                 })
                 await axios.post('http://localhost:3000/users/updatePoint', {
                     id: 17,
@@ -203,57 +201,63 @@ export default function Cart() {
                             )
                         )}
                     </table>
-                    <div className="text-right justify-end place-content-end ">
-                        <div className="font-bold ">
-                            Tổng cộng: {calculateTotalPrice().toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+                    <div className=" flex w-full justify-end">
+                        <div className="Totail text-right w-2/6 mr-4 my-4    ">
+                            <div className="font-bold flex place-content-between">
+                                <div className="ml-32">Tổng cộng:</div>
+                                <div>{calculateTotalPrice().toLocaleString('vi', { style: 'currency', currency: 'VND' })}</div>
+                            </div>
+
+                            <div className="font-bold flex place-content-between">
+                                <div className="ml-32">Số điểm bonus sẽ tích được:</div>
+                                <div>{calculateBonus()}</div>
+                            </div>
+
+                            <div className=" font-bold ">
+                                <div className="flex justify-end gap-4 my-2 ">
+                                    <Popup trigger={<Button variant="contained">Thanh toán</Button>} position="right center" modal>
+                                        {(close) => (
+                                            <div>
+                                                <h2>Chi tiết thanh toán</h2>
+                                                <p>Tổng cộng: {calculateTotalPrice().toLocaleString('vi', { style: 'currency', currency: 'VND' })}</p>
+
+                                                <div>
+                                                    <label>
+                                                        <input
+                                                            type="radio"
+                                                            name="paymentMethod"
+                                                            value="COD"
+                                                            checked={paymentMethod === 'COD'}
+                                                            onChange={() => setPaymentMethod('COD')}
+                                                        />
+                                                        Thanh toán khi nhận hàng
+                                                    </label>
+                                                </div>
+
+                                                <div>
+                                                    <label>
+                                                        <input
+                                                            type="radio"
+                                                            name="paymentMethod"
+                                                            value="vnpay"
+                                                            checked={paymentMethod === 'vnpay'}
+                                                            onChange={() => setPaymentMethod('vnpay')}
+                                                        />
+                                                        Thanh toán nhanh cùng VNPay
+                                                    </label>
+                                                </div>
+
+                                                <Button onClick={handlePayment} variant="outlined">
+                                                    Đặt hàng
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </Popup>
+                                    <Button variant="contained">Xóa tất cả</Button>
+                                    <Button variant="contained">Tiếp tục mua hàng</Button>
+                                </div>
+                            </div>
                         </div>
-
-                        <div className="font-bold ">Số điểm bonus sẽ tích được: {calculateBonus()}</div>
-
-                        <div className="text-right font-bold ">
-                            <Popup trigger={<Button variant="contained">Thanh toán</Button>} position="right center" modal>
-                                {(close) => (
-                                    <div>
-                                        <h2>Chi tiết thanh toán</h2>
-                                        <p>Tổng cộng: {calculateTotalPrice().toLocaleString('vi', { style: 'currency', currency: 'VND' })}</p>
-
-                                        <div>
-                                            <label>
-                                                <input
-                                                    type="radio"
-                                                    name="paymentMethod"
-                                                    value="COD"
-                                                    checked={paymentMethod === 'COD'}
-                                                    onChange={() => setPaymentMethod('COD')}
-                                                />
-                                                Thanh toán khi nhận hàng
-                                            </label>
-                                        </div>
-
-                                        <div>
-                                            <label>
-                                                <input
-                                                    type="radio"
-                                                    name="paymentMethod"
-                                                    value="vnpay"
-                                                    checked={paymentMethod === 'vnpay'}
-                                                    onChange={() => setPaymentMethod('vnpay')}
-                                                />
-                                                Thanh toán nhanh cùng VNPay
-                                            </label>
-                                        </div>
-
-                                        <Button onClick={handlePayment} variant="outlined">
-                                            Đặt hàng
-                                        </Button>
-                                    </div>
-                                )}
-                            </Popup>
-                        </div>
-                    </div>
-                    <div className="flex justify-end gap-4 mx-4 my-2 ">
-                        <Button variant="contained">Tiếp tục mua hàng</Button>
-                        <Button variant="contained">Xóa tất cả</Button>
                     </div>
                 </div>
             )}
