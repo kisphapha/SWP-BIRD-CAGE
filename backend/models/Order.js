@@ -141,10 +141,12 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
 const changeStatus_Paid = async (id) => {
     try {
         let poolConnection = await sql.connect(config);
-        const result = await poolConnection.request().query(
+        const result = await poolConnection.request()
+        .input('id', id)
+        .query(
             ` UPDATE dbo.Orders
               SET Status_Paid = 'Paid', View_Status = 0
-              WHERE id = ${id}
+              WHERE id = @id
               `
         )
     } catch (e) {
