@@ -67,7 +67,6 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                     [TotalAmount],
                     [PaymentMethod],
                     [IsDeleted],
-                    [CreateAt],
                     [UpdateAt],
                     [Status],
                     [View_Status],
@@ -86,7 +85,6 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                         @TotalAmount,
                         @PaymentMethod,
                         0,
-                        GETDATE(),
                         GETDATE(),
                         @Status,
                         0,
@@ -162,7 +160,6 @@ const getAllOrderItemByOrderID = async (id) => {
            SELECT p.Id,p.Name, oi.CreatedAt, oi.Price, oi.Quantity, i.Url, o.Status, c.name AS Shape, p.discount
          FROM OrderItem oi, Orders o, Products p, Image i, Category c
          WHERE o.Id = ${id} AND o.Id = oi.OrdersId AND oi.ProductId = p.id AND i.ProductId = p.Id AND p.Category = c.Id
-
         `)
         return result.recordset;
     } catch (error) {

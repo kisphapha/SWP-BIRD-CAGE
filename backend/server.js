@@ -12,8 +12,10 @@ const eventLog = require('./helper/logEvent');
 const app = express();
 const helmet = require('helmet'); // make web more secure
 const hostname = 'localhost';
+var cron = require('node-cron');
 const port = 3000;
 const cors = require('cors');
+const axios = require('axios')
 
 app.use(helmet());
 app.use(cors({
@@ -38,8 +40,19 @@ app.use("/shipper", shipperRoutes);
 app.use("/component", componentRouter);
 
 
+
+
+
 console.log("Starting... at port: " ,port);
 
-app.listen(port, hostname), () => {
+app.listen(port, hostname, () => {
     console.log(`Server is running on port ${port}`);
-};
+
+    // dùng để xóa data rác nên demo 15s
+    // hiện là phút thứ 55 sẽ chạy câu lệnh
+    // cron.schedule('* 55 * * * *',async () => {
+    //     const res = await axios.get("http://localhost:3000/admin/deleteJunkData")
+    //     console.log(res.data);
+    //     // http://localhost:3000/admin/deleteJunkData
+    // });
+});

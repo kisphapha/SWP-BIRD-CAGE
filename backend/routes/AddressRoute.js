@@ -7,4 +7,4 @@ router.post("/edit", AddressController.updateAddress);
 router.delete("/delete/:id", AddressController.deleteAddress);
 router.get("/:code", AddressController.getAddressOfUser);
 
-module.exports = router;
+module.exports = router; 
