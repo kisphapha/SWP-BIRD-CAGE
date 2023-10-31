@@ -30,6 +30,7 @@ import ReturnPolicy from './Pages/NaviFooter/Policy/ReturnPolicy'
 import SecurePolicy from './Pages/NaviFooter/Policy/SecurePolicy'
 import About from './Pages/NaviFooter/Information/About'
 import Contact from './Pages/NaviFooter/Information/Contact'
+import Components from './Pages/Admin/Component'
 function App() {
     return (
         <div>
@@ -87,6 +88,7 @@ function App() {
                     <Route element={<NewCoupon />} path="NewCoupon" />
                     <Route element={<NewProduct />} path="NewProduct" />
                     <Route element={<Products />} path="Products" />
+                    <Route element={<Components />} path="Components" />
                     <Route element={<Categories />} path="Categories" />
                     <Route element={<Collection />} path="Collection" />
                     <Route element={<Attribute />} path="Attribute" />
