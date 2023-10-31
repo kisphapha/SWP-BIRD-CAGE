@@ -157,7 +157,7 @@ export default function Products() {
                             <TableCell>
                                 <div>
                                     <div>Image</div>
-                                    {/* <div>Hình ảnh</div> */}
+                                    <div>.</div>
                                 </div>
                             </TableCell>
                             <TableCell>
