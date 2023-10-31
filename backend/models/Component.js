@@ -18,6 +18,9 @@ const getAllComponent = async (CateID) => {
     }
 }
 
+
+
+
 module.exports  = {
     getAllComponent
 }

@@ -14,11 +14,14 @@ AdminRouter.post("/deleteUser", AdminController.deleteUser);
 
 AdminRouter.get("/updateUser", AdminController.updateUser);
 
-AdminRouter.route("/loadUnseen/:id").get(AdminController.loadUnSeen);
+AdminRouter.get("/loadUnseen/:id", AdminController.loadUnSeen);
 
-AdminRouter.route("/changeToSeen").patch(AdminController.changetoSeen);
+AdminRouter.patch("/changeToSeen", AdminController.changetoSeen);
+
+AdminRouter.get("/getMonthLyIncome", AdminController.getMonthLyIncome);
 
 AdminRouter.route("/statistic").post(AdminController.orderStatisticByMonth)
 
+AdminRouter.get("/deleteJunkData", AdminController.deleteJunkData);
 
 module.exports = AdminRouter;
