@@ -1,4 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react'
+import * as React from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { UserContext } from '../../UserContext'
@@ -7,9 +8,31 @@ import Popup from 'reactjs-popup'
 import LoginCard from '../features/LoginCard'
 import logo from '../../../src/image/icons/logo.svg'
 import './Header.css'
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import { Button } from '@mui/material'
+import IconButton from '@mui/material/IconButton'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
 // import banner from '../../image/banner/banner.png'
 
 function Header() {
+    const options = [
+        'None',
+        'Atria',
+        'Callisto',
+        'Dione',
+        'Ganymede',
+        'Hangouts Call',
+        'Luna',
+        'Oberon',
+        'Phobos',
+        'Pyxis',
+        'Sedna',
+        'Titania',
+        'Triton',
+        'Umbriel'
+    ]
     const { user } = useContext(UserContext)
     const [email, setEmail] = useState('')
     const [keyword, setKeyword] = useState('')
@@ -36,7 +59,7 @@ function Header() {
         setIsTriggerClicked(true)
     }
 
-    const handleClick = () => {
+    const handleClickto = () => {
         navigate('/')
     }
 
@@ -49,6 +72,14 @@ function Header() {
          //a`); alert("You have been attacked")//
      }
 
+    const [anchorEl, setAnchorEl] = React.useState(null)
+    const open = Boolean(anchorEl)
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget)
+    }
+    const handleClose = () => {
+        setAnchorEl(null)
+    }
     return (
         <div id="header">
             <section className="header-top">
@@ -82,6 +113,7 @@ function Header() {
                         <Link to="/user/profile" className="avatar">
                             <img src={user.Picture} alt="avatar" />
                         </Link>
+
                         <ul className="user-info-list">
                             {JSON.parse(sessionStorage.loginedUser).Role == 'Admin' ? (
                                 <Link to="/admin" className="user-info-suboptions">
@@ -105,8 +137,8 @@ function Header() {
             </section>
 
             <section className="header-bottom">
-                <div className="logo" onClick={handleClick}>
-                    <img src={logo} style={{height:"60px", width: "60px"}}/>
+                <div className="logo" onClick={handleClickto}>
+                    <img src={logo} style={{ height: '60px', width: '60px' }} />
                     BICA
                 </div>
                 <form className="search-container">
@@ -115,7 +147,36 @@ function Header() {
                         🔍︎
                     </button>
                 </form>
-                <div> </div>
+                <div className="text-white">
+                    <IconButton
+                        aria-label="more"
+                        id="long-button"
+                        aria-controls={open ? 'long-menu' : undefined}
+                        aria-expanded={open ? 'true' : undefined}
+                        aria-haspopup="true"
+                        onClick={handleClick}
+                    >
+                        <div className="text-white">
+                            <NotificationsNoneIcon fontSize="large" />
+                        </div>
+                        {/* <MoreVertIcon /> */}
+                    </IconButton>
+                    <Menu
+                        id="long-menu"
+                        MenuListProps={{
+                            'aria-labelledby': 'long-button'
+                        }}
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                    >
+                        {options.map((option) => (
+                            <MenuItem key={option} selected={option === 'Pyxis'} onClick={handleClose}>
+                                {option}
+                            </MenuItem>
+                        ))}
+                    </Menu>
+                </div>
             </section>
         </div>
     )

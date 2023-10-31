@@ -67,10 +67,26 @@ const updateUser = async (name, email, phone, dateOfBirth) => {
     }
 };
 
+const getPointForUser = async(id, point) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        await poolConnection.request()
+        .input('id', id)
+        .input('point', point)
+        .query(`
+            UPDATE dbo.[User]
+            SET Point = Point + @point 
+            WHERE Id = @id
+        `)
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
 
 module.exports = {
     getAllUser,
     getUserByEmail,
     newUser,
     updateUser,
+    getPointForUser
 };

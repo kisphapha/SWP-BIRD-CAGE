@@ -12,6 +12,7 @@ import './style.css'
 
 export default function Cart() {
     const [cartData, setCartData] = useState({ products: [] })
+    const [point, setPoint] = useState(0)
     const [loading, setLoading] = useState(true)
     const [paymentMethod, setPaymentMethod] = useState('COD') // Default to 'onDelivery'
     const navigate = useNavigate()
@@ -22,10 +23,12 @@ export default function Cart() {
         }
         setLoading(false)
     }
+ 
 
     useEffect(() => {
         loadCartData()
     }, [])
+    
 
     const handleDecrement = (productId) => {
         const updatedCart = { ...cartData }
@@ -62,7 +65,11 @@ export default function Cart() {
                     TotalAmount: calculateTotalPrice(),
                     PaymentMethod: paymentMethod,
                     Status: 'UNPAID',
-                    Items: JSON.parse(sessionStorage.cart).products
+                    Items: JSON.parse(sessionStorage.cart).products,
+                })
+                await axios.post('http://localhost:3000/users/updatePoint', {
+                    id: 17,
+                    point: 1000
                 })
                 console.log(res.data.orderid)
                 if (paymentMethod == 'vnpay') {
@@ -111,6 +118,10 @@ export default function Cart() {
         })
         return bonus
     }
+
+    useEffect(() =>{
+        setPoint(calculateBonus())
+    },[calculateBonus])
 
     const removeProductFromCart = (productId) => {
         const updatedCart = { ...cartData }

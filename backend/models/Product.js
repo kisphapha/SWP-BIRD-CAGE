@@ -321,7 +321,9 @@ const paging = async (page, cate) => {
             WHERE Category = @cate AND material != 'Custom' AND p.isDeleted = 0
         `;
 
-        const linesResult = await poolConnection.request().input('cate',cate).query(linesQuery);
+        const linesResult = await poolConnection.request()
+        .input('cate', cate)
+        .query(linesQuery);
         json.lines = linesResult.recordset[0];
         return json;
     } catch (e) {

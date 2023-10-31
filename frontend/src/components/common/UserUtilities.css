@@ -38,37 +38,37 @@
     padding-left: 30%;
 }
 
-.ult-txt:hover{
+.ult-txt:hover {
     color: rgb(22, 234, 217);
 }
 
-.user-utilities > .utilities> .active {
+.user-utilities > .utilities > .active {
     font-weight: bold;
     color: rgb(22, 234, 217);
     border-radius: 4px 0px 0px 4px;
     background-color: rgb(255, 255, 255);
 }
 
-.user-utilities > .utilities > .active{
+.user-utilities > .utilities > .active {
     position: relative;
 }
 
-.user-utilities >.utilities >.active::before,
-.user-utilities >.utilities >.active::after {
-    content: " ";
+.user-utilities > .utilities > .active::before,
+.user-utilities > .utilities > .active::after {
+    content: ' ';
     position: absolute;
-    width: 10px ;
+    width: 10px;
     height: 20px;
     right: 0;
 }
 
-.user-utilities >.utilities >.active::before{
+.user-utilities > .utilities > .active::before {
     top: -20px;
     border-radius: 0 0 4px 0;
     box-shadow: 0px 10px rgb(255, 255, 255);
 }
 
-.user-utilities >.utilities >.active::after {
+.user-utilities > .utilities > .active::after {
     border-radius: 0 4px 0 0;
     box-shadow: 0px -10px rgb(255, 255, 255);
 }

@@ -12,6 +12,7 @@
 }
 
 #header > .header-top > .service {
+    padding-left: 10%;
     font: bold;
     color: white;
     display: flex;
@@ -86,14 +87,15 @@
 }
 
 #header > .header-top > .user-info {
-    width: 15%;
+    width: 3%;
     z-index: 100;
     right: 0%;
     position: absolute;
     display: inline-block;
-    margin-right: 2%;
+    margin-right: 10%;
     margin-top: 1%;
     color: white;
+    padding-right: ;
 }
 
 #header > .header-top > .user-info > .avatar > img {
@@ -106,6 +108,7 @@
 }
 
 #header > .header-top > .user-info > .user-info-list {
+    width: 200px;
     display: none;
     position: absolute;
     top: 100%;
@@ -114,7 +117,7 @@
     flex-direction: column;
     padding: 0px;
     background-color: #ffffff;
-    width: 100%;
+    /* width: 100%; */
     border-radius: 10px;
     color: black;
 }
@@ -157,8 +160,8 @@
 #header > .header-bottom {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    gap: 20px;
+    justify-content: center;
+    gap: 100px;
     align-items: center;
     width: 100%;
     height: 60px;
@@ -175,7 +178,7 @@
 
 #header > .header-bottom > .search-container {
     display: flex;
-    justify-content: center;
+    /* justify-content: center; */
     align-items: center;
     height: 100%;
     padding: 10px 0;

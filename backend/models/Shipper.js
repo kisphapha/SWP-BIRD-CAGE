@@ -10,7 +10,7 @@ const changeShippingState = async(id, status) => {
         .input('id', sql.Int, id)
         .query(`
           UPDATE dbo.Orders
-          SET Status_Shipping = @Status_Shipping
+          SET Status_Shipping = @Status_Shipping, View_Status = 0
           WHERE id = @id;
         `);
       
