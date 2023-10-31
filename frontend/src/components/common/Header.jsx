@@ -71,10 +71,9 @@ function Header() {
         setKeyword(event.target.value)
     }
 
-     const handleSearch = () => {
-         if (keyword.trim() != '') navigate(`/filter/2/${keyword}`)
-         //a`); alert("You have been attacked")//
-     }
+    const handleSearch = () => {
+        if (keyword.trim() != '') navigate(`/filter/2/${keyword}`)
+    }
 
     const [anchorEl, setAnchorEl] = React.useState(null)
     const open = Boolean(anchorEl)
@@ -86,14 +85,20 @@ function Header() {
     }
 
     const handleSeen = async (id) => {
-        // await axios.patch(`http://localhost:3000/order/changetoSeen`, {
-        //     id: id,
-        //     userid: JSON.parse(sessionStorage.loginedUser).Id
-        // });
-        // const orders = await fetchOrders();
-        // setUnseenMessage(orders.filter(o => !o.View_Status));
-        // setSeenMessage(orders.filter(o => o.View_Status));
+        await axios.patch(`http://localhost:3000/order/changetoSeen`, {
+            id: id,
+            userid: JSON.parse(sessionStorage.loginedUser).Id,
+        });
+    
+        setUnseenMessage((unseen) => unseen.filter((notification) => notification.Id !== id));
+    
+        const foundNotification = unseenMessage.find((notification) => notification.Id === id);
+        if (foundNotification) {
+            setSeenMessage((seen) => [...seen, foundNotification]);
+        }
     }
+
+
     return (
         <div id="header">
             <section className="header-top">
@@ -174,7 +179,6 @@ function Header() {
                                 <NotificationsNoneIcon fontSize="large" />
                             </Badge>
                         </div>
-                        {/* <MoreVertIcon /> */}
                     </IconButton>
                     <Menu
                         id="long-menu"
@@ -186,7 +190,7 @@ function Header() {
                         onClose={handleClose}
                     >
                         {unseenMessage.map((option) => (
-                            <MenuItem key={option.Id} onClick={handleSeen(option.Id)} sx={{ backgroundColor: 'white' }}>
+                            <MenuItem key={option.Id} onClick={() => handleSeen(option.Id)} sx={{ backgroundColor: 'white' }}>
                                 <div className="flex">
                                     <div className="w-12 ">
                                         <NotificationsActiveIcon></NotificationsActiveIcon>
@@ -200,7 +204,7 @@ function Header() {
                             </MenuItem>
                         ))}
                         {seenMessage.map((option) => (
-                            <MenuItem key={option} sx={{ backgroundColor: '#e0e0e0' }}>
+                            <MenuItem key={option.Id} sx={{ backgroundColor: '#e0e0e0' }}>
                                 <div className="flex">
                                     <div className="w-12 ">{/* <NotificationsActiveIcon></NotificationsActiveIcon> */}</div>
                                     <div>

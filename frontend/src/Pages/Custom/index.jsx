@@ -11,11 +11,8 @@ export default function Custom() {
     const [categories, setCategories] = useState([]);
     const [components, setComponents] = useState([]);
     const [tmpName, setTempName] = useState('');
-    const [tmpMaterial, setMaterial] = useState('');
-    const [tmpCate, setCate] = useState('');
     const [tmpDescription, setTempDescription] = useState('');
     const [selectedImage, setSelectedImage] = useState(null);
-    const [componentType, setComponentType] = useState('');
     const [selectedComponent, setSelectedComponent] = useState(null);
 
     const handleCategoryChange = (event) => {
@@ -26,16 +23,8 @@ export default function Custom() {
         setTempName(event.target.value);
     };
 
-    const handleMaterialChange = (event) => {
-        setMaterial(event.target.value);
-    };
-
     const handleDescriptionChange = (event) => {
         setTempDescription(event.target.value);
-    };
-
-    const handleComponentTypeChange = (event) => {
-        setComponentType(event.target.value);
     };
 
     const handleSelectedComponentChange = (event) => {
@@ -107,7 +96,6 @@ export default function Custom() {
                             </div>
                             <TextField
                                 fullWidth
-                                select
                                 label="Móc"
                                 helperText="Chọn móc"
                                 variant="filled"
