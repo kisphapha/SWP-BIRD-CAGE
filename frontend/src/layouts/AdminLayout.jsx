@@ -3,8 +3,8 @@ import { Link, Outlet } from 'react-router-dom'
 import TabAdmin from '../components/features/TabAdmin'
 
 export default function AdminLayout() {
-    try {
-        if (JSON.parse(sessionStorage.loginedUser).Role == 'Admin') {
+    try {//JSON.parse(sessionStorage.loginedUser).Role == 'Admin'
+        if (true) {
             return (
                 <div className="flex bg-gray-50" style={{ paddingLeft: '256px' }}>
                     <div>

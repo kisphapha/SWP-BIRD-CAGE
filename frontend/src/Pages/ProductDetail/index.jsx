@@ -1,16 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react'
-import axios from 'axios'
 import { useParams } from 'react-router-dom'
-import './styles.css'
-import Popup from 'reactjs-popup'
-import 'reactjs-popup/dist/index.css'
 import { UserContext, UserProvider } from '../../UserContext'
+import { Button, TextField, Rating, Avatar } from '@mui/material'
+import axios from 'axios'
+import Popup from 'reactjs-popup'
 import Header from '../../components/common/Header'
 import Navbar from '../../components/common/Navbar'
 import CategoryNav from '../../components/features/CategoryNav'
-import { useNavigate } from 'react-router-dom'
-import { Button, TextField, Rating, Avatar } from '@mui/material'
 import AddressPopup from '../../components/features/AddressPopup/AddressPopup'
+import './styles.css'
+import 'reactjs-popup/dist/index.css'
 
 export default function ProductDetails() {
     const { user } = useContext(UserContext)
@@ -200,13 +199,14 @@ export default function ProductDetails() {
                             {(close) => (
                                 <div className="popup-order">
                                     {/* <AddressPopup user={user} close={close} /> */}
+                                    <h1>Thông tin người nhận</h1>
                                     <div className="adr-container">
                                         <TextField
                                             select
                                             required
                                             fullWidth
                                             label="Chọn địa chỉ của bạn"
-                                            className="user-address"
+                                            className="user-input"
                                             id="adrress"
                                             size="small"
                                             SelectProps={{
@@ -223,20 +223,73 @@ export default function ProductDetails() {
                                                 </option>
                                             ))}
                                         </TextField>
+                                        <div className="add-address-btn">
+                                            <Popup
+                                                trigger={<Button variant="contained">Thêm</Button>}
+                                                position="right center"
+                                                modal
+                                                >
+                                                {(close) => (
+                                                    <div className="popup-address">
+                                                        <h1>Thêm địa chỉ</h1>
+                                                        <AddressPopup user={user} fetchAddresses={fetchAddresses} close={close} />
+                                                    </div>
+                                                )}
+                                            </Popup>
+                                        </div>
                                     </div>
-                                    <div className="add-address-btn">
-                                        <Popup
-                                            trigger={<Button variant="contained">Thêm</Button>}
-                                            position="right center"
-                                            modal
-                                            >
-                                            {(close) => (
-                                                <div className="popup-address">
-                                                    <h1>Thêm địa chỉ</h1>
-                                                    <AddressPopup user={user} fetchAddresses={fetchAddresses} close={close} />
-                                                </div>
-                                            )}
-                                        </Popup>
+                                    <div className="phone-container">
+                                        <TextField
+                                        type="number"
+                                        required
+                                        fullWidth
+                                        label="Số điện thoại"
+                                        className="user-input"
+                                        id="phoneNumber"
+                                        size="small"
+                                        ></TextField>
+                                    </div>
+                                    <div className="curr-item-container">
+                                        <table>
+                                            <tr>
+                                                <th>Ảnh</th>
+                                                <th>Tên sản phẩm</th>
+                                                <th>Giá / Sản phẩm</th>
+                                                <th>Số lượng</th>
+                                                <th>Tổng cộng</th>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <img className="h-full w-16 rounded-md" src={product.Url} alt={product.name} />
+                                                </td>
+                                                <td>
+                                                    <div>{product.Name}</div>
+                                                </td>
+                                                <td className="text-center">
+                                                    <div>{product.Price.toLocaleString('vi', { style: 'currency', currency: 'VND' })}</div>
+                                                </td>
+                                                <td  className="text-center">
+                                                    <div>{quantity}</div>
+                                                </td>
+                                                <td>
+                                                    <div>
+                                                        {(product.Price*quantity).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div className="buttons">
+                                    {/* <button className="decision" onClick={close}></button> */}
+                                    <Button variant="contained" onClick={close}>
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        variant="contained"
+                                        onClick={close}
+                                    >
+                                        Ok
+                                    </Button>
                                     </div>
                                 </div>
                             )}
