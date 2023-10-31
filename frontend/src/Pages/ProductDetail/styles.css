@@ -21,6 +21,8 @@
 }
 #page-product > .product-container > .product > .img-container > .img-main {
     align-content: center;
+}
+#page-product > .product-container > .product > .img-container > .img-main > .image {
     border: 1px solid;
 }
 #page-product > .product-container > .product > .img-container > .img-more {

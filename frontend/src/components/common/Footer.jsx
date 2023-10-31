@@ -11,9 +11,6 @@ import { useNavigate } from 'react-router-dom'
 
 export default function Footer() {
     const navigate = useNavigate()
-    function handleSeeMore() {
-        navigate('/filter/' + 1 + '/' + 'L2T')
-    }
 
     return (
         <div id="footer">
@@ -57,20 +54,20 @@ export default function Footer() {
                     <li
                         className="detail"
                         onClick={() => {
-                            navigate('/filter/' + 1 + '/' + 'L2T')
-                            window.location.reload()
-                        }}
-                    >
-                        Lồng 2 tầng
-                    </li>
-                    <li
-                        className="detail"
-                        onClick={() => {
                             navigate('/filter/' + 1 + '/' + 'LK')
                             window.location.reload()
                         }}
                     >
                         Lồng Đặc Biệt
+                    </li>
+                    <li
+                        className="detail"
+                        onClick={() => {
+                            navigate('/filter/' + 1 + '/' + 'LS')
+                            window.location.reload()
+                        }}
+                    >
+                        Lồng Kiểu Singapore
                     </li>
                     <li
                         className="detail"
@@ -88,7 +85,7 @@ export default function Footer() {
                             window.location.reload()
                         }}
                     >
-                        Lồng Vuông Cáp Quang
+                        Lồng Vuông
                     </li>
                     <li
                         className="detail"
@@ -104,9 +101,11 @@ export default function Footer() {
             <div className="container">
                 <div className="title">LIÊN HỆ VỚI CHÚNG TÔI</div>
                 <ul className="content">
-                    <li className="detail">Hotline: 037.251.3251</li>
-                    <li className="detail">Email: cskhlongchim@gmail.com</li>
-                    <li className="detail">Facebook: facebook.com/longchim.vn</li>
+                    <li className="detail">Hotline: 0935039353</li>
+                    <li className="detail">Email: longchimbica@gmail.com</li>
+                    <li className="detail">
+                        <a href="https://facebook.com/quangphat.nguy" target="_blank" rel="noreferrer noopener">Facebook: facebook.com/quangphat.nguy</a>
+                    </li>
                 </ul>
             </div>
             <div className="container">
@@ -114,7 +113,7 @@ export default function Footer() {
                 <img src={payment} alt="" />
                 <div className="title">KẾT NỐI VỚI CHÚNG TÔI</div>
                 <div>
-                    <FacebookIcon />
+                    <a href="https://facebook.com/quangphat.nguy" target="_blank" rel="noreferrer noopener"><FacebookIcon /></a>
                     <InstagramIcon />
                     <TwitterIcon />
                     <YouTubeIcon />

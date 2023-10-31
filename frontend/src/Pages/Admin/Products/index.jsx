@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/jsx-key */
-import { Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material'
+import { Button, ButtonBase, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import MenuItem from '@mui/material/MenuItem'
 import Axios from 'axios'
@@ -97,8 +97,8 @@ export default function Products() {
     }
 
     useEffect(() => {
-        setPageList(Array.from({ length: maxPage }));
-    }, [maxPage]);
+        setPageList(Array.from({ length: maxPage }))
+    }, [maxPage])
 
     useEffect(() => {
         handleFilter()
@@ -175,12 +175,13 @@ export default function Products() {
                             </TextField>
                         </td>
                         <td className="w-1/12 text-end pr-2">
-                            <Button variant="outlined" onClick={() =>
-                                {
-                                setPage(1)
-                                handleFilter()
-                            }
-                            }>
+                            <Button
+                                variant="outlined"
+                                onClick={() => {
+                                    setPage(1)
+                                    handleFilter()
+                                }}
+                            >
                                 Filter
                             </Button>
                         </td>
@@ -215,13 +216,17 @@ export default function Products() {
                                             closeOnEscape={false}
                                         >
                                             {(close) => (
-                                                <>
-                                                    <button className="px-5" onClick={close}>
-                                                        X
-                                                    </button>
-                                                    <EditProductForm productId={product.Id} close={close}
-                                                        handleFilter={handleFilter} />
-                                                </>
+                                                <div>
+                                                    <div className="flex place-content-between ">
+                                                        <div className="m-4 font-bold text-lg">Chỉnh sửa sản phẩm </div>
+                                                        <div>
+                                                            <Button variant="outlined" className="" onClick={close}>
+                                                                X
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                    <EditProductForm productId={product.Id} close={close} handleFilter={handleFilter} />
+                                                </div>
                                             )}
                                         </Popup>
                                         <button onClick={() => handleDelete(product.Id)}>
@@ -238,16 +243,13 @@ export default function Products() {
                 {pageList.map((pg, index) => (
                     <td key={index}>
                         <div className="items-center">
-                            <Button
-                                variant={index + 1 === page ? "contained" : "outlined"}
-                                onClick={() => handleSwitchPage(index + 1)}
-                            >
+                            <Button variant={index + 1 === page ? 'contained' : 'outlined'} onClick={() => handleSwitchPage(index + 1)}>
                                 {index + 1}
                             </Button>
                         </div>
                     </td>
                 ))}
-            </div>          
+            </div>
         </div>
     )
 }
