@@ -7,8 +7,6 @@ import Header from '../../components/common/Header'
 import Navbar from '../../components/common/Navbar'
 import CategoryNav from '../../components/features/CategoryNav'
 import { useNavigate } from 'react-router-dom'
-import ArrowBack from '@mui/icons-material/ArrowBack';
-import ArrowForward from '@mui/icons-material/ArrowForward';
 
 import { Button, TextField, Rating, Avatar } from '@mui/material'
 
@@ -87,12 +85,12 @@ export default function ProductDetails() {
         const existingProduct = cart.products.find((product) => product.id === productId)
 
         if (existingProduct) {
-            existingProduct.quantity = (parseInt(existingProduct.quantity) + parseInt(quantity)).toString()
+            existingProduct.quantity = (parseInt(existingProduct.quantity) + parseInt(quantity))
         } else {
             cart.products.push({
                 id: productId,
                 name: product.Name,
-                quantity: quantity.toString(),
+                quantity: quantity,
                 url: product.Url,
                 price: (product.Price * (100 - product.discount)) / 100
             })
@@ -180,8 +178,7 @@ export default function ProductDetails() {
                                 </button>
                             </div>
                             <div className="add-cart" onClick={addToCart}>
-                                {' '}
-                                Thêm vào giỏ hàng{' '}
+                                Thêm vào giỏ hàng
                             </div>
                         </div>
 

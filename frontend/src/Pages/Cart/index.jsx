@@ -31,10 +31,13 @@ export default function Cart() {
         const updatedCart = { ...cartData }
         const productIndex = updatedCart.products.findIndex((product) => product.id === productId)
 
-        if (updatedCart.products[productIndex].quantity > 1) {
+        if (updatedCart.products[productIndex].quantity >= 1) {
             updatedCart.products[productIndex].quantity -= 1
             sessionStorage.setItem('cart', JSON.stringify(updatedCart))
             setCartData(updatedCart)
+        }
+        if (updatedCart.products[productIndex].quantity == 0) {
+            removeProductFromCart(productId)
         }
     }
 
@@ -101,6 +104,7 @@ export default function Cart() {
         })
         return total
     }
+
     const calculateBonus = () => {
         let bonus = 0
 
@@ -122,6 +126,12 @@ export default function Cart() {
             console.log(sessionStorage.getItem('cart'))
             setCartData(updatedCart)
         }
+    }
+
+    const clearCart = () => {
+        const updatedCart = {...cartData, products: []}
+        sessionStorage.setItem('cart', JSON.stringify(updatedCart))
+        setCartData(updatedCart)
     }
 
     return (
@@ -247,8 +257,10 @@ export default function Cart() {
                         </tr>
                     </table>
                     <div className="flex justify-end gap-4 mx-4 my-2 ">
-                        <Button variant="contained">Tiếp tục mua hàng</Button>
-                        <Button variant="contained">Xóa tất cả</Button>
+                        <Button onClick={() => navigate(`/`)} variant="contained">
+                            Tiếp tục mua hàng
+                        </Button>
+                        <Button onClick={clearCart} variant="contained">Xóa tất cả</Button>
                     </div>
                 </div>
             )}

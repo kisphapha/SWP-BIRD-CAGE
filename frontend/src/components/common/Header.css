@@ -22,28 +22,6 @@
     justify-content: space-between;
 }
 
-#header > .header-top > .service > .contact > .intro {
-    animation: rainbow 1s linear infinite;
-}
-
-@keyframes rainbow {
-    0% {
-        color: red;
-    }
-    25% {
-        color: orange;
-    }
-    50% {
-        color: yellow;
-    }
-    75% {
-        color: green;
-    }
-    100% {
-        color: blue;
-    }
-}
-
 #header > .header-top > .login {
     border: none;
     outline: none;

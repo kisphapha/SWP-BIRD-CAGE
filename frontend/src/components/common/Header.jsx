@@ -54,9 +54,8 @@ function Header() {
                 <div className="service">
                     <div className="contact">
                         <div>
-                            Chăm sóc khách hàng: <Link to="/user/contact">0334567856</Link>
+                            Chăm sóc khách hàng: <Link to="/user/contact">0935039353</Link>
                         </div>
-                        {/* <div className="intro">Shop Bán Lồng Chim Đẹp Giá Rẻ & Cao Cấp</div> */}
                     </div>
                 </div>
                 {user == null ? (
