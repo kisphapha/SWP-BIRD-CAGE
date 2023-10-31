@@ -83,7 +83,7 @@ export default function ProductDetails() {
         const existingProduct = cart.products.find((product) => product.id === productId)
 
         if (existingProduct) {
-            existingProduct.quantity = parseInt(existingProduct.quantity) + parseInt(quantity)
+            existingProduct.quantity = existingProduct.quantity + quantity
         } else {
             cart.products.push({
                 id: productId,
@@ -123,7 +123,7 @@ export default function ProductDetails() {
                 <div className="product">
                     <div className="img-container">
                         <div className="img-main">
-                            <img src={focusUrl} />
+                            <img className="image" src={focusUrl} />
                         </div>
                         <div className="img-more ">
                             {imgList.map((image) => (
