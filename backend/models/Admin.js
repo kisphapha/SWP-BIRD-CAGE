@@ -131,10 +131,10 @@ const getMonthLyIncome = async() => {
     try {
        let poolConnection= await sql.connect(config);
        const result = await poolConnection.request().query(`
-        SELECT  DATEPART(MONTH, PaymentDate) AS Month, SUM(TotalAmount) AS revenue
-        FROM dbo.Orders
-        WHERE Status_Paid = 'Paid' 
-        GROUP BY PaymentDate
+       SELECT DISTINCT DATEPART(MONTH, PaymentDate) AS Month, SUM(TotalAmount) AS revenue
+       FROM dbo.Orders
+       WHERE Status_Paid = 'Paid' 
+       GROUP BY  DATEPART(MONTH, PaymentDate)
        `) 
         return result.recordset;
     } catch (error) {

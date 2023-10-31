@@ -23,6 +23,7 @@
     "mssql": "^10.0.1",
     "node-cron": "^3.0.2",
     "request": "^2.88.2",
+    "swagger-ui-express": "^5.0.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {

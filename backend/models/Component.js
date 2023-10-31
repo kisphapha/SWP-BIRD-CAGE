@@ -13,6 +13,9 @@ const getAllComponent = async() => {
     }
 }
 
+
+
+
 module.exports  = {
     getAllComponent
 }
