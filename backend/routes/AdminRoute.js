@@ -18,5 +18,7 @@ AdminRouter.route("/loadUnseen/:id").get(AdminController.loadUnSeen);
 
 AdminRouter.route("/changeToSeen").patch(AdminController.changetoSeen);
 
+AdminRouter.route("/statistic").post(AdminController.orderStatisticByMonth)
+
 
 module.exports = AdminRouter;

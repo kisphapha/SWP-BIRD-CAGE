@@ -143,7 +143,7 @@ export default function Order() {
                                             <MenuItem value={'Đang giao'}>Đang giao</MenuItem>
                                             <MenuItem value={'Đã giao'}>Đã giao</MenuItem>
                                         </TextField> */}
-                                            <Stepper activeStep={getActiveStep(cards.Status_Shipping)}>
+                                            <Stepper activeStep={getActiveStep(order.Status_Shipping)}>
                                                 {steps.map((label, index) => {
                                                     const stepProps = {}
                                                     const labelProps = {}
@@ -197,12 +197,6 @@ export default function Order() {
                                         <div className="flex gap-4">
                                             <Button variant="outlined" onClick={close}>
                                                 Duyệt
-                                            </Button>
-                                            <Button variant="outlined" onClick={close}>
-                                                xong
-                                            </Button>
-                                            <Button variant="outlined" onClick={close} disabled>
-                                                Giao hàng
                                             </Button>
                                         </div>
                                         <div>
