@@ -134,10 +134,12 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
 const changeStatus_Paid = async (id) => {
     try {
         let poolConnection = await sql.connect(config);
-        const result = await poolConnection.request().query(
+        const result = await poolConnection.request()
+        .input('id', id)
+        .query(
             ` UPDATE dbo.Orders
               SET Status_Paid = 'Paid', View_Status = 0
-              WHERE id = ${id}
+              WHERE id = @id
               `
         )
     } catch (e) {
@@ -148,12 +150,21 @@ const changeStatus_Paid = async (id) => {
 const getAllOrderItemByOrderID = async (id) => {
     try {
         let poolConnection = await sql.connect(config);
-        const result = await poolConnection.request().query(`
-           SELECT p.Id,p.Name, oi.CreatedAt, oi.Price, oi.Quantity, i.Url, o.Status, c.name AS Shape, p.discount
-         FROM OrderItem oi, Orders o, Products p, Image i, Category c
-         WHERE o.Id = ${id} AND o.Id = oi.OrdersId AND oi.ProductId = p.id AND i.ProductId = p.Id AND p.Category = c.Id
-
-        `)
+        const query = `
+            SELECT p.Id, p.Name, oi.CreatedAt, oi.Price, oi.Quantity, i.Url, o.Status, c.name AS Shape, p.discount
+            FROM OrderItem oi
+            INNER JOIN Orders o ON o.Id = oi.OrdersId
+            INNER JOIN Products p ON oi.ProductId = p.id
+            INNER JOIN Category c ON p.Category = c.Id
+            JOIN (
+                SELECT Image.*, ROW_NUMBER() OVER (PARTITION BY ProductId ORDER BY Id) AS RowNum
+                FROM Image
+            ) i ON i.ProductId = p.id AND i.RowNum = 1
+            WHERE o.Id = @OrderId;
+        `;
+        const result = await poolConnection.request()
+            .input('OrderId', sql.Int, id)
+            .query(query);
         return result.recordset;
     } catch (error) {
         console.log("error: ", error);

@@ -198,6 +198,10 @@ module.exports = {
     updateUser,
     newUser,
     deleteUser,
-    loadUnSeen
+    loadUnSeen,
+    deleteJunkData,
+    orderStatisticByMonth,
+    getMonthLyIncome,
+    changetoSeen
 };
 
