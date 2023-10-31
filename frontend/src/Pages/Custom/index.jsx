@@ -126,22 +126,6 @@ export default function Custom() {
                             </TextField>
                         </div>
                         <div className="w-2/5 mr-40 ">
-                            <div className=" my-4 mt-12">
-                                <TextField
-                                    fullWidth
-                                    select
-                                    label="Bình nước"
-                                    helperText="Chọn bình nước"
-                                    variant="filled"
-                                    onChange={handleCategoryChange}
-                                >
-                                    {categories.map((option) => (
-                                        <MenuItem key={option.id} value={option.id}>
-                                            {option.name}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
-                            </div>
                             <div className=" my-4 w-full">
                                 <TextField fullWidth select label="Size" helperText="Kích thước " variant="filled" onChange={handleCategoryChange}>
                                     {categories.map((option) => (
@@ -150,39 +134,32 @@ export default function Custom() {
                                         </MenuItem>
                                     ))}
                                 </TextField>
-                                <div className="flex w-full">
-                                    <div className="w-20 h-20">
-                                        <img src="https://mengjinblog.files.wordpress.com/2021/06/17.jpg" alt="" />
-                                    </div>
-                                    <div className="w-full ml-4">
-                                        <div>Mô tả : ádasdasdasdsadasdsadasdas</div>
-                                        <div className="flex place-content-between">
-                                            <div>Thời gian chế tạo: </div>
-                                            <div> Giá tiền: 3000</div>
-                                        </div>
-                                    </div>
-                                </div>
+                                {/*<div className="flex w-full">*/}
+                                {/*    <div className="w-20 h-20">*/}
+                                {/*        <img src="https://mengjinblog.files.wordpress.com/2021/06/17.jpg" alt="" />*/}
+                                {/*    </div>*/}
+                                {/*    <div className="w-full ml-4">*/}
+                                {/*        <div>Mô tả : ádasdasdasdsadasdsadasdas</div>*/}
+                                {/*        <div className="flex place-content-between">*/}
+                                {/*            <div>Thời gian chế tạo: </div>*/}
+                                {/*            <div> Giá tiền: 3000</div>*/}
+                                {/*        </div>*/}
+                                {/*    </div>*/}
+                                {/*</div>*/}
                             </div>
                             <div className=" my-4 w-full">
-                                <TextField fullWidth select label="Size" helperText="Kích thước " variant="filled" onChange={handleCategoryChange}>
-                                    {categories.map((option) => (
-                                        <MenuItem key={option.id} value={option.id}>
-                                            {option.name}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
                                 <div className="flex w-full">
                                     {/* <div className="w-20 h-20">
                                         <img src="https://mengjinblog.files.wordpress.com/2021/06/17.jpg" alt="" />
                                     </div> */}
-                                    <div className="w-full ml-4">
-                                        <div>Mô tả :Phù hợp chim ........</div>
-                                        <div className="flex place-content-between">
-                                            <div>40x60x80 </div>
-                                            <div>Thời gian chế tạo: </div>
-                                            <div> Giá tiền: 3000</div>
-                                        </div>
-                                    </div>
+                                    {/*<div className="w-full ml-4">*/}
+                                    {/*    <div>Mô tả :Phù hợp chim ........</div>*/}
+                                    {/*    <div className="flex place-content-between">*/}
+                                    {/*        <div>40x60x80 </div>*/}
+                                    {/*        <div>Thời gian chế tạo: </div>*/}
+                                    {/*        <div> Giá tiền: 3000</div>*/}
+                                    {/*    </div>*/}
+                                    {/*</div>*/}
                                 </div>
                             </div>
                             <TextField
