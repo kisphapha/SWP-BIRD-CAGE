@@ -225,15 +225,7 @@ export default function Cart() {
 
                             <div className=" font-bold ">
                                 <div className="flex justify-end gap-4 my-2 ">
-                                    <Popup
-                                        trigger={
-                                            <div className="w-fit">
-                                                <Button variant="contained">Thanh toán</Button>
-                                            </div>
-                                        }
-                                        position="right center"
-                                        modal
-                                    >
+                                    <Popup trigger={<Button variant="contained">Thanh toán</Button>} position="right center" modal>
                                         {(close) => (
                                             <div>
                                                 <h2>Chi tiết thanh toán</h2>

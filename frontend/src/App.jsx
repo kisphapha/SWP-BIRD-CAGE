@@ -37,14 +37,7 @@ function App() {
                 <Route element={<UserLayout />} path="/">
                     <Route element={<Home />} path="" />
                     <Route element={<LoginCard />} path="/login" />
-                    <Route
-                        element={
-                            <UserProvider>
-                                <ProductDetails />
-                            </UserProvider>
-                        }
-                        path="/products/:productId"
-                    />
+                    <Route element={<ProductDetails />} path="/products/:productId" />
                     <Route element={<About />} path="/About" />
                     <Route element={<Contact />} path="/Contact" />
                     <Route element={<GeneralPolicy />} path="/GeneralPolicy" />
@@ -79,7 +72,7 @@ function App() {
                     <Route element={<FilteredPage />} path="/filter/:filter/:keyword" />
                     <Route element={<Custom />} path="/Custom" />
                     <Route element={<VNPaySuccess />} path="/test" />
-                    <Route element={<Custom />} path="/custom" />
+                    <Route element={<Custom /> } path="/custom"/>
                 </Route>
 
                 <Route element={<AdminLayout />} path="/admin">
@@ -87,7 +80,6 @@ function App() {
                     <Route element={<NewCoupon />} path="NewCoupon" />
                     <Route element={<NewProduct />} path="NewProduct" />
                     <Route element={<Products />} path="Products" />
-                    <Route element={<Products />} path="Components" />
                     <Route element={<Categories />} path="Categories" />
                     <Route element={<Collection />} path="Collection" />
                     <Route element={<Attribute />} path="Attribute" />
