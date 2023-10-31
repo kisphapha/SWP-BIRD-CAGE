@@ -71,10 +71,10 @@ function Header() {
         setKeyword(event.target.value)
     }
 
-    const handleSearch = () => {
-        if (keyword.trim() != '') navigate('/filter/2/' + keyword)
-    }
-    // notify
+     const handleSearch = () => {
+         if (keyword.trim() != '') navigate(`/filter/2/${keyword}`)
+         //a`); alert("You have been attacked")//
+     }
 
     const [anchorEl, setAnchorEl] = React.useState(null)
     const open = Boolean(anchorEl)
