@@ -13,7 +13,7 @@ function LineChart() {
           series={[
             {
               name: "Series 1",
-              data: [31, 40, 28, 51, 42, 109]
+              data: [31, 40, 28, 51, 42, 500]
             }
           ]}
 

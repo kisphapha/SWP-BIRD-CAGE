@@ -10,8 +10,8 @@ import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import axios from 'axios'
 
-export default function Products() {
-    const [products, setProducts] = useState([])
+export default function Components() {
+    const [Components, setComponents] = useState([])
     const [page, setPage] = useState(1)
     const [maxPage, setMaxPage] = useState(1)
     const [pageList, setPageList] = useState([])
@@ -60,7 +60,7 @@ export default function Products() {
         setPage(page)
     }
     async function handleDelete(id) {
-        await axios.delete(`http://localhost:3000/products/` + id)
+        await axios.delete(`http://localhost:3000/Components/` + id)
         alert('Product deleted')
         handleFilter()
     }
@@ -77,9 +77,9 @@ export default function Products() {
             status: prostatus,
             page: page
         }
-        Axios.post('http://localhost:3000/products/filter/', json)
+        Axios.post('http://localhost:3000/Components/filter/', json)
             .then((response) => {
-                setProducts(response.data.data)
+                setComponents(response.data.data)
                 setMaxPage(Math.ceil(response.data.lines.Count / 10))
             })
             .catch((error) => {
@@ -186,7 +186,7 @@ export default function Products() {
                             </Button>
                         </td>
                     </tr>
-                    {products.map((product) => (
+                    {Components.map((product) => (
                         <div>
                             <hr className="my-2" />
                             <tr className="items-center flex  w-full">

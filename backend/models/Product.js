@@ -155,13 +155,12 @@ const addNewProductToDB = async (Name, Description, Price, Category, Material, S
         const productIdResult = await imageRequest.query(productIdQuery);
         const productId = productIdResult.recordset[0].Id;
 
-        await imageRequest.query(`
+        await imageRequest
+            .input("ProductId", sql.Int, productId)
+            .query(`
             INSERT INTO Image (ProductId,Url,isDeleted)
             VALUES (@ProductId, @Url, 0)
-        `, {
-            ProductId: productId,
-            Url: Url
-        });
+        `);
 
         return result.recordset;
     } catch (error) {

@@ -24,11 +24,9 @@ export default function Cart() {
         setLoading(false)
     }
 
-
     useEffect(() => {
         loadCartData()
     }, [])
-
 
     const handleDecrement = (productId) => {
         const updatedCart = { ...cartData }
@@ -65,7 +63,7 @@ export default function Cart() {
                     TotalAmount: calculateTotalPrice(),
                     PaymentMethod: paymentMethod,
                     Status: 'UNPAID',
-                    Items: JSON.parse(sessionStorage.cart).products,
+                    Items: JSON.parse(sessionStorage.cart).products
                 })
                 await axios.post('http://localhost:3000/users/updatePoint', {
                     id: 17,
@@ -81,15 +79,17 @@ export default function Cart() {
                         phoneNumber: JSON.parse(sessionStorage.loginedUser).PhoneNumber,
                         orderid: res.data.orderid
                     })
-                    setTimeout(() => {
-                        alert('Đang chuyển tiếp đến VNPay')
-                    }, 2000)
+                    // setTimeout(() => {
+                    //     alert('Đang chuyển tiếp đến VNPay')
+                    // }, 2000)
+                    console.log(response.data.url)
                     window.location.href = response.data.url
                 } else {
                     alert('Đặt hàng thành công')
+                    sessionStorage.setItem('cart', '{"products":[]}')
+                    window.location.reload(false)
                 }
                 sessionStorage.setItem('cart', '{"products":[]}')
-                window.location.reload(false)
             } else {
                 alert('Đăng nhập để tiến hành thanh toán')
             }
@@ -133,6 +133,12 @@ export default function Cart() {
             console.log(sessionStorage.getItem('cart'))
             setCartData(updatedCart)
         }
+    }
+    //clear cart
+    const clearCart = () => {
+        const emptyCart = { products: [] }
+        setCartData(emptyCart)
+        sessionStorage.setItem('cart', JSON.stringify(emptyCart))
     }
 
     return (
@@ -203,57 +209,83 @@ export default function Cart() {
                             )
                         )}
                     </table>
-                    <div className="text-right justify-end place-content-end ">
-                        <div className="font-bold ">
-                            Tổng cộng: {calculateTotalPrice().toLocaleString('vi', { style: 'currency', currency: 'VND' })}
-                        </div>
+                    <div className=" flex w-full justify-end">
+                        <div className=" w-2/6 mr-4 my-4   ">
+                            <div className="border border-gray-300 rounded p-4 w-4/5 ml-24">
+                                <div className="font-bold flex place-content-between ">
+                                    <div className="">Tổng cộng:</div>
+                                    <div>{calculateTotalPrice().toLocaleString('vi', { style: 'currency', currency: 'VND' })}</div>
+                                </div>
 
-                        <div className="font-bold ">Số điểm bonus sẽ tích được: {calculateBonus()}</div>
+                                <div className="font-bold flex place-content-between">
+                                    <div className="">Số điểm bonus sẽ tích được:</div>
+                                    <div>{calculateBonus()}</div>
+                                </div>
+                            </div>
 
-                        <div className="text-right font-bold ">
-                            <Popup trigger={<Button variant="contained">Thanh toán</Button>} position="right center" modal>
-                                {(close) => (
-                                    <div>
-                                        <h2>Chi tiết thanh toán</h2>
-                                        <p>Tổng cộng: {calculateTotalPrice().toLocaleString('vi', { style: 'currency', currency: 'VND' })}</p>
+                            <div className=" font-bold ">
+                                <div className="flex justify-end gap-4 my-2 ">
+                                    <Popup
+                                        trigger={
+                                            <div className="w-fit">
+                                                <Button variant="contained">Thanh toán</Button>
+                                            </div>
+                                        }
+                                        position="right center"
+                                        modal
+                                    >
+                                        {(close) => (
+                                            <div>
+                                                <h2>Chi tiết thanh toán</h2>
+                                                <p>Tổng cộng: {calculateTotalPrice().toLocaleString('vi', { style: 'currency', currency: 'VND' })}</p>
 
-                                        <div>
-                                            <label>
-                                                <input
-                                                    type="radio"
-                                                    name="paymentMethod"
-                                                    value="COD"
-                                                    checked={paymentMethod === 'COD'}
-                                                    onChange={() => setPaymentMethod('COD')}
-                                                />
-                                                Thanh toán khi nhận hàng
-                                            </label>
-                                        </div>
+                                                <div>
+                                                    <label>
+                                                        <input
+                                                            type="radio"
+                                                            name="paymentMethod"
+                                                            value="COD"
+                                                            checked={paymentMethod === 'COD'}
+                                                            onChange={() => setPaymentMethod('COD')}
+                                                        />
+                                                        Thanh toán khi nhận hàng
+                                                    </label>
+                                                </div>
 
-                                        <div>
-                                            <label>
-                                                <input
-                                                    type="radio"
-                                                    name="paymentMethod"
-                                                    value="vnpay"
-                                                    checked={paymentMethod === 'vnpay'}
-                                                    onChange={() => setPaymentMethod('vnpay')}
-                                                />
-                                                Thanh toán nhanh cùng VNPay
-                                            </label>
-                                        </div>
+                                                <div>
+                                                    <label>
+                                                        <input
+                                                            type="radio"
+                                                            name="paymentMethod"
+                                                            value="vnpay"
+                                                            checked={paymentMethod === 'vnpay'}
+                                                            onChange={() => setPaymentMethod('vnpay')}
+                                                        />
+                                                        Thanh toán nhanh cùng VNPay
+                                                    </label>
+                                                </div>
 
-                                        <Button onClick={handlePayment} variant="outlined">
-                                            Đặt hàng
+                                                <Button onClick={handlePayment} variant="outlined">
+                                                    Đặt hàng
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </Popup>
+                                    <div className="w-fit">
+                                        <Button variant="contained" onClick={clearCart} disableRipple>
+                                            Xóa tất cả
                                         </Button>
                                     </div>
-                                )}
-                            </Popup>
+                                    <div className="w-fit">
+                                        <Button variant="contained" onClick={() => navigate('/')}>
+                                            Tiếp tục mua hàng
+                                        </Button>
+                                    </div>
+
+                                    {/* // */}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div className="flex justify-end gap-4 mx-4 my-2 ">
-                        <Button variant="contained">Tiếp tục mua hàng</Button>
-                        <Button variant="contained">Xóa tất cả</Button>
                     </div>
                 </div>
             )}

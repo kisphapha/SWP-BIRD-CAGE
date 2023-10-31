@@ -72,19 +72,19 @@ const loadUnSeen = async (req, res) => {
         const order = await Order.loadUnSeen(req.params.id);
         res.json(order);
     } catch (error) {
-        res.status(500).json({message: e.message})
+        res.status(500).json({ message: e.message })
     }
 }
 
 // cach dung cho tui frontend (luc user bam vao cai chuong thi no gui 2 tham so la id vs status = 1 xuong)
-const changetoSeen = async(req, res) => {
+const changetoSeen = async (req, res) => {
     try {
         const id = req.body.id;
         const userid = req.body.userid;
-        const order = await Order.changetoSeen(id, userid);
-        res.json("Success");
+        const respone = await Order.changetoSeen(id, userid);
+        res.json({ status: "Success", result: respone });
     } catch (error) {
-        res.status(500).json({message: error.message});
+        res.status(500).json({ message: error.message });
     }
 }
 

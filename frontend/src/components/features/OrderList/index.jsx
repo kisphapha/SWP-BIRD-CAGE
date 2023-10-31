@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom'
 import { Button, Rating } from '@mui/material'
 import Stepper from '@mui/material/Stepper'
 import Step from '@mui/material/Step'
-import Typography from '@mui/material/Typography'
 import StepLabel from '@mui/material/StepLabel'
+import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Popup from 'reactjs-popup'
 
@@ -27,6 +27,7 @@ const OrderList = (props) => {
     const handleRebuy = (productId) => {
         navigate('/products/' + productId)
     }
+    //step
 
     const getActiveStep = (status) => {
         return steps.indexOf(status)
@@ -104,6 +105,8 @@ const OrderList = (props) => {
                             {/* <div className="px-2"> Trạng thái đơn hàng: {card.Status} </div> */}
                         </div>
                     </div>
+                    <hr className="border  border-slate-300 my-2 w-full" />
+
                     <div className="flex-row w-full">
                         {card.items.map((item) => (
                             <div key={item.Id}>
@@ -172,12 +175,14 @@ const OrderList = (props) => {
                                                 </div>
                                             )}
                                         </Popup>
+                                        <hr className="border  border-slate-300 my-2 mx-8" />
                                     </div>
                                 </div>
                             </div>
                         ))}
                     </div>
                     <div className="flex-col ">
+                        {/* <hr className="border  border-slate-950 " /> */}
                         <div className="text-right mx-8 my-4  text-red-500 text-2xl">
                             {parseInt(card.TotalAmount).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
                         </div>

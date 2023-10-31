@@ -22,7 +22,7 @@ function Dashboard() {
             </div>
             <div className="px-72">
                 <div className="flex-col items-center  justify-center    ">
-                    <div className="pl-8 my-8 ">Best Sellers</div>
+                    <h1 className="pl-8 my-8 ">Best Sellers</h1>
                     <div className="px-64 my-8"></div>
                 </div>
                 <table className="">
