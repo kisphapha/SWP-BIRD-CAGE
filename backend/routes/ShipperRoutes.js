@@ -3,7 +3,7 @@ const ShipperController = require("../controllers/ShipperController");
 
 const shipperRoutes = express.Router();
 
-shipperRoutes.post("/changeShippingState", ShipperController.changeShippingState);
+shipperRoutes.post("/change", ShipperController.changeShippingState);
 
 
 module.exports = shipperRoutes;

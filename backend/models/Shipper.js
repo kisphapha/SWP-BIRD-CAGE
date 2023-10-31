@@ -21,8 +21,6 @@ const changeShippingState = async(id, status) => {
     }
 }
 
-
-
 module.exports = {
     changeShippingState
 }

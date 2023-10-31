@@ -74,11 +74,13 @@ export default function Order() {
 
     async function changeState(orderId, status) {
 
-        await axios.post(`https://localhost:3000/shipper/changeShippingState`, {
+        await axios.post(`http://localhost:3000/shipper/change`, {
             orderId: orderId,
             status: status
         })
         alert("Order is updated")
+        fetchOrder()
+
 
     }
     useEffect(() => {
