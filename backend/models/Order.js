@@ -22,7 +22,8 @@ const getOrderByUserId = async (id) => {
             .query(
             `select *
              from Orders
-             where Orders.UserID = @Id`
+             where Orders.UserID = @Id
+             order by Id DESC`
         );
         return result.recordset;
     } catch (error) {
