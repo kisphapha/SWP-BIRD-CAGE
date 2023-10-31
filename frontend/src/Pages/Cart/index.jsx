@@ -12,6 +12,7 @@ import './style.css'
 
 export default function Cart() {
     const [cartData, setCartData] = useState({ products: [] })
+    const [point, setPoint] = useState(0)
     const [loading, setLoading] = useState(true)
     const [paymentMethod, setPaymentMethod] = useState('COD') // Default to 'onDelivery'
     const navigate = useNavigate()
@@ -22,27 +23,21 @@ export default function Cart() {
         }
         setLoading(false)
     }
-    const clearCart = () => {
-        const emptyCart = { products: [] }
-        setCartData(emptyCart)
-        sessionStorage.setItem('cart', JSON.stringify(emptyCart))
-    }
+
 
     useEffect(() => {
         loadCartData()
     }, [])
 
+
     const handleDecrement = (productId) => {
         const updatedCart = { ...cartData }
         const productIndex = updatedCart.products.findIndex((product) => product.id === productId)
 
-        if (updatedCart.products[productIndex].quantity >= 1) {
+        if (updatedCart.products[productIndex].quantity > 1) {
             updatedCart.products[productIndex].quantity -= 1
             sessionStorage.setItem('cart', JSON.stringify(updatedCart))
             setCartData(updatedCart)
-        }
-        if (updatedCart.products[productIndex].quantity == 0) {
-            removeProductFromCart(productId)
         }
     }
 
@@ -70,7 +65,11 @@ export default function Cart() {
                     TotalAmount: calculateTotalPrice(),
                     PaymentMethod: paymentMethod,
                     Status: 'UNPAID',
-                    Items: JSON.parse(sessionStorage.cart).products
+                    Items: JSON.parse(sessionStorage.cart).products,
+                })
+                await axios.post('http://localhost:3000/users/updatePoint', {
+                    id: 17,
+                    point: 1000
                 })
                 console.log(res.data.orderid)
                 if (paymentMethod == 'vnpay') {
@@ -109,7 +108,6 @@ export default function Cart() {
         })
         return total
     }
-
     const calculateBonus = () => {
         let bonus = 0
 
@@ -120,6 +118,10 @@ export default function Cart() {
         })
         return bonus
     }
+
+    useEffect(() => {
+        setPoint(calculateBonus())
+    }, [calculateBonus])
 
     const removeProductFromCart = (productId) => {
         const updatedCart = { ...cartData }
@@ -250,12 +252,8 @@ export default function Cart() {
                         </div>
                     </div>
                     <div className="flex justify-end gap-4 mx-4 my-2 ">
-                        <Button onClick={() => navigate(`/`)} variant="contained">
-                            Tiếp tục mua hàng
-                        </Button>
-                        <Button onClick={clearCart} variant="contained">
-                            Xóa tất cả
-                        </Button>
+                        <Button variant="contained">Tiếp tục mua hàng</Button>
+                        <Button variant="contained">Xóa tất cả</Button>
                     </div>
                 </div>
             )}

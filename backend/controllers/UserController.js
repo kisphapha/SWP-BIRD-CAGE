@@ -52,9 +52,22 @@ const updateUser = async (req, res) => {
 //     }
 // }
 
+const getPointForUser = async (req, res) =>{
+    try {
+        const id = req.body.id;
+        const point = req.body.point;
+
+        await User.getPointForUser(id, point);
+        res.json({message: "success"});
+    } catch (error) {
+        res.status(500).json({message: error.message})
+    }
+}
+
 module.exports = {
     getAllUser,
     getUserByEmail,
     newUser,
-    updateUser
+    updateUser,
+    getPointForUser
 };
