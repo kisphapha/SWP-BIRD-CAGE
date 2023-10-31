@@ -65,6 +65,35 @@ const deleteUser = async (req, res) => {
     }
 }
 
+const loadUnSeen = async (req, res) => {
+    try {
+        const order = await Order.loadUnSeen();
+        res.json(order);
+    } catch (error) {
+        res.status(500).json({message: e.message})
+    }
+}
+
+// cach dung cho tui frontend (luc user bam vao cai chuong thi no gui 2 tham so la id vs status = 1 xuong)
+const changetoSeen = async(req, res) => {
+    try {
+        const order = await Order.changetoSeen();
+        res.json("Success");
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+}
+
+const orderStatisticByMonth = async (req, res) => {
+    try {
+        const month = req.body.month
+        const year = req.body.year
+        const statistic = await Admin.orderStatisticByMonth(month,year);
+        res.json(statistic);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
 
 
 module.exports = {
@@ -73,5 +102,8 @@ module.exports = {
     getAllUser,
     newUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    loadUnSeen,
+    changetoSeen,
+    orderStatisticByMonth
 }

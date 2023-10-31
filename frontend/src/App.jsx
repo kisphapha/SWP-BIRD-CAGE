@@ -28,6 +28,8 @@ import GeneralPolicy from './Pages/NaviFooter/Policy/GeneralPolicy'
 import PaymentPolicy from './Pages/NaviFooter/Policy/PaymentPolicy'
 import ReturnPolicy from './Pages/NaviFooter/Policy/ReturnPolicy'
 import SecurePolicy from './Pages/NaviFooter/Policy/SecurePolicy'
+import About from './Pages/NaviFooter/Information/About'
+import Contact from './Pages/NaviFooter/Information/Contact'
 function App() {
     return (
         <div>
@@ -35,7 +37,9 @@ function App() {
                 <Route element={<UserLayout />} path="/">
                     <Route element={<Home />} path="" />
                     <Route element={<LoginCard />} path="/login" />
-                    <Route element={ <UserProvider><ProductDetails /></UserProvider>} path="/products/:productId" />
+                    <Route element={<ProductDetails />} path="/products/:productId" />
+                    <Route element={<About />} path="/About" />
+                    <Route element={<Contact />} path="/Contact" />
                     <Route element={<GeneralPolicy />} path="/GeneralPolicy" />
                     <Route element={<PaymentPolicy />} path="/PaymentPolicy" />
                     <Route element={<ReturnPolicy />} path="/ReturnPolicy" />

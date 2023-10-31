@@ -16,21 +16,32 @@ const getAllUser = async () => {
 const getUserByEmail = async (email) => {
     try {
         let poolConnection = await sql.connect(config);
-        const result = await poolConnection.request().query(
-            `SELECT * FROM [dbo].[User] WHERE email = '${email}'`
-        );
+        const query = `
+            SELECT *
+            FROM [dbo].[User]
+            WHERE email = @Email;
+        `;
+        const result = await poolConnection.request()
+            .input('Email', sql.NVarChar, email)
+            .query(query);
         return result.recordset[0];
     } catch (error) {
         console.log("error: ", error);
     }
 };
+
 const newUser = async (name, email, picture) => {
     try {
         let poolConnection = await sql.connect(config);
-        await poolConnection.request().query(
-            `INSERT INTO [User] (Name,email,picture,Role,point,Status,CreatedAt) 
-            VALUES (N'${name}','${email}','${picture}','User',0,'Active',GETDATE())`
-        );
+        const query = `
+            INSERT INTO [User] (Name, email, picture, Role, point, Status, CreatedAt) 
+            VALUES (@Name, @Email, @Picture, 'User', 0, 'Active', GETDATE());
+        `;
+        await poolConnection.request()
+            .input('Name', sql.NVarChar, name)
+            .input('Email', sql.NVarChar, email)
+            .input('Picture', sql.NVarChar, picture)
+            .query(query);
     } catch (error) {
         console.log("error: ", error);
     }
@@ -39,22 +50,43 @@ const newUser = async (name, email, picture) => {
 const updateUser = async (name, email, phone, dateOfBirth) => {
     try {
         let poolConnection = await sql.connect(config);
-        await poolConnection.request().query(
-            `UPDATE [User] 
-            SET Name=N'${name}',PhoneNumber='${phone}',DateOfBirth='${dateOfBirth}'
-            WHERE Email='${email}'`
-        );
-        return getUserByEmail(email)
+        const query = `
+            UPDATE [User]
+            SET Name = @Name, PhoneNumber = @Phone, DateOfBirth = @DateOfBirth
+            WHERE Email = @Email;
+        `;
+        await poolConnection.request()
+            .input('Name', sql.NVarChar, name)
+            .input('Phone', sql.NVarChar, phone)
+            .input('DateOfBirth', sql.NVarChar, dateOfBirth)
+            .input('Email', sql.NVarChar, email)
+            .query(query);
+        return getUserByEmail(email);
     } catch (error) {
         console.log("error: ", error);
     }
 };
 
-
+const getPointForUser = async(id, point) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        await poolConnection.request()
+        .input('id', id)
+        .input('point', point)
+        .query(`
+            UPDATE dbo.[User]
+            SET Point = Point + @point 
+            WHERE Id = @id
+        `)
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
 
 module.exports = {
     getAllUser,
     getUserByEmail,
     newUser,
     updateUser,
+    getPointForUser
 };

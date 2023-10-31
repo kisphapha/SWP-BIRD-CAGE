@@ -5,17 +5,17 @@ import { useNavigate } from 'react-router-dom'
 import { Button, Rating } from '@mui/material'
 import Stepper from '@mui/material/Stepper'
 import Step from '@mui/material/Step'
-import Typography from '@mui/material/Typography'
 import StepLabel from '@mui/material/StepLabel'
+import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Popup from 'reactjs-popup'
 
 const steps = ['Chờ duyệt', 'Đang chuẩn bị', 'Đang giao', 'Đã Giao']
 const OrderList = (props) => {
     const [cards, setCards] = useState([])
-    const [orders, setOrders] = useState([]);
-    const [rating, setRating] = useState(0);
-    const [feedbackContent, setFeedbackContent] = useState('');
+    const [orders, setOrders] = useState([])
+    const [rating, setRating] = useState(0)
+    const [feedbackContent, setFeedbackContent] = useState('')
     const navigate = useNavigate()
 
     const handleStarPoint = (event) => {
@@ -27,9 +27,10 @@ const OrderList = (props) => {
     const handleRebuy = (productId) => {
         navigate('/products/' + productId)
     }
+    //step
 
     const getActiveStep = (status) => {
-        return steps.indexOf(status);
+        return steps.indexOf(status)
     }
     async function fetchOrderItems(id) {
         const response = await axios.get(`http://localhost:3000/order/list/${id}`)
@@ -40,37 +41,35 @@ const OrderList = (props) => {
             UserId: props.user.Id,
             ProductId: productId,
             StarPoint: rating,
-            Content : feedbackContent
+            Content: feedbackContent
         }
         console.log(json)
         if (json.StarPoint > 0) {
             await axios.post(`http://localhost:3000/products/rating/`, json)
-            alert("Chúng tôi đã ghi nhận. Chân thành cảm ơn bạn!")
+            alert('Chúng tôi đã ghi nhận. Chân thành cảm ơn bạn!')
             close()
         } else {
-            alert("Xin vui lòng đánh giá số sao")
+            alert('Xin vui lòng đánh giá số sao')
         }
-        
     }
     async function fetchOrder() {
-        const response = await axios.get(`http://localhost:3000/order/user/${props.user.Id}`);
+        const response = await axios.get(`http://localhost:3000/order/user/${props.user.Id}`)
         if (response.data) {
-            const jsonData = response.data;
-            const ordersWithItems = [];
+            const jsonData = response.data
+            const ordersWithItems = []
 
             for (const order of jsonData) {
-                const items = await fetchOrderItems(order.Id);
-                const orderWithItems = { ...order, items };
-                ordersWithItems.push(orderWithItems);
+                const items = await fetchOrderItems(order.Id)
+                const orderWithItems = { ...order, items }
+                ordersWithItems.push(orderWithItems)
             }
-            setCards(ordersWithItems);
+            setCards(ordersWithItems)
         }
     }
 
-
-    useEffect(() => {      
-        fetchOrder()       
-    },[])
+    useEffect(() => {
+        fetchOrder()
+    }, [])
 
     return (
         <>
@@ -106,33 +105,35 @@ const OrderList = (props) => {
                             {/* <div className="px-2"> Trạng thái đơn hàng: {card.Status} </div> */}
                         </div>
                     </div>
-                    <div className="flex py-2 place-content-between">
-                    {
-                        
-                            card.items.map((item) => (
-                                <div key={item.Id }>
-                                    <div className="flex">
-                                        <Button onClick={() => handleRebuy(item.Id)}>
-                                        <img className="h-30 w-20 mx-4  " src={item.Url}></img>
-                                        </Button>
+                    <div className="flex-row w-full">
+                        {card.items.map((item) => (
+                            <div key={item.Id}>
+                                <div className="flex-row w-full">
+                                    <div className="flex place-content-between">
+                                        <div className="flex">
+                                            <Button onClick={() => handleRebuy(item.Id)}>
+                                                <img className="h-30 w-20 mx-4  " src={item.Url}></img>
+                                            </Button>
+                                            <div className="">
+                                                <div className="font-bold">{item.Name}</div>
+                                                <div className="pl-2">Phân loại: {item.Shape}</div>
+                                                <div className="pl-2">x{item.Quantity}</div>
+                                            </div>
+                                        </div>
                                         <div className="">
-                                            <div className="font-bold">{item.Name}</div>
-                                            <div className="pl-2">Phân loại: {item.Shape}</div>
-                                            <div className="pl-2">x{item.Quantity}</div>
+                                            <div className="mx-8 my-4 text-right line-through text-gray-400 ">
+                                                {parseInt((item.Price * 100) / (100 - item.discount)).toLocaleString('vi', {
+                                                    style: 'currency',
+                                                    currency: 'VND'
+                                                })}
+                                            </div>
+                                            <div className="mx-8 text-right  text-red-500 ">
+                                                {' '}
+                                                {item.Price.toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="">
-                                        <div className="mx-8 my-4 text-right line-through text-gray-400 ">
-                                            {parseInt((item.Price * 100)/(100-item.discount)).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
-
-                                        </div>
-                                        <div className="mx-8 text-right  text-red-500 ">
-                                            {' '}
-                                            {item.Price.toLocaleString('vi', { style: 'currency', currency: 'VND' })}
-
-                                        </div>
-                                    </div>
-                                    <div className="flex  justify-end gap-4">
+                                    <div className="text-end">
                                         <Popup
                                             trigger={
                                                 <Button className="" variant="contained" onClick={() => handleRebuy(card.Id)}>
@@ -149,39 +150,41 @@ const OrderList = (props) => {
                                                     <h2>ĐÁNH GIÁ SẢN PHẨM</h2>
                                                     <h3>{item.Name}</h3>
                                                     <div>
-                                                        <Rating name="hover-feedback" precision={1} onChange={handleStarPoint} defaultValue={0 } />
+                                                        <Rating name="hover-feedback" precision={1} onChange={handleStarPoint} defaultValue={0} />
 
-                                                        <TextField className="text-left" fullWidth variant="standard"
+                                                        <TextField
+                                                            className="text-left"
+                                                            fullWidth
+                                                            variant="standard"
                                                             label="Hãy cho chúng tôi biết cảm nghĩ của bạn về sản phẩm"
-                                                            multiline rows={6}
-                                                            onChange={handleFeedbackContent }
-                                                            >
-                                                            </TextField>
-                                                        </div>
+                                                            multiline
+                                                            rows={6}
+                                                            onChange={handleFeedbackContent}
+                                                        ></TextField>
+                                                    </div>
                                                     <div className="flex justify-end">
-                                                        <Button variant="outlined" onClick={close}>Cancel</Button>
-                                                        <Button variant="outlined" onClick={() => submitFeedback(item.Id, close)}>OK</Button>
+                                                        <Button variant="outlined" onClick={close}>
+                                                            Cancel
+                                                        </Button>
+                                                        <Button variant="outlined" onClick={() => submitFeedback(item.Id, close)}>
+                                                            OK
+                                                        </Button>
                                                     </div>
                                                 </div>
                                             )}
                                         </Popup>
-                                        
                                     </div>
                                 </div>
-                            ))
-                        
-                    }
-                        
+                            </div>
+                        ))}
                     </div>
                     <div className="flex-col ">
                         <div className="text-right mx-8 my-4  text-red-500 text-2xl">
                             {parseInt(card.TotalAmount).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
                         </div>
-                        
                     </div>
                 </div>
             ))}
-
         </>
     )
 }

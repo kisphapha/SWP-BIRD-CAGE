@@ -92,12 +92,12 @@ export default function ProductDetails() {
         const existingProduct = cart.products.find((product) => product.id === productId)
 
         if (existingProduct) {
-            existingProduct.quantity = (parseInt(existingProduct.quantity) + parseInt(quantity)).toString()
+            existingProduct.quantity = existingProduct.quantity + quantity
         } else {
             cart.products.push({
                 id: productId,
                 name: product.Name,
-                quantity: quantity.toString(),
+                quantity: quantity,
                 url: product.Url,
                 price: (product.Price * (100 - product.discount)) / 100
             })
@@ -127,9 +127,9 @@ export default function ProductDetails() {
                 <div className="product">
                     <div className="img-container">
                         <div className="img-main">
-                            <img src={focusUrl} />
+                            <img className="image" src={focusUrl} />
                         </div>
-                        <div className="img-more">
+                        <div className="img-more ">
                             {imgList.map((image) => (
                                 // eslint-disable-next-line react/jsx-key
                                 <img onClick={() => setFocusUrl(image.Url)} className="img" src={image.Url} />
@@ -180,8 +180,7 @@ export default function ProductDetails() {
                                 </button>
                             </div>
                             <div className="add-cart" onClick={addToCart}>
-                                {' '}
-                                Thêm vào giỏ hàng{' '}
+                                Thêm vào giỏ hàng
                             </div>
                         </div>
 

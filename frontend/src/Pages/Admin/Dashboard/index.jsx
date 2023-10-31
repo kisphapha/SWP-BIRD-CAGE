@@ -9,7 +9,9 @@ import './styles.css'
 function Dashboard() {
     return (
         <div className="dashboard ">
-            <div className="px-4">DashBoard</div>
+            {/* Chao mung admin ...... fetch {user} */}
+            <div></div>
+            <div className="px-4 font-bold">DashBoard</div>
             <div className="dashboard-detail my-8">
                 <div className="chart-container">
                     <LineChart />

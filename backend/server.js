@@ -7,6 +7,7 @@ const addressRoutes = require("./routes/AddressRoute");
 const paymentRoutes = require("./routes/PaymentRoute");
 const adminRoutes = require("./routes/AdminRoute");
 const shipperRoutes = require("./routes/ShipperRoutes");
+const componentRouter = require("./routes/ComponentRoute");
 const eventLog = require('./helper/logEvent');
 const app = express();
 const helmet = require('helmet'); // make web more secure
@@ -32,9 +33,9 @@ app.use("/users", userRoutes);
 app.use("/order", orderRoutes);
 app.use("/address", addressRoutes);
 app.use("/admin", adminRoutes);
-app.use("/payment",paymentRoutes);
+ app.use("/payment",paymentRoutes);
 app.use("/shipper", shipperRoutes);
-
+app.use("/component", componentRouter);
 
 
 console.log("Starting... at port: " ,port);

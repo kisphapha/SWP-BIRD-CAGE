@@ -22,14 +22,19 @@
 #page-product > .product-container > .product > .img-container > .img-main {
     align-content: center;
 }
+#page-product > .product-container > .product > .img-container > .img-main > .image {
+    border: 1px solid;
+}
 #page-product > .product-container > .product > .img-container > .img-more {
     display: flex;
     flex-direction: row;
     gap: 10px;
     padding-left: 10px;
     padding-top: 10px;
+    margin-bottom: 8px;
 }
 #page-product > .product-container > .product > .img-container > .img-more > .img {
+    border: 1px solid;
     width: 100px;
     height: 100px;
 }

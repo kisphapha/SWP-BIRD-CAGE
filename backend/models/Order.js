@@ -17,10 +17,12 @@ const getAllOrder = async () => {
 const getOrderByUserId = async (id) => {
     try {
         let poolConnection = await sql.connect(config);
-        const result = await poolConnection.request().query(
+        const result = await poolConnection.request()
+            .input("ID",sql.Int, id)
+            .query(
             `select *
              from Orders
-             where Orders.UserID = ${id}`
+             where Orders.UserID = @Id`
         );
         return result.recordset;
     } catch (error) {
@@ -31,11 +33,14 @@ const getOrderByUserId = async (id) => {
 const getOrderById = async (id) => {
     try {
         let poolConnection = await sql.connect(config);
-        const result = await poolConnection.request().query(
-            `select *
-             from Orders
-             where Orders.id = ${id}`
-        );
+        const query = `
+            SELECT *
+            FROM Orders
+            WHERE Orders.id = @Id
+        `;
+        const result = await poolConnection.request()
+            .input('Id', sql.Int, id)
+            .query(query);
         return result.recordset[0];
     } catch (error) {
         console.log("error: ", error);
@@ -45,7 +50,46 @@ const getOrderById = async (id) => {
 const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentMethod, Status, Items) => {
     try {
         let poolConnection = await sql.connect(config);
-        const result = await poolConnection.request()
+        const orderQuery = `
+            INSERT INTO dbo.Orders
+            (
+                [UserID],
+                [OrderDate],
+                [PaymentDate],
+                [AddressID],
+                [PhoneNumber],
+                [Note],
+                [TotalAmount],
+                [PaymentMethod],
+                [IsDeleted],
+                [CreateAt],
+                [UpdateAt],
+                [Status],
+                [View_Status],
+                [Status_Shipping],
+                [Status_Paid]
+            )
+            OUTPUT INSERTED.Id
+            VALUES
+            (
+                @UserID,
+                @OrderDate,
+                @PaymentDate,
+                @AddressID,
+                @PhoneNumber,
+                @Note,
+                @TotalAmount,
+                @PaymentMethod,
+                0,
+                GETDATE(),
+                GETDATE(),
+                @Status,
+                0,
+                N'Chờ duyệt',
+                'UnPaid'
+            );
+        `;
+        const orderRequest = poolConnection.request()
             .input('UserID', sql.Int, UserID)
             .input('OrderDate', sql.DateTime, OrderDate)
             .input('PaymentDate', sql.DateTime, PaymentDate)
@@ -54,52 +98,11 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
             .input('Note', sql.NVarChar, Note)
             .input('TotalAmount', sql.Int, TotalAmount)
             .input('PaymentMethod', sql.NVarChar, PaymentMethod)
-            .input('Status', sql.NVarChar, Status)
-            .query(`
-                INSERT INTO dbo.Orders
-                (
-                    [UserID],
-                    [OrderDate],
-                    [PaymentDate],
-                    [AddressID],
-                    [PhoneNumber],
-                    [Note],
-                    [TotalAmount],
-                    [PaymentMethod],
-                    [IsDeleted],
-                    [CreateAt],
-                    [UpdateAt],
-                    [Status],
-                    [View_Status],
-                    [Status_Shipping],
-                    [Status_Paid]
-                    )
-                OUTPUT INSERTED.Id
-                VALUES
-                    (
-                        @UserID,
-                        @OrderDate,
-                        @PaymentDate,
-                        @AddressID,
-                        @PhoneNumber,
-                        @Note,
-                        @TotalAmount,
-                        @PaymentMethod,
-                        0,
-                        GETDATE(),
-                        GETDATE(),
-                        @Status,
-                        0,
-                        N'Chờ duyệt',
-                        'UnPaid'
-                    );
-            `);
-        Items.forEach(item => {
-            poolConnection.request()
-                .input('ProductId', sql.Int, item.id)
-                .input('Quantity', sql.Int, parseInt(item.quantity))
-                .input('Price', sql.Int, parseInt(item.price))
-                .query(`
+            .input('Status', sql.NVarChar, Status);
+        const orderResult = await orderRequest.query(orderQuery);
+        const orderId = orderResult.recordset[0].Id;
+        for (const item of Items) {
+            const itemQuery = `
                 INSERT INTO OrderItem(
                     ProductId,
                     OrdersId,
@@ -108,54 +111,100 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                     CreatedAt
                 ) VALUES (
                     @ProductId,
-                    (SELECT 
-                        TOP 1 Id 
-                    FROM 
-                        Orders 
-                    ORDER BY 
-                        Id DESC),
+                    @OrderId,
                     @Quantity,
                     @Price,
                     GETDATE()
-                )               
-                `)
-        });
-        return result.recordset[0].Id;
+                );
+            `;
+            const itemRequest = poolConnection.request()
+                .input('ProductId', sql.Int, item.id)
+                .input('OrderId', sql.Int, orderId)
+                .input('Quantity', sql.Int, parseInt(item.quantity))
+                .input('Price', sql.Int, parseInt(item.price));
+            await itemRequest.query(itemQuery);
+        }
+        return orderId;
     } catch (error) {
         console.log("error: ", error);
     }
-}
+};
 
 const changeStatus_Paid = async (id) => {
     try {
         let poolConnection = await sql.connect(config);
-        const result = await poolConnection.request().query(
-            ` UPDATE dbo.Orders
-              SET Status_Paid = 'Paid'
-              WHERE id = ${id}
-              `
-        )
+        const query = `
+            UPDATE dbo.Orders
+            SET Status_Paid = 'Paid'
+            WHERE id = @Id;
+        `;
+        const result = await poolConnection.request()
+            .input('Id', sql.Int, id)
+            .query(query);
     } catch (e) {
         console.log("error: ", e);
     }
-}
-
+};
 
 const getAllOrderItemByOrderID = async (id) => {
     try {
         let poolConnection = await sql.connect(config);
-        const result = await poolConnection.request().query(`
-           SELECT p.Id,p.Name, oi.CreatedAt, oi.Price, oi.Quantity, i.Url, o.Status, c.name AS Shape, p.discount
-         FROM OrderItem oi, Orders o, Products p, Image i, Category c
-         WHERE o.Id = ${id} AND o.Id = oi.OrdersId AND oi.ProductId = p.id AND i.ProductId = p.Id AND p.Category = c.Id
-
-        `)
+        const query = `
+            SELECT p.Id, p.Name, oi.CreatedAt, oi.Price, oi.Quantity, i.Url, o.Status, c.name AS Shape, p.discount
+            FROM OrderItem oi
+            INNER JOIN Orders o ON o.Id = oi.OrdersId
+            INNER JOIN Products p ON oi.ProductId = p.id
+            INNER JOIN Category c ON p.Category = c.Id
+            JOIN (
+                SELECT Image.*, ROW_NUMBER() OVER (PARTITION BY ProductId ORDER BY Id) AS RowNum
+                FROM Image
+            ) i ON i.ProductId = p.id AND i.RowNum = 1
+            WHERE o.Id = @OrderId;
+        `;
+        const result = await poolConnection.request()
+            .input('OrderId', sql.Int, id)
+            .query(query);
         return result.recordset;
     } catch (error) {
-        console.log("error: ", error)
+        console.log("error: ", error);
+    }
+};
+
+
+const loadUnSeen = async (id) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('id', id)
+        .query(
+            `SELECT * FROM dbo.Orders 
+             WHERE UserID = @id`
+
+        )
+        return result.recordset;
+    } catch (error) {
+        console.log("Error: " , error)
     }
 }
 
+const changetoSeen = async(id, userid) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('id', id)
+        .input('userid', userid)
+        .query(
+            ` 
+            UPDATE dbo.Orders
+            SET View_Status = 1
+            WHERE UserID = @userid
+            AND Id = @id
+            `
+        )
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
 
 module.exports = {
     getAllOrder,
@@ -163,5 +212,7 @@ module.exports = {
     addOrderToDB,
     changeStatus_Paid,
     getAllOrderItemByOrderID,
-    getOrderByUserId
+    getOrderByUserId,
+    loadUnSeen,
+    changetoSeen
 }

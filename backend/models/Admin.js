@@ -94,12 +94,82 @@ const deleteUser = async (userId, status, ReasonBlock) => {
     }
 }
 
+
+const loadUnSeen = async () => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('id', id)
+        .query(
+            `SELECT * FROM dbo.Orders 
+             WHERE View_Status = 0
+            `
+        )
+        return result.recordset;
+    } catch (error) {
+        console.log("Error: " , error)
+    }
+}
+
+const changetoSeen = async() => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('id', id)
+        .query(
+            ` 
+            UPDATE dbo.Orders
+            SET  View_Status = 1
+            `
+        )
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
+
+const orderStatisticByMonth = async (month,year) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+            .input('Month', sql.Int, month)
+            .input('Year', sql.Int, year)
+            .query(
+                ` 
+                CREATE TABLE #Calendar (DayDate DATE);
+
+                DECLARE @StartDate DATE = DATEFROMPARTS(@Year, @Month, 1);
+                DECLARE @EndDate DATE = EOMONTH(@StartDate);
+
+                WHILE @StartDate <= @EndDate
+                BEGIN
+                    INSERT INTO #Calendar (DayDate) VALUES (@StartDate);
+                    SET @StartDate = DATEADD(DAY, 1, @StartDate);
+                END;
+
+                SELECT CONCAT(DAY(c.DayDate), '/', MONTH(c.DayDate)) AS MonthDay, ISNULL(SUM(o.TotalAmount), 0) AS TotalAmount
+                FROM #Calendar c
+                LEFT JOIN Orders o ON CAST(o.OrderDate AS DATE) = c.DayDate
+                GROUP BY c.DayDate
+                ORDER BY c.DayDate;
+
+                DROP TABLE #Calendar;
+            `
+        )
+        return result.recordset;
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
+
 module.exports = {
     getOrderBy5Month,
     getBestSellingProducts,
     getAllUser,
     updateUser,
     newUser,
-    deleteUser
+    deleteUser,
+    loadUnSeen,
+    changetoSeen,
+    orderStatisticByMonth
 };
 
