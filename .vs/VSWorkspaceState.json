@@ -1,17 +1,16 @@
 {
   "ExpandedNodes": [
     "",
+    "\\backend",
+    "\\backend\\controllers",
+    "\\backend\\routes",
     "\\frontend",
     "\\frontend\\src",
     "\\frontend\\src\\components",
+    "\\frontend\\src\\components\\common",
     "\\frontend\\src\\components\\features",
-    "\\frontend\\src\\components\\features\\AddressCard",
-    "\\frontend\\src\\components\\features\\OrderList",
-    "\\frontend\\src\\Pages",
-    "\\frontend\\src\\Pages\\Admin",
-    "\\frontend\\src\\Pages\\Admin\\Order",
-    "\\frontend\\src\\Pages\\UserPage"
+    "\\frontend\\src\\components\\features\\LineChart"
   ],
-  "SelectedNode": "\\frontend\\src\\components\\features\\OrderList\\index.jsx",
+  "SelectedNode": "\\backend\\server.js",
   "PreviewInSolutionExplorer": false
 }

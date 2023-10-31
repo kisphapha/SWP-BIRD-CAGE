@@ -39,6 +39,7 @@ export default function Order() {
     const [order, setOrder] = useState('')
     const [orderItem, setOrderItem] = useState([])
     const [rows, setRows] = useState([])
+    const [btnState, setBtnState] = useState('')
 
     const handleRowClick = async (params) => {
         const order = await getAnOrder(params.row.id)
@@ -47,6 +48,7 @@ export default function Order() {
         setOrderItem(detail)
         setOpenPopup(true)
     }
+
     async function getAnOrder(id) {
         const response = await axios.get(`http://localhost:3000/order/${id}`)
         return response.data
@@ -68,6 +70,16 @@ export default function Order() {
             }
             setCards(ordersWithItems)
         }
+    }
+
+    async function changeState(orderId, status) {
+
+        await axios.post(`https://localhost:3000/shipper/changeShippingState`, {
+            orderId: orderId,
+            status: status
+        })
+        alert("Order is updated")
+
     }
     useEffect(() => {
         fetchOrder()
@@ -93,11 +105,16 @@ export default function Order() {
     }, [cards])
 
     //step
-
-    const steps = ['Chờ duyệt', 'Đang chuẩn bị', 'Đang giao', 'Đã Giao']
+    const buttonState = ["Duyệt", "Đã bàn giao cho Shipper"]
+    const steps = ['Chờ duyệt', 'Đang chuẩn bị', 'Đang giao', 'Đã giao']
     const getActiveStep = (status) => {
         return steps.indexOf(status)
     }
+
+    function getButtonStatus(status) {
+        return buttonState[steps.indexOf(status)]
+    }
+
 
     useEffect(() => {
         fetchOrder()
@@ -195,10 +212,20 @@ export default function Order() {
                                     </div>
                                     <div className="flex mx-2 place-content-between">
                                         <div className="flex gap-4">
-                                            <Button variant="outlined" onClick={close}>
-                                                Duyệt
-                                            </Button>
+
+                                        {
+                                                getActiveStep(order.Status_Shipping) < 2 && (
+                                                    <Button variant="outlined" onClick={() => {
+                                                        changeState(order.Id, steps[parseInt(getActiveStep(order.Status_Shipping)) + 1])
+                                                            close()
+                                                        }
+                                                    }>
+                                                        {getButtonStatus(order.Status_Shipping)}
+                                                    </Button>
+                                            )
+                                        }
                                         </div>
+
                                         <div>
                                             <Button variant="contained" onClick={close}>
                                                 Cancel
