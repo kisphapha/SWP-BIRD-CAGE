@@ -84,7 +84,16 @@ const changetoSeen = async(req, res) => {
     }
 }
 
-
+const orderStatisticByMonth = async (req, res) => {
+    try {
+        const month = req.body.month
+        const year = req.body.year
+        const statistic = await Admin.orderStatisticByMonth(month,year);
+        res.json(statistic);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
 
 
 module.exports = {
@@ -95,5 +104,6 @@ module.exports = {
     updateUser,
     deleteUser,
     loadUnSeen,
-    changetoSeen
+    changetoSeen,
+    orderStatisticByMonth
 }

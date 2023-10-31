@@ -1,16 +1,17 @@
 {
   "ExpandedNodes": [
     "",
-    "\\backend",
-    "\\backend\\models",
     "\\frontend",
     "\\frontend\\src",
     "\\frontend\\src\\components",
-    "\\frontend\\src\\components\\common",
     "\\frontend\\src\\components\\features",
+    "\\frontend\\src\\components\\features\\AddressCard",
+    "\\frontend\\src\\components\\features\\OrderList",
+    "\\frontend\\src\\Pages",
     "\\frontend\\src\\Pages\\Admin",
-    "\\frontend\\src\\Pages\\Cart"
+    "\\frontend\\src\\Pages\\Admin\\Order",
+    "\\frontend\\src\\Pages\\UserPage"
   ],
-  "SelectedNode": "\\frontend\\src\\components\\common\\Header.jsx",
+  "SelectedNode": "\\frontend\\src\\components\\features\\OrderList\\index.jsx",
   "PreviewInSolutionExplorer": false
 }
