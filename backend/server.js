@@ -22,7 +22,7 @@ app.use(cors({
 }));
 
 app.use(express.json());
-app.use((err,req, res, next) => {
+app.use((err, req, res, next) => {
     eventLog(err.statusMessage);
     res.status(err.status || 500);
     res.json()
@@ -33,12 +33,12 @@ app.use("/users", userRoutes);
 app.use("/order", orderRoutes);
 app.use("/address", addressRoutes);
 app.use("/admin", adminRoutes);
- app.use("/payment",paymentRoutes);
+app.use("/payment", paymentRoutes);
 app.use("/shipper", shipperRoutes);
 app.use("/component", componentRouter);
 
 
-console.log("Starting... at port: " ,port);
+console.log("Starting... at port: ", port);
 
 app.listen(port, hostname), () => {
     console.log(`Server is running on port ${port}`);

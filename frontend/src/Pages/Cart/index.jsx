@@ -79,15 +79,17 @@ export default function Cart() {
                         phoneNumber: JSON.parse(sessionStorage.loginedUser).PhoneNumber,
                         orderid: res.data.orderid
                     })
-                    setTimeout(() => {
-                        alert('Đang chuyển tiếp đến VNPay')
-                    }, 2000)
+                    // setTimeout(() => {
+                    //     alert('Đang chuyển tiếp đến VNPay')
+                    // }, 2000)
+                    console.log(response.data.url)
                     window.location.href = response.data.url
                 } else {
                     alert('Đặt hàng thành công')
+                    sessionStorage.setItem('cart', '{"products":[]}')
+                    window.location.reload(false)
                 }
                 sessionStorage.setItem('cart', '{"products":[]}')
-                window.location.reload(false)
             } else {
                 alert('Đăng nhập để tiến hành thanh toán')
             }
