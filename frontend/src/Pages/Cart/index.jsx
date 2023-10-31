@@ -281,8 +281,6 @@ export default function Cart() {
                                             Tiếp tục mua hàng
                                         </Button>
                                     </div>
-
-                                    {/* // */}
                                 </div>
                             </div>
                         </div>
