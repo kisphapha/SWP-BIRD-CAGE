@@ -13,7 +13,7 @@ class GeneralPolicy extends React.Component {
                     <Navbar />
                 </UserProvider>
                 <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }]} current="Chính sách chung"></CategoryNav>
-                <div className="row row-main" style={{ padding: '2em 15em' }}>
+                <div className="row row-main" style={{ padding: '2em 15em 10em' }}>
                     <div className="large-12 col">
                         <div className="col-inner">
                             <h1 style={{ fontSize: '30px', textAlign: 'center', color: 'red' }}>
