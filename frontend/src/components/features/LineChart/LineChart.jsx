@@ -1,10 +1,44 @@
 import React, { useEffect, useState } from "react";
 import Chart from "react-apexcharts";
+import axios from "axios";
 
 function LineChart() {
 
+  const [data, setData] = useState([]);
+
+  function getIncome(){
+    const income = []
+    data.map((element) => {
+      income.push(element.TotalAmount)  
+    })
+    console.log(income)
+    return income;
+  }
+  function getDate(){
+    const date = []
+    data.map(element => {
+      date.push(element.MonthDay)  
+    })
+    return date;
+  }
+
+  useEffect(() => {
+      async function fetchData(){
+        const res = await axios.post('http://localhost:3000/admin/statistic',{
+          month:10,
+          year:2023
+        })
+        if (res) {
+          setData(res.data);
+        }
+      }
+
+      fetchData();
+  },[])
+
   return (
     <React.Fragment>
+      {data && (
       <div className="container-fluid">
         <Chart
           type ="line"
@@ -13,7 +47,7 @@ function LineChart() {
           series={[
             {
               name: "Series 1",
-              data: [31, 40, 28, 51, 42, 500]
+              data: getIncome()
             }
           ]}
 
@@ -33,14 +67,7 @@ function LineChart() {
             },
             xaxis: {
             title: { text: "Monthly Income" },
-              categories: [
-                        "May",
-                        "June",
-                        "July",
-                        "August",
-                        "September",
-                        "October"
-                    ]
+              categories: getDate()
             },
           }}
           
@@ -81,6 +108,7 @@ function LineChart() {
 
         </Chart> 
       </div>
+      )}
     </React.Fragment>
   )
 }
