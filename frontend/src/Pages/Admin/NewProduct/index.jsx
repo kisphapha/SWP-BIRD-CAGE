@@ -1,11 +1,15 @@
 ﻿import { ButtonBase, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material'
-import { React, useState, useEffect } from 'react'
+import { React, useState, useEffect , useRef} from 'react'
 import { Button } from '@mui/material'
 import MenuItem from '@mui/material/MenuItem'
 import axios from 'axios'
-
+import ImageUploader from '../../../components/features/ImageUploader/index'
 export default function NewProduct() {
     const [categories, setCategories] = useState([])
+    const [images, setImages] = useState([]);
+    const maxNumber = 6;
+
+
     //temp varible
     const [tmpName, setTempName] = useState('')
     const [tmpDescription, setTempDescription] = useState('')
@@ -16,10 +20,11 @@ export default function NewProduct() {
     const [tmpStock, setStock] = useState('')
     const [tmpHeight, setHeight] = useState('')
     const [tmpWidth, setWidth] = useState('')
-    const [tmpUrl, setUrl] = useState('')
+    const [tmpUrls, setUrls] = useState([])
     const [tmpCate, setCate] = useState('')
     const [tmpStatus, setStatus] = useState('')
 
+   
     async function fetchCategories() {
         const response = await axios.get('http://localhost:3000/category/')
         if (response.data) {
@@ -41,7 +46,7 @@ export default function NewProduct() {
             SuitableBird: tmpBird,
             discount: tmpDiscount,
             Status: tmpStatus,
-            Url: tmpUrl
+            Urls: tmpUrls
         }
         if (json.Stock && json.Name && json.Category && json.Price && json.Status) {
             await axios.post(`http://localhost:3000/products/add`, json)
@@ -77,9 +82,6 @@ export default function NewProduct() {
     }
     const handleWidthChange = (event) => {
         setWidth(event.target.value)
-    }
-    const handleUrlChange = (event) => {
-        setUrl(event.target.value)
     }
     const handleCategoryChange = (event) => {
         setCate(event.target.value.trim())
@@ -175,14 +177,16 @@ export default function NewProduct() {
                     </div>
                     <div className="w-3/4">
                         {/* <div>description</div> */}
-                        <TextField
-                            fullWidth
-                            label={'Link ảnh'}
-                            variant="standard"
-                            onChange={handleUrlChange}
-                            value={tmpUrl }
-                        />
-                    </div>
+                        {/*<TextField*/}
+                        {/*    fullWidth*/}
+                        {/*    label={'Link ảnh'}*/}
+                        {/*    variant="standard"*/}
+                        {/*    onChange={handleUrlChange}*/}
+                        {/*    value={tmpUrl }*/}
+                        {/*/>*/}
+                        <div>Hình ảnh </div>
+                        <ImageUploader images={images} setImages={setImages} maxNumber={maxNumber} setUrls={setUrls} />
+                        </div>
                 </div>
                 <div className="px-4 pl-40 flex flex-col basis-1/2 items-start gap-4 py-10">
                     <div>

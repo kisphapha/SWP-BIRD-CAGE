@@ -266,15 +266,19 @@ export default function ProductDetails() {
                                                     <div>{product.Name}</div>
                                                 </td>
                                                 <td className="text-center">
-                                                    <div>{product.Price.toLocaleString('vi', { style: 'currency', currency: 'VND' })}</div>
-                                                </td>
+                                                    {parseInt((product.Price * (100 - product.discount)) / 100).toLocaleString('vi', {
+                                                        style: 'currency',
+                                                        currency: 'VND'
+                                                    })}                                                </td>
                                                 <td  className="text-center">
                                                     <div>{quantity}</div>
                                                 </td>
                                                 <td>
                                                     <div>
-                                                        {(product.Price*quantity).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
-                                                    </div>
+                                                        {parseInt(((product.Price * (100 - product.discount)) / 100) * quantity).toLocaleString('vi', {
+                                                            style: 'currency',
+                                                            currency: 'VND'
+                                                        })}                                                    </div>
                                                 </td>
                                             </tr>
                                         </table>

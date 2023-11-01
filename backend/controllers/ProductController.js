@@ -57,9 +57,9 @@ const getNewProductToDB = async (req, res) => {
         const SuitableBird = req.body.SuitableBird;
         const discount = req.body.discount;
         const Status = req.body.Status;
-        const Url = req.body.Url
+        const Urls = req.body.Urls
 
-        await Product.addNewProductToDB(Name, Description, Price, Category, material, SuitableBird, discount, Size, Stock, Status, Url);
+        await Product.addNewProductToDB(Name, Description, Price, Category, material, SuitableBird, discount, Size, Stock, Status, Urls);
         res.json({ message: "done" });
     }catch (error){
         res.status(500).json({message: error.message});
