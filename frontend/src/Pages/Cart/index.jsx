@@ -10,6 +10,9 @@ import Popup from 'reactjs-popup'
 import axios from 'axios'
 import './style.css'
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 export default function Cart() {
     const [cartData, setCartData] = useState({ products: [] })
     const [loading, setLoading] = useState(true)
@@ -26,6 +29,17 @@ export default function Cart() {
         const emptyCart = { products: [] }
         setCartData(emptyCart)
         sessionStorage.setItem('cart', JSON.stringify(emptyCart))
+        toast.dismiss()
+        toast.error('Toàn bộ sản phẩm đã được xoá', {
+            position: "bottom-left",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+        });
     }
 
     useEffect(() => {
@@ -127,16 +141,21 @@ export default function Cart() {
         const productIndex = updatedCart.products.findIndex((product) => product.id === productId)
         if (productIndex != -1) {
             updatedCart.products.splice(productIndex, 1)
+            setCartData(updatedCart)
             sessionStorage.setItem('cart', JSON.stringify(updatedCart))
             console.log(sessionStorage.getItem('cart'))
-            setCartData(updatedCart)
         }
-    }
-
-    const clearCart = () => {
-        const updatedCart = { ...cartData, products: [] }
-        sessionStorage.setItem('cart', JSON.stringify(updatedCart))
-        setCartData(updatedCart)
+        toast.dismiss()
+        toast.error('Sản phẩm bạn chọn đã được xoá', {
+            position: "bottom-left",
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+        });
     }
 
     return (
@@ -200,6 +219,7 @@ export default function Cart() {
                                         <Button onClick={() => removeProductFromCart(product.id)}>
                                             <DeleteIcon />
                                         </Button>
+                                        <ToastContainer />
                                     </td>
                                 </tr>
                             ) : (
@@ -268,6 +288,7 @@ export default function Cart() {
                         <Button onClick={clearCart} variant="contained">
                             Xóa tất cả
                         </Button>
+                        <ToastContainer />
                     </div>
                 </div>
             )}

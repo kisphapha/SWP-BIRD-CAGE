@@ -9,8 +9,10 @@ import CategoryNav from '../../components/features/CategoryNav'
 import { useNavigate } from 'react-router-dom'
 import ArrowBack from '@mui/icons-material/ArrowBack'
 import ArrowForward from '@mui/icons-material/ArrowForward'
-
 import { Button, TextField, Rating, Avatar } from '@mui/material'
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function ProductDetails() {
     const [imgList, setImgList] = useState([])
@@ -98,6 +100,18 @@ export default function ProductDetails() {
         sessionStorage.setItem('cart', JSON.stringify(cart))
 
         console.log(sessionStorage.getItem('cart'))
+
+        toast.dismiss()
+        toast.success('Sản phẩm đã được thêm vào', {
+            position: "bottom-left",
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            });
     }
 
     const handleBuy = () => {
@@ -178,6 +192,7 @@ export default function ProductDetails() {
                             <div className="add-cart" onClick={addToCart}>
                                 Thêm vào giỏ hàng
                             </div>
+                            <ToastContainer />
                         </div>
 
                         <div className="buy" onClick={handleBuy}>
