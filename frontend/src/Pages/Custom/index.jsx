@@ -276,7 +276,7 @@ export default function Custom() {
                                 </div>
                                 <div className="w-full flex place-content-between">
                                     <div className="w-72 pl-4">
-                                        <TextField
+                                        {/* <TextField
                                             fullWidth
                                             select
                                             label="Size"
@@ -290,7 +290,7 @@ export default function Custom() {
                                                     {option.name}
                                                 </MenuItem>
                                             ))}
-                                        </TextField>
+                                        </TextField> */}
                                     </div>
                                     <div className="py-2">
                                         <IconButton>
