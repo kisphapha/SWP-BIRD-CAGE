@@ -288,9 +288,9 @@ export default function Cart() {
                                         </div>
                                     )}
                                 </Popup>
-                            </td>
-                        </tr>
-                    </table>
+                            </div>
+                        </div>
+                    </div>
                     <div className="flex justify-end gap-4 mx-4 my-2 ">
                         <Button onClick={() => navigate(`/`)} variant="contained">
                             Tiếp tục mua hàng
@@ -301,7 +301,8 @@ export default function Cart() {
                         <ToastContainer />
                     </div>
                 </div>
-            )}
+            </div>
+         )}
         </div>
     )
 }

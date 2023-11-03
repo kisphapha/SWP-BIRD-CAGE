@@ -39,7 +39,7 @@ function PieChart() {
         type="pie"
         // height={200}
 
-        series={[1, 2, 3, 4]}
+        series={[1, 7, 3 ,11]}
 
         
 

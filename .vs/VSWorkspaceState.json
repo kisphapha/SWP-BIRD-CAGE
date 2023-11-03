@@ -2,15 +2,13 @@
   "ExpandedNodes": [
     "",
     "\\backend",
-    "\\backend\\controllers",
     "\\frontend",
     "\\frontend\\src",
+    "\\frontend\\src\\components",
+    "\\frontend\\src\\Pages",
     "\\frontend\\src\\Pages\\Admin",
-    "\\frontend\\src\\Pages\\Admin\\Component",
     "\\frontend\\src\\Pages\\Admin\\NewProduct",
-    "\\frontend\\src\\Pages\\Admin\\Order",
-    "\\frontend\\src\\Pages\\ProductDetail"
+    "\\frontend\\src\\Pages\\Admin\\Products"
   ],
-  "SelectedNode": "\\backend\\controllers\\OrderController.js",
   "PreviewInSolutionExplorer": false
 }

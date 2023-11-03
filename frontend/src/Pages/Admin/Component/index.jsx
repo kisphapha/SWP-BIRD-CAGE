@@ -94,10 +94,10 @@ export default function Components() {
             status: prostatus,
             page: page
         }
-        Axios.post('http://localhost:3000/Components/filter/', json)
+        Axios.get('http://localhost:3000/component/getAllcomponent')
             .then((response) => {
-                setComponents(response.data.data)
-                setMaxPage(Math.ceil(response.data.lines.Count / 10))
+                setComponents(response.data)
+                setMaxPage(1)
             })
             .catch((error) => {
                 console.error('Error fetching data:', error)
@@ -261,14 +261,14 @@ export default function Components() {
                     <TableBody>
                         {Components.map((Component) => (
                             <TableRow>
-                                <TableCell>{Component.Id}</TableCell>
+                                <TableCell>{Component.ID}</TableCell>
                                 <TableCell>
-                                    <img className="w-16 h-16   " src={Component.Url} />
+                                    <img className="w-16 h-16   " src={Component.Picture} />
                                 </TableCell>
                                 <TableCell>{Component.Name}</TableCell>
                                 <TableCell>{Component.Price.toLocaleString('vi', { style: 'currency', currency: 'VND' })}</TableCell>
                                 <TableCell>{Component.Stock}</TableCell>
-                                <TableCell>{Component.Shape}</TableCell>
+                                <TableCell>{Component.Type}</TableCell>
                                 <TableCell>{Component.Status}</TableCell>
                                 <TableCell>
                                     {' '}
