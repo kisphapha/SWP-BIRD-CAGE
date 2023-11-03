@@ -72,6 +72,7 @@ export default function Shipper() {
                     ordersWithItems.push(orderWithItems)
                 }
             }
+            // sdasd
             setCards(ordersWithItems)
         }
     }
@@ -93,12 +94,12 @@ export default function Shipper() {
         const data = []
         cards.map((card) => {
             data.push({
-                id: card.Id,
-                user: card.UserID,
+                id: card.OrderId,
+                user: card.Name,
                 orderDate: card.OrderDate ? card.OrderDate.substr(0, 10) : '',
                 status: card.Status_Paid,
                 shipping: card.Status_Shipping,
-                address: card.AddressID,
+                address: card.Address,
                 phone: card.PhoneNumber,
                 total: card.TotalAmount,
                 note: card.Note,
@@ -120,7 +121,7 @@ export default function Shipper() {
     }
 
     useEffect(() => {
-        fetchOrder()
+        fetchOrderItems()
     }, [])
 
     return (
@@ -153,9 +154,9 @@ export default function Shipper() {
                                 <div>
                                     <div className="flex place-content-between align-middle">
                                         <div className="flex m-2">
-                                            <div className="px-2">Mã đơn hàng: {order.Id} </div>
+                                            <div className="px-2">Mã đơn hàng: {order.OrderId} </div>
                                             <div>|</div>
-                                            <div className="px-2">Ngày đặt mua: {(order.CreateAt + '').substr(0, 10)} </div>
+                                            <div className="px-2">Ngày đặt mua: {(order.OrderDate + '').substr(0, 10)} </div>
                                         </div>
                                         <div className="m-2">
                                             {/* <TextField className="w-64" select label="Trạng thái" variant="filled">

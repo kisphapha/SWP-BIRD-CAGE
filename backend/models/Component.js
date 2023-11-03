@@ -10,7 +10,7 @@ const getByComponentCate = async (CateID) => {
             select * from ComponentDetail
             JOIN dbo.ComponentDetail_Category 
             ON ComponentDetail_Category.ComponentID = ComponentDetail.ID
-            WHERE CateID = @CateID
+            WHERE CateID = @CateID AND Status = 1
         `)
         return result.recordset;
     } catch (error) {

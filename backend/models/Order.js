@@ -5,8 +5,16 @@ const getAllOrder = async () => {
     try {
         let poolConnection = await sql.connect(config);
         const result = await poolConnection.request().query(
-            `SELECT *
-             FROM [dbo].[Orders]`
+            `SELECT dbo.Orders.Id AS OrderId,
+            dbo.[User].Name,dbo.Orders.OrderDate,Orders.Status_Paid,
+            dbo.Orders.Status_Shipping,
+            CONCAT(dbo.UserAddress.SoNha,', ', dbo.UserAddress.PhuongXa,', ',dbo.UserAddress.QuanHuyen,', ', dbo.UserAddress.TinhTP ) AS Address,
+            dbo.Orders.PhoneNumber, dbo.Orders.TotalAmount, dbo.Orders.UpdateAt, dbo.Orders.Note 
+            FROM dbo.Orders 
+            JOIN dbo.[User]
+            ON [User].Id = Orders.UserID
+            JOIN dbo.UserAddress
+            ON UserAddress.ID = Orders.AddressID`
         );
         return result.recordset;
     } catch (error) {
@@ -149,7 +157,7 @@ const getAllOrderItemByOrderID = async (id) => {
     try {
         let poolConnection = await sql.connect(config);
         const query = `
-            SELECT p.Id, p.Name, oi.CreatedAt, oi.Price, oi.Quantity, i.Url, o.Status, c.name AS Shape, p.discount
+            SELECT p.Id, p.Name, oi.CreatedAt, oi.Price, oi.Quantity, i.Url,c.name AS Shape, p.discount
             FROM OrderItem oi
             INNER JOIN Orders o ON o.Id = oi.OrdersId
             INNER JOIN Products p ON oi.ProductId = p.id
@@ -204,6 +212,26 @@ const changetoSeen = async(id, userid) => {
         console.log("error: ", error);
     }
 }
+
+const pieChartData = async() => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .query(
+            ` 
+            SELECT Category.Id, SUM(dbo.OrderItem.Quantity)AS Cages FROM dbo.Category
+            JOIN dbo.Products
+            ON Products.Category = Category.Id
+            JOIN dbo.OrderItem
+            ON OrderItem.ProductId = Products.Id
+            GROUP BY Category.Id
+            `
+        )
+        return result.recordset;
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
 // dasda
 module.exports = {
     getAllOrder,
@@ -213,5 +241,6 @@ module.exports = {
     getAllOrderItemByOrderID,
     getOrderByUserId,
     loadUnSeen,
-    changetoSeen
+    changetoSeen,
+    pieChartData
 }
