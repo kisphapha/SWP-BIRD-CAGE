@@ -88,12 +88,12 @@ export default function Order() {
         const data = []
         cards.map((card) => {
             data.push({
-                id: card.Id,
-                user: card.UserID,
+                id: card.OrderId,
+                user: card.Name,
                 orderDate: card.OrderDate ? card.OrderDate.substr(0, 10) : '',
                 status: card.Status_Paid,
                 shipping: card.Status_Shipping,
-                address: card.AddressID,
+                address: card.Address,
                 phone: card.PhoneNumber,
                 total: card.TotalAmount,
                 note: card.Note,
