@@ -6,8 +6,9 @@ const OrderRouter = express.Router();
 // no parameter
 OrderRouter.route("/").get(OrderController.getAllOrder);
 
+OrderRouter.route("/pieChartData").get(OrderController.pieChartData);
 
-OrderRouter.route("/:id").get(OrderController.getOrderById);
+
 
 OrderRouter.route("/addordertodb").post(OrderController.addOrderToDB);
 
@@ -21,6 +22,7 @@ OrderRouter.route("/loadUnseen/:id").get(OrderController.loadUnSeen);
 
 OrderRouter.route("/changeToSeen").patch(OrderController.changetoSeen);
 
+OrderRouter.route("/:id").get(OrderController.getOrderById);
 
 module.exports = OrderRouter;
     
