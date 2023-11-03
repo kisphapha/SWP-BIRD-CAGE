@@ -229,7 +229,6 @@ export default function Order() {
                                         <div>
                                             <Button variant="contained" onClick={close}>
                                                 Cancel
-                                                {/* asa */}
                                             </Button>
                                         </div>
                                     </div>

@@ -98,7 +98,7 @@ const getProductByName = async (name) => {
     }
 };
 
-const addNewProductToDB = async (Name, Description, Price, Category, Material, SuitableBird, Discount, Size, Stock, Status, Url) => {
+const addNewProductToDB = async (Name, Description, Price, Category, Material, SuitableBird, Discount, Size, Stock, Status, Urls) => {
     try {
         let poolConnection = await sql.connect(config);
         const request = poolConnection.request();
@@ -149,19 +149,21 @@ const addNewProductToDB = async (Name, Description, Price, Category, Material, S
             );
         `);
 
-        const imageRequest = poolConnection.request();
-        imageRequest.input('Url', sql.NVarChar, Url);
         const productIdQuery = `SELECT TOP 1 Id FROM Products ORDER BY Id DESC`;
-        const productIdResult = await imageRequest.query(productIdQuery);
+        const productIdResult = await poolConnection.request().query(productIdQuery);
         const productId = productIdResult.recordset[0].Id;
 
-        await imageRequest
-            .input("ProductId", sql.Int, productId)
-            .query(`
-            INSERT INTO Image (ProductId,Url,isDeleted)
-            VALUES (@ProductId, @Url, 0)
-        `);
-
+        for (const url of Urls) {
+            const imageRequest = poolConnection.request(); // Create a new Request object for each iteration
+            const query = `
+                    INSERT INTO Image (ProductId, Url, isDeleted)
+                    VALUES (@ProductId, @Url, 0)
+                `;
+            await imageRequest
+                .input("ProductId", sql.Int, productId)
+                .input("Url", sql.NVarChar, url)
+                .query(query);
+        }
         return result.recordset;
     } catch (error) {
         console.log("error: ", error);
