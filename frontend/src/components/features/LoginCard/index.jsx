@@ -44,7 +44,7 @@ function LoginCard() {
                 )
                 await fetchUsers()
             }
-            navigate('/')
+            // navigate('/')
             window.location.reload()
         }
 

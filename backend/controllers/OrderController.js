@@ -31,7 +31,7 @@ const addOrderToDB = async (req, res) => {
         const UserID = req.body.UserID;
         const OrderDate = req.body.OrderDate;
         const PaymentDate = req.body.PaymentDate;
-        const ShippingAddress = req.body.ShippingAddress;
+        const ShippingAddress = req.body.AddressID;
         const PhoneNumber = req.body.PhoneNumber;
         const Note = req.body.Note;
         const TotalAmount = req.body.TotalAmount;

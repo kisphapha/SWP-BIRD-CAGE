@@ -22,6 +22,7 @@ export default function Navbar() {
         setLoading(false)
     }, [])
 
+
     const totalProductQuantity = () => {
         let total = 0
         cartData.products.forEach((product) => {

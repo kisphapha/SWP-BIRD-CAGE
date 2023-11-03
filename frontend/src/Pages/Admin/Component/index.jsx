@@ -104,13 +104,9 @@ export default function Components() {
             })
     }
     async function fetchCates() {
-        Axios.get('http://localhost:3000/category')
-            .then((response) => {
-                setCate(response.data)
-            })
-            .catch((error) => {
-                console.error('Error fetching category data:', error)
-            })
+        setCate([
+            "Móc","Nắp","Đáy","Nan","Bình nước","Khung","Cửa"
+        ])
     }
 
     useEffect(() => {
@@ -232,8 +228,8 @@ export default function Components() {
                                         <TextField className="w-64" select label="Loại" variant="filled" onChange={handleCategoryChange}>
                                             <MenuItem value={'All'}>All</MenuItem>
                                             {cate.map((option) => (
-                                                <MenuItem key={option.id} value={option.id}>
-                                                    {option.name}
+                                                <MenuItem key={option} value={option}>
+                                                    {option}
                                                 </MenuItem>
                                             ))}
                                         </TextField>
