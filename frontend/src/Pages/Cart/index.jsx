@@ -10,6 +10,9 @@ import Popup from 'reactjs-popup'
 import axios from 'axios'
 import './style.css'
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 export default function Cart() {
     const [cartData, setCartData] = useState({ products: [] })
     const [point, setPoint] = useState(0)
@@ -22,6 +25,22 @@ export default function Cart() {
             setCartData(JSON.parse(cartDataFromSession))
         }
         setLoading(false)
+    }
+    const clearCart = () => {
+        const emptyCart = { products: [] }
+        setCartData(emptyCart)
+        sessionStorage.setItem('cart', JSON.stringify(emptyCart))
+        toast.dismiss()
+        toast.error('Toàn bộ sản phẩm đã được xoá', {
+            position: "bottom-left",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+        });
     }
 
     useEffect(() => {
@@ -129,16 +148,21 @@ export default function Cart() {
         const productIndex = updatedCart.products.findIndex((product) => product.id === productId)
         if (productIndex != -1) {
             updatedCart.products.splice(productIndex, 1)
+            setCartData(updatedCart)
             sessionStorage.setItem('cart', JSON.stringify(updatedCart))
             console.log(sessionStorage.getItem('cart'))
-            setCartData(updatedCart)
         }
-    }
-    //clear cart
-    const clearCart = () => {
-        const emptyCart = { products: [] }
-        setCartData(emptyCart)
-        sessionStorage.setItem('cart', JSON.stringify(emptyCart))
+        toast.dismiss()
+        toast.error('Sản phẩm bạn chọn đã được xoá', {
+            position: "bottom-left",
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+        });
     }
 
     return (
@@ -202,6 +226,7 @@ export default function Cart() {
                                         <Button onClick={() => removeProductFromCart(product.id)}>
                                             <DeleteIcon />
                                         </Button>
+                                        <ToastContainer />
                                     </td>
                                 </tr>
                             ) : (
@@ -257,25 +282,23 @@ export default function Cart() {
                                                     </label>
                                                 </div>
 
-                                                <Button onClick={handlePayment} variant="outlined">
-                                                    Đặt hàng
-                                                </Button>
-                                            </div>
-                                        )}
-                                    </Popup>
-                                    <div className="w-fit">
-                                        <Button variant="contained" onClick={clearCart} disableRipple>
-                                            Xóa tất cả
-                                        </Button>
-                                    </div>
-                                    <div className="w-fit">
-                                        <Button variant="contained" onClick={() => navigate('/')}>
-                                            Tiếp tục mua hàng
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                                            <Button onClick={handlePayment} variant="outlined">
+                                                Đặt hàng
+                                            </Button>
+                                        </div>
+                                    )}
+                                </Popup>
+                            </td>
+                        </tr>
+                    </table>
+                    <div className="flex justify-end gap-4 mx-4 my-2 ">
+                        <Button onClick={() => navigate(`/`)} variant="contained">
+                            Tiếp tục mua hàng
+                        </Button>
+                        <Button onClick={clearCart} variant="contained">
+                            Xóa tất cả
+                        </Button>
+                        <ToastContainer />
                     </div>
                 </div>
             )}
