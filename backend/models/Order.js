@@ -219,12 +219,12 @@ const pieChartData = async() => {
         const result = await poolConnection.request()
         .query(
             ` 
-            SELECT Category.Id, SUM(dbo.OrderItem.Quantity)AS Cages FROM dbo.Category
+            SELECT Category.name, SUM(dbo.OrderItem.Quantity)AS Cages FROM dbo.Category
             JOIN dbo.Products
             ON Products.Category = Category.Id
             JOIN dbo.OrderItem
             ON OrderItem.ProductId = Products.Id
-            GROUP BY Category.Id
+            GROUP BY Category.name
             `
         )
         return result.recordset;
