@@ -176,11 +176,12 @@
 
 .popup-order{
     position: relative;
-    height: 470px;
+    /* height: 470px; */
+    height: fit-content;
     display: flex;
     flex-direction: column;
     padding: 45px;
-    gap: 5%;
+    gap: 20px;
 }
  
 .adr-container{
@@ -195,6 +196,15 @@
 
 .add-address-btn{
     width: 10%;
+}
+
+.curr-item{
+    width: 100%
+}
+
+.popup-order > h1{
+    font-size: 1.25em;
+    font-weight: bold;
 }
 
 input::-webkit-outer-spin-button,
