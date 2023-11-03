@@ -59,7 +59,7 @@ export default function Cart() {
                     PaymentDate: null,
                     ShippingAddress: null,
                     PhoneNumber: JSON.parse(sessionStorage.loginedUser).PhoneNumber,
-                    Note: 'abcxyz',
+                    Note: '',
                     TotalAmount: calculateTotalPrice(),
                     PaymentMethod: paymentMethod,
                     Status: 'UNPAID',
@@ -79,9 +79,7 @@ export default function Cart() {
                         phoneNumber: JSON.parse(sessionStorage.loginedUser).PhoneNumber,
                         orderid: res.data.orderid
                     })
-                    // setTimeout(() => {
-                    //     alert('Đang chuyển tiếp đến VNPay')
-                    // }, 2000)
+
                     console.log(response.data.url)
                     window.location.href = response.data.url
                 } else {

@@ -73,7 +73,7 @@ export default function Order() {
     }
 
     async function changeState(orderId, status) {
-        await axios.post(`http://localhost:3000/shipper/change`, {
+        await axios.post(`http://localhost:3000/shipper/changeShippingState`, {
             orderId: orderId,
             status: status
         })
@@ -104,7 +104,7 @@ export default function Order() {
     }, [cards])
 
     //step
-    const buttonState = ['Duyệt', 'Đã bàn giao cho Shipper']
+    const buttonState = ['Duyệt', 'Đã bàn giao cho Shipper', 'Giao hoàn tất']
     const steps = ['Chờ duyệt', 'Đang chuẩn bị', 'Đang giao', 'Đã giao']
     const getActiveStep = (status) => {
         return steps.indexOf(status)
@@ -149,7 +149,7 @@ export default function Order() {
                                         <div className="flex m-2">
                                             <div className="px-2">Mã đơn hàng: {order.Id} </div>
                                             <div>|</div>
-                                            <div className="px-2">Ngày đặt mua: {(order.CreateAt + '').substr(0, 10)} </div>
+                                            <div className="px-2">Ngày đặt mua: {(order.OrderDate + '').substr(0, 10)} </div>
                                         </div>
                                         <div className="m-2">
                                             {/* <TextField className="w-64" select label="Trạng thái" variant="filled">
@@ -210,7 +210,7 @@ export default function Order() {
                                     </div>
                                     <div className="flex mx-2 place-content-between">
                                         <div className="flex gap-4">
-                                            {getActiveStep(order.Status_Shipping) < 2 && (
+                                            {getActiveStep(order.Status_Shipping) < 3 && (
                                                 <Button
                                                     variant="outlined"
                                                     onClick={() => {

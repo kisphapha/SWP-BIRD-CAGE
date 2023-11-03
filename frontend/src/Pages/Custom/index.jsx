@@ -13,36 +13,44 @@ export default function Custom() {
     const [categories, setCategories] = useState([])
     const [components, setComponents] = useState([])
     const [tmpName, setTempName] = useState('')
-    const [tmpMaterial, setMaterial] = useState('')
-    const [tmpCate, setCate] = useState('')
     const [tmpDescription, setTempDescription] = useState('')
     const [selectedImage, setSelectedImage] = useState(null)
-    const [componentType, setComponentType] = useState('')
-    const [selectedComponent, setSelectedComponent] = useState(null)
-
-    const handleCategoryChange = (event) => {
-        setCate(event.target.value)
-    }
+    // const [selectedComponents, setSelectedComponents] = useState([])
 
     const handleNameChange = (event) => {
         setTempName(event.target.value)
     }
 
-    const handleMaterialChange = (event) => {
-        setMaterial(event.target.value)
-    }
-
     const handleDescriptionChange = (event) => {
         setTempDescription(event.target.value)
     }
+    
+    const componentType = ["Móc", "Khung", "Nan", "Nắp", "Đáy", "Bình nước"]
+    const initialSelectedComponents = componentType.map(type => ({
+        type,
+        data: null
+    }));
+    const [selectedComponents, setSelectedComponents] = useState(initialSelectedComponents);
+    
+    const handleSelectedComponentChange = (event, componentType) => {
+        const selectedComponentData = components.find((component) => component.ID === event.target.value);
+        setSelectedComponents((prevSelectedComponents) => {
+            const updatedSelectedComponents = [...prevSelectedComponents];
+            const existingIndex = updatedSelectedComponents.findIndex((comp) => comp.type === componentType);
 
-    const handleComponentTypeChange = (event) => {
-        setComponentType(event.target.value)
-    }
-
-    const handleSelectedComponentChange = (event) => {
-        const selectedComponentData = components.find((component) => component.ID === event.target.value)
-        setSelectedComponent(selectedComponentData)
+            if (existingIndex !== -1) {
+                updatedSelectedComponents[existingIndex] = {
+                    type: componentType,
+                    data: selectedComponentData,
+                };
+            } else {
+                updatedSelectedComponents.push({
+                    type: componentType,
+                    data: selectedComponentData,
+                });
+            }
+            return updatedSelectedComponents;
+        });
     }
 
     async function fetchCategories() {
@@ -63,6 +71,16 @@ export default function Custom() {
         }
     }
 
+    function calculateTotalPrice(selectedComponents) {
+        let total = 0;
+        selectedComponents.forEach((selectedComponent) => {
+            total += selectedComponent.data?.Price;
+        });
+        return total;
+    }
+    const total = calculateTotalPrice(selectedComponents);
+
+
     useEffect(() => {
         fetchCategories()
     }, [])
@@ -70,6 +88,21 @@ export default function Custom() {
     const defaultImageClass = 'h-64 w-64 m-2 transition-transform transform-gpu rounded-lg'
     const selectedImageClass = 'h-52 w-52 m-2 hover:scale-105 border-2 border-blue-500'
 
+    const sortedSelectedComponents = selectedComponents.sort((a, b) => {
+        return componentType.indexOf(a.type) - componentType.indexOf(b.type);
+    });
+
+    const handleRemoveComponent = (componentType) => {
+        setSelectedComponents((prevSelectedComponents) => {
+            const updatedSelectedComponents = prevSelectedComponents.map((comp) => {
+                if (comp.type === componentType) {
+                    return { type: componentType, data: null }; // Clear data in the row
+                }
+                return comp;
+            });
+            return updatedSelectedComponents;
+        });
+    };
     return (
         <form action="">
             <div className="w-full">
@@ -80,7 +113,7 @@ export default function Custom() {
                 <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }]} current="Lồng tùy chỉnh" />
                 <div className="flex-row bg-slate-50 my-8 mx-32">
                     <div className="px-8 py-4 font-bold text-red-500"> Chọn kiểu lồng</div>
-                    <div className="grid grid-cols-4 place-items-center h">
+                    <div className="grid grid-cols-4 place-items-center">
                         {categories.map((category, index) => {
                             if (category.Allow_customize === true) {
                                 return (
@@ -92,7 +125,7 @@ export default function Custom() {
                                         }}
                                         key={index}
                                     >
-                                        <img className="max-h-52" src={category.imageUrl} alt="" />
+                                        <img className="max-h-52 mx-auto" src={category.imageUrl} alt="" />
                                         <div className="text-center">
                                             <h1 className="font-bold my-2">{category.name}</h1>
                                         </div>
@@ -107,173 +140,42 @@ export default function Custom() {
                         <div className="content-center w-1/4">
                             <div className="m-4 font-bold">Các thành phần của lồng </div>
                             <div className="w-full mx-4  flex-row space-y-4 pb-8 mb-16 bg-white">
-                                <div className="w-full pl-4">
-                                    <TextField fullWidth label="Tên sản phẩm" variant="standard" onChange={handleNameChange} value={tmpName} />
+                                <div className="w-full pt-4 pl-4 h-20">
+                                    <TextField helperText={`Đặt tên cho sản phẩm`} fullWidth label="Tên sản phẩm" variant="standard" onChange={handleNameChange} value={tmpName} />
                                 </div>
-                                <div className="w-full flex place-content-between">
-                                    <div className="w-72 pl-4">
-                                        <TextField
-                                            fullWidth
-                                            select
-                                            label="Móc"
-                                            helperText="Chọn móc"
-                                            variant="filled"
-                                            onChange={handleSelectedComponentChange}
-                                        >
-                                            {components.map((component) => {
-                                                if (component.Type === 'Móc') {
-                                                    return (
-                                                        <MenuItem key={component.ID} value={component.ID}>
-                                                            {component.Name}
-                                                        </MenuItem>
-                                                    )
-                                                }
-                                            })}
-                                        </TextField>
-                                    </div>
-                                    <div className="py-2">
-                                        <IconButton>
-                                            <ClearIcon />
-                                        </IconButton>
-                                    </div>
-                                </div>
-                                <div className="w-full flex place-content-between">
-                                    <div className="w-72 pl-4">
-                                        <TextField
-                                            fullWidth
-                                            select
-                                            label="Khung"
-                                            helperText="Chọn khung"
-                                            variant="filled"
-                                            onChange={handleSelectedComponentChange}
-                                        >
-                                            {components.map((component) => {
-                                                if (component.Type === 'Khung') {
-                                                    return (
-                                                        <MenuItem key={component.ID} value={component.ID}>
-                                                            {component.Name}
-                                                        </MenuItem>
-                                                    )
-                                                }
-                                            })}
-                                        </TextField>
-                                    </div>
-                                    <div className="py-2">
-                                        <IconButton>
-                                            <ClearIcon />
-                                        </IconButton>
-                                    </div>
-                                </div>
-                                <div className="w-full flex place-content-between">
-                                    <div className="w-72 pl-4">
-                                        <TextField
-                                            fullWidth
-                                            select
-                                            label="Nan"
-                                            helperText="Chọn nan"
-                                            variant="filled"
-                                            onChange={handleSelectedComponentChange}
-                                        >
-                                            {components.map((component) => {
-                                                if (component.Type === 'Nan') {
-                                                    return (
-                                                        <MenuItem key={component.ID} value={component.ID}>
-                                                            {component.Name}
-                                                        </MenuItem>
-                                                    )
-                                                }
-                                            })}
-                                        </TextField>
-                                    </div>
-                                    <div className="py-2">
-                                        <IconButton>
-                                            <ClearIcon />
-                                        </IconButton>
-                                    </div>
-                                </div>
-
-                                <div className="w-full flex place-content-between">
-                                    <div className="w-72 pl-4">
-                                        <TextField
-                                            fullWidth
-                                            select
-                                            label="Nắp"
-                                            helperText="Chọn nắp"
-                                            variant="filled"
-                                            onChange={handleSelectedComponentChange}
-                                        >
-                                            {components.map((component) => {
-                                                if (component.Type === 'Nắp') {
-                                                    return (
-                                                        <MenuItem key={component.ID} value={component.ID}>
-                                                            {component.Name}
-                                                        </MenuItem>
-                                                    )
-                                                }
-                                            })}
-                                        </TextField>
-                                    </div>
-                                    <div className="py-2">
-                                        <IconButton>
-                                            <ClearIcon />
-                                        </IconButton>
-                                    </div>
-                                </div>
-                                <div className="w-full flex place-content-between">
-                                    <div className="w-72 pl-4">
-                                        <TextField
-                                            fullWidth
-                                            select
-                                            label="Đáy"
-                                            helperText="Chọn đáy "
-                                            variant="filled"
-                                            onChange={handleSelectedComponentChange}
-                                        >
-                                            {components.map((component) => {
-                                                if (component.Type === 'Đáy') {
-                                                    return (
-                                                        <MenuItem key={component.ID} value={component.ID}>
-                                                            {component.Name}
-                                                        </MenuItem>
-                                                    )
-                                                }
-                                            })}
-                                        </TextField>
-                                    </div>
-                                    <div className="py-2">
-                                        <IconButton>
-                                            <ClearIcon />
-                                        </IconButton>
-                                    </div>
-                                </div>
-
-                                <div className=" flex place-content-between">
-                                    <div className="w-72 pl-4">
-                                        <TextField
-                                            fullWidth
-                                            select
-                                            label="Bình nước"
-                                            helperText="Chọn bình nước"
-                                            variant="filled"
-                                            onChange={handleSelectedComponentChange}
-                                        >
-                                            {components.map((component) => {
-                                                if (component.Type === 'Bình nước') {
-                                                    return (
-                                                        <MenuItem key={component.ID} value={component.ID}>
-                                                            {component.Name}
-                                                        </MenuItem>
-                                                    )
-                                                }
-                                            })}
-                                        </TextField>
-                                    </div>
-                                    <div className="py-2">
-                                        <IconButton>
-                                            <ClearIcon />
-                                        </IconButton>
-                                    </div>
-                                </div>
+                                {
+                                    componentType.map(type => {
+                                        return (
+                                            <div className="w-full h-24 flex place-content-between">
+                                                <div className="w-72 pl-4">
+                                                    <TextField
+                                                        fullWidth
+                                                        select
+                                                        helperText={`Chọn ${type.toLowerCase()}`}
+                                                        label={type}
+                                                        variant="filled"
+                                                        onChange={(event) => handleSelectedComponentChange(event, type)}
+                                                    >
+                                                        {components.map((component) => {
+                                                            if (component.Type === type) {
+                                                                return (
+                                                                    <MenuItem key={component.ID} value={component.ID}>
+                                                                        {component.Name}
+                                                                    </MenuItem>
+                                                                )
+                                                            }
+                                                        })}
+                                                    </TextField>
+                                                </div>
+                                                <div className="py-2">
+                                                    <IconButton>
+                                                        <ClearIcon onClick={() => handleRemoveComponent(type)}/>
+                                                    </IconButton>
+                                                </div>
+                                            </div>
+                                        )
+                                    })
+                                }
                                 <div className="w-full flex place-content-between">
                                     <div className="w-72 pl-4">
                                         {/* <TextField
@@ -282,7 +184,6 @@ export default function Custom() {
                                             label="Size"
                                             helperText="Kích thước"
                                             variant="filled"
-                                            onChange={handleCategoryChange}
                                             disabled
                                         >
                                             {categories.map((option) => (
@@ -314,126 +215,28 @@ export default function Custom() {
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        <TableRow>
-                                            <TableCell>Móc </TableCell>
-                                            <TableCell>
-                                                <div className="w-20 h-20">
-                                                    <img
-                                                        src={selectedComponent?.Image || 'https://mengjinblog.files.wordpress.com/2021/06/17.jpg'}
-                                                        alt=""
-                                                    />
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Mô tả: {selectedComponent?.Description || 'No description available'}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Thời gian chế tạo: {selectedComponent?.ProductionTime || 'N/A'}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Giá tiền: {selectedComponent?.Price || 'N/A'}</div>
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell>Khung </TableCell>
-                                            <TableCell>
-                                                <div className="w-20 h-20">
-                                                    <img
-                                                        src={selectedComponent?.Image || 'https://mengjinblog.files.wordpress.com/2021/06/17.jpg'}
-                                                        alt=""
-                                                    />
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Mô tả: {selectedComponent?.Description || 'No description available'}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Thời gian chế tạo: {selectedComponent?.ProductionTime || 'N/A'}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Giá tiền: {selectedComponent?.Price || 'N/A'}</div>
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell>Nan </TableCell>
-                                            <TableCell>
-                                                <div className="w-20 h-20">
-                                                    <img
-                                                        src={selectedComponent?.Image || 'https://mengjinblog.files.wordpress.com/2021/06/17.jpg'}
-                                                        alt=""
-                                                    />
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Mô tả: {selectedComponent?.Description || 'No description available'}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Thời gian chế tạo: {selectedComponent?.ProductionTime || 'N/A'}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Giá tiền: {selectedComponent?.Price || 'N/A'}</div>
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell>Nắp</TableCell>
-                                            <TableCell>
-                                                <div className="w-20 h-20">
-                                                    <img
-                                                        src={selectedComponent?.Image || 'https://mengjinblog.files.wordpress.com/2021/06/17.jpg'}
-                                                        alt=""
-                                                    />
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Mô tả: {selectedComponent?.Description || 'No description available'}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Thời gian chế tạo: {selectedComponent?.ProductionTime || 'N/A'}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Giá tiền: {selectedComponent?.Price || 'N/A'}</div>
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell>Đáy </TableCell>
-                                            <TableCell>
-                                                <div className="w-20 h-20">
-                                                    <img
-                                                        src={selectedComponent?.Image || 'https://mengjinblog.files.wordpress.com/2021/06/17.jpg'}
-                                                        alt=""
-                                                    />
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Mô tả: {selectedComponent?.Description || 'No description available'}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Thời gian chế tạo: {selectedComponent?.ProductionTime || 'N/A'}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Giá tiền: {selectedComponent?.Price || 'N/A'}</div>
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell>Bình nước </TableCell>
-                                            <TableCell>
-                                                <div className="w-20 h-20">
-                                                    <img
-                                                        src={selectedComponent?.Image || 'https://mengjinblog.files.wordpress.com/2021/06/17.jpg'}
-                                                        alt=""
-                                                    />
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Mô tả: {selectedComponent?.Description || 'No description available'}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Thời gian chế tạo: {selectedComponent?.ProductionTime || 'N/A'}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Giá tiền: {selectedComponent?.Price || 'N/A'}</div>
-                                            </TableCell>
-                                        </TableRow>
+                                        {sortedSelectedComponents.map((selectedComponent, index) => (
+                                            <TableRow key={index}>
+                                                <TableCell>{selectedComponent.type}</TableCell>
+                                                <TableCell>
+                                                    <div className="w-20 h-20">
+                                                        <img
+                                                            src={selectedComponent.data?.Picture}
+                                                            alt=""
+                                                        />
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div>{selectedComponent.data?.Description || ''}</div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div>{selectedComponent.data?.ProductionTime || 'N/A'}</div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div>{selectedComponent.data?.Price.toLocaleString('vi', { style: 'currency', currency: 'VND' }) || ''}</div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
                                     </TableBody>
                                 </Table>
                             </TableContainer>
@@ -441,7 +244,7 @@ export default function Custom() {
                                 <div className="w-2/4 ">
                                     <TextField
                                         fullWidth
-                                        label={'Chú thích'}
+                                        label={'Ghi chú thêm cho cửa hàng'}
                                         variant="standard"
                                         onChange={handleDescriptionChange}
                                         value={tmpDescription}
@@ -449,18 +252,24 @@ export default function Custom() {
                                         rows={6}
                                     />
                                 </div>
-                                <div className="mt-8 w-1/4">
+                                <div className="mt-8 w-3/8">
                                     <div className="flex place-content-between">
                                         <div className=" font-bold">Thời gian hoàn thành dự kiến:</div>
-                                        {/* fetch */}
-                                        {/* <div>{...}</div> */}
                                     </div>
                                     <div className="flex place-content-between">
                                         <div className=" font-bold">Tổng cộng:</div>
-                                        {/* fetch */}
-                                        {/* <div> {...}</div> */}
+
                                     </div>
-                                    {/* <div className="my-8 text-center"></div> */}
+                                </div>
+                                <div className="mt-8 w-1/8">
+                                    <div className="flex place-content-between">
+                                        <div className=" font-bold">N/A</div>
+                                        {/* fetch */}
+
+                                    </div>
+                                    <div className="flex place-content-between">
+                                        <div className=" font-bold">{total.toLocaleString('vi', { style: 'currency', currency: 'VND' })}</div>
+                                    </div>
                                 </div>
                             </div>
                             <div className="text-right">
