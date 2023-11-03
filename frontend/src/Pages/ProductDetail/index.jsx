@@ -1,19 +1,24 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { UserContext, UserProvider } from '../../UserContext'
-import { Button, TextField, Rating, Avatar } from '@mui/material'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import Popup from 'reactjs-popup'
+import { useParams } from 'react-router-dom'
+import './styles.css'
+import { UserContext, UserProvider } from '../../UserContext'
 import Header from '../../components/common/Header'
 import Navbar from '../../components/common/Navbar'
-import LoginCard from '../../components/features/LoginCard'
 import CategoryNav from '../../components/features/CategoryNav'
 import AddressPopup from '../../components/features/AddressPopup/AddressPopup'
-import './styles.css'
-import 'reactjs-popup/dist/index.css'
+import LoginCard from '../../components/features/LoginCard'
+import { useNavigate } from 'react-router-dom'
+import ArrowBack from '@mui/icons-material/ArrowBack'
+import ArrowForward from '@mui/icons-material/ArrowForward'
+import { Button, TextField, Rating, Avatar } from '@mui/material'
+import Popup from 'reactjs-popup'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import { useContext } from 'react'
 
 export default function ProductDetails() {
-    const { user } = useContext(UserContext)
+    const {user } = useContext(UserContext)
     const [imgList, setImgList] = useState([])
     const { productId } = useParams()
     const [quantity, setQuantity] = useState(1)
@@ -25,6 +30,7 @@ export default function ProductDetails() {
     const [orderAddress, setOrderAddress] = useState('')
     const [phoneNumber, setPhoneNumber] = useState('')
     const [checkValidation, setCheckValidation] = useState(false)
+    const navigate = useNavigate()
 
     useEffect(() => {
         window.scrollTo(0, 0)
@@ -46,12 +52,10 @@ export default function ProductDetails() {
         fetchRatings()
         fetchImage()
     }, [productId])
-
     async function fetchAddresses() {
         const response = await axios.get(`http://localhost:3000/address/${user.Id}`)
         console.log(response.data)
         setAddressList(response.data)
-        console.log(addressList)
     }
 
     const getFeedback = () => {
@@ -113,7 +117,7 @@ export default function ProductDetails() {
         const existingProduct = cart.products.find((product) => product.id === productId)
 
         if (existingProduct) {
-            existingProduct.quantity = existingProduct.quantity + quantity
+            existingProduct.quantity = parseInt(existingProduct.quantity) + parseInt(quantity)
         } else {
             cart.products.push({
                 id: productId,
@@ -123,6 +127,7 @@ export default function ProductDetails() {
                 price: (product.Price * (100 - product.discount)) / 100
             })
         }
+        
 
         // Store the updated cart in sessionStorage
         sessionStorage.setItem('cart', JSON.stringify(cart))
@@ -197,6 +202,22 @@ export default function ProductDetails() {
         } catch (error) {
             console.error('Lỗi thanh toán:', error)
         }
+        toast.dismiss()
+        toast.success('Sản phẩm đã được thêm vào', {
+            position: 'bottom-left',
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: 'colored'
+        })
+    }
+
+    const handleBuy = () => {
+        addToCart()
+        navigate('/cart')
     }
 
     return (
@@ -217,7 +238,7 @@ export default function ProductDetails() {
                 <div className="product">
                     <div className="img-container">
                         <div className="img-main">
-                            <img className="image" src={focusUrl} />
+                            <img src={focusUrl} />
                         </div>
                         <div className="img-more ">
                             {imgList.map((image) => (
@@ -269,8 +290,11 @@ export default function ProductDetails() {
                                     +
                                 </button>
                             </div>
-                            <div className="add-cart" onClick={addToCart}>
-                                Thêm vào giỏ hàng
+                            <div>
+                                <Button variant="contained" className="add-cart" onClick={addToCart}>
+                                    Thêm vào giỏ hàng
+                                </Button>
+                                <ToastContainer />
                             </div>
                         </div>
 

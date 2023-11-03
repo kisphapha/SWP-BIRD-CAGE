@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Popup from 'reactjs-popup'
 
-const steps = ['Chờ duyệt', 'Đang chuẩn bị', 'Đang giao', 'Đã Giao']
+const steps = ['Chờ duyệt', 'Đang chuẩn bị', 'Đang giao', 'Đã giao']
 const OrderList = (props) => {
     const [cards, setCards] = useState([])
     const [orders, setOrders] = useState([])
@@ -43,7 +43,6 @@ const OrderList = (props) => {
             StarPoint: rating,
             Content: feedbackContent
         }
-        console.log(json)
         if (json.StarPoint > 0) {
             await axios.post(`http://localhost:3000/products/rating/`, json)
             alert('Chúng tôi đã ghi nhận. Chân thành cảm ơn bạn!')

@@ -255,7 +255,6 @@ export default function Products() {
                             </TableCell>
                             <TableCell>
                                 <div>
-                                    <div>Sửa</div>
                                     <div><Button variant="contained" onClick={handleFilter }>FILTER</Button></div>
                                 </div>
                             </TableCell>

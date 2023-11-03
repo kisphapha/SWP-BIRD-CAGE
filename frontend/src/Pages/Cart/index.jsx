@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from 'react'
+import DeleteIcon from '@mui/icons-material/Delete'
 import { Button } from '@mui/material'
-import { useNavigate } from 'react-router-dom'
 import { UserProvider } from '../../UserContext'
 import Header from '../../components/common/Header'
 import Navbar from '../../components/common/Navbar'
 import CategoryNav from '../../components/features/CategoryNav'
-import DeleteIcon from '@mui/icons-material/Delete'
+import { useNavigate } from 'react-router-dom'
 import Popup from 'reactjs-popup'
 import axios from 'axios'
 import './style.css'
 
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 export default function Cart() {
     const [cartData, setCartData] = useState({ products: [] })
-    const [point, setPoint] = useState(0)
     const [loading, setLoading] = useState(true)
     const [paymentMethod, setPaymentMethod] = useState('COD') // Default to 'onDelivery'
     const navigate = useNavigate()
@@ -32,15 +31,15 @@ export default function Cart() {
         sessionStorage.setItem('cart', JSON.stringify(emptyCart))
         toast.dismiss()
         toast.error('Toàn bộ sản phẩm đã được xoá', {
-            position: "bottom-left",
+            position: 'bottom-left',
             autoClose: 3000,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: false,
             draggable: true,
             progress: undefined,
-            theme: "colored",
-        });
+            theme: 'colored'
+        })
     }
 
     useEffect(() => {
@@ -51,10 +50,13 @@ export default function Cart() {
         const updatedCart = { ...cartData }
         const productIndex = updatedCart.products.findIndex((product) => product.id === productId)
 
-        if (updatedCart.products[productIndex].quantity > 1) {
+        if (updatedCart.products[productIndex].quantity >= 1) {
             updatedCart.products[productIndex].quantity -= 1
             sessionStorage.setItem('cart', JSON.stringify(updatedCart))
             setCartData(updatedCart)
+        }
+        if (updatedCart.products[productIndex].quantity == 0) {
+            removeProductFromCart(productId)
         }
     }
 
@@ -81,12 +83,7 @@ export default function Cart() {
                     Note: 'abcxyz',
                     TotalAmount: calculateTotalPrice(),
                     PaymentMethod: paymentMethod,
-                    Status: 'UNPAID',
                     Items: JSON.parse(sessionStorage.cart).products
-                })
-                await axios.post('http://localhost:3000/users/updatePoint', {
-                    id: 17,
-                    point: 1000
                 })
                 console.log(res.data.orderid)
                 if (paymentMethod == 'vnpay') {
@@ -98,17 +95,15 @@ export default function Cart() {
                         phoneNumber: JSON.parse(sessionStorage.loginedUser).PhoneNumber,
                         orderid: res.data.orderid
                     })
-                    // setTimeout(() => {
-                    //     alert('Đang chuyển tiếp đến VNPay')
-                    // }, 2000)
-                    console.log(response.data.url)
+                    setTimeout(() => {
+                        alert('Đang chuyển tiếp đến VNPay')
+                    }, 2000)
                     window.location.href = response.data.url
                 } else {
                     alert('Đặt hàng thành công')
-                    sessionStorage.setItem('cart', '{"products":[]}')
-                    window.location.reload(false)
                 }
                 sessionStorage.setItem('cart', '{"products":[]}')
+                window.location.reload(false)
             } else {
                 alert('Đăng nhập để tiến hành thanh toán')
             }
@@ -127,6 +122,7 @@ export default function Cart() {
         })
         return total
     }
+
     const calculateBonus = () => {
         let bonus = 0
 
@@ -137,10 +133,6 @@ export default function Cart() {
         })
         return bonus
     }
-
-    useEffect(() => {
-        setPoint(calculateBonus())
-    }, [calculateBonus])
 
     const removeProductFromCart = (productId) => {
         const updatedCart = { ...cartData }
@@ -154,15 +146,15 @@ export default function Cart() {
         }
         toast.dismiss()
         toast.error('Sản phẩm bạn chọn đã được xoá', {
-            position: "bottom-left",
+            position: 'bottom-left',
             autoClose: 1000,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: false,
             draggable: true,
             progress: undefined,
-            theme: "colored",
-        });
+            theme: 'colored'
+        })
     }
 
     return (
@@ -233,54 +225,51 @@ export default function Cart() {
                                 <></>
                             )
                         )}
-                    </table>
-                    <div className=" flex w-full justify-end">
-                        <div className=" w-2/6 mr-4 my-4   ">
-                            <div className="border border-gray-300 rounded p-4 w-4/5 ml-24">
-                                <div className="font-bold flex place-content-between ">
-                                    <div className="">Tổng cộng:</div>
-                                    <div>{calculateTotalPrice().toLocaleString('vi', { style: 'currency', currency: 'VND' })}</div>
-                                </div>
+                        <tr>
+                            <td colSpan="5" className="text-right font-bold">
+                                Tổng cộng: {calculateTotalPrice().toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colSpan="5" className="text-right font-bold">
+                                Số điểm bonus sẽ tích được: {calculateBonus()}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td colSpan="4" className="text-right font-bold py-8 pr-10">
+                                <Popup trigger={<Button variant="contained">Thanh toán</Button>} position="right center" modal>
+                                    {(close) => (
+                                        <div>
+                                            <h2>Chi tiết thanh toán</h2>
+                                            <p>Tổng cộng: {calculateTotalPrice().toLocaleString('vi', { style: 'currency', currency: 'VND' })}</p>
 
-                                <div className="font-bold flex place-content-between">
-                                    <div className="">Số điểm bonus sẽ tích được:</div>
-                                    <div>{calculateBonus()}</div>
-                                </div>
-                            </div>
-
-                            <div className=" font-bold ">
-                                <div className="flex justify-end gap-4 my-2 ">
-                                    <Popup trigger={<Button variant="contained">Thanh toán</Button>} position="right center" modal>
-                                        {(close) => (
                                             <div>
-                                                <h2>Chi tiết thanh toán</h2>
-                                                <p>Tổng cộng: {calculateTotalPrice().toLocaleString('vi', { style: 'currency', currency: 'VND' })}</p>
+                                                <label>
+                                                    <input
+                                                        type="radio"
+                                                        name="paymentMethod"
+                                                        value="COD"
+                                                        checked={paymentMethod === 'COD'}
+                                                        onChange={() => setPaymentMethod('COD')}
+                                                    />
+                                                    Thanh toán khi nhận hàng
+                                                </label>
+                                            </div>
 
-                                                <div>
-                                                    <label>
-                                                        <input
-                                                            type="radio"
-                                                            name="paymentMethod"
-                                                            value="COD"
-                                                            checked={paymentMethod === 'COD'}
-                                                            onChange={() => setPaymentMethod('COD')}
-                                                        />
-                                                        Thanh toán khi nhận hàng
-                                                    </label>
-                                                </div>
-
-                                                <div>
-                                                    <label>
-                                                        <input
-                                                            type="radio"
-                                                            name="paymentMethod"
-                                                            value="vnpay"
-                                                            checked={paymentMethod === 'vnpay'}
-                                                            onChange={() => setPaymentMethod('vnpay')}
-                                                        />
-                                                        Thanh toán nhanh cùng VNPay
-                                                    </label>
-                                                </div>
+                                            <div>
+                                                <label>
+                                                    <input
+                                                        type="radio"
+                                                        name="paymentMethod"
+                                                        value="vnpay"
+                                                        checked={paymentMethod === 'vnpay'}
+                                                        onChange={() => setPaymentMethod('vnpay')}
+                                                    />
+                                                    Thanh toán nhanh cùng VNPay
+                                                </label>
+                                            </div>
 
                                             <Button onClick={handlePayment} variant="outlined">
                                                 Đặt hàng
@@ -288,9 +277,9 @@ export default function Cart() {
                                         </div>
                                     )}
                                 </Popup>
-                            </div>
-                        </div>
-                    </div>
+                            </td>
+                        </tr>
+                    </table>
                     <div className="flex justify-end gap-4 mx-4 my-2 ">
                         <Button onClick={() => navigate(`/`)} variant="contained">
                             Tiếp tục mua hàng
@@ -301,8 +290,7 @@ export default function Cart() {
                         <ToastContainer />
                     </div>
                 </div>
-            </div>
-         )}
+            )}
         </div>
     )
 }

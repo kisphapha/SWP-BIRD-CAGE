@@ -43,6 +43,15 @@ export default function TabAdmin() {
                         New Product
                     </Button>
                     <Button
+                        startIcon={<AddIcon />}
+                        onClick={() => handleButtonClick('/admin/NewComponent')}
+                        fullWidth
+                        classes={{ root: activeButton === '/admin/NewComponent' ? 'active-dashboard' : '' }}
+                        style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
+                    >
+                        New Component
+                    </Button>
+                    <Button
                         onClick={() => handleButtonClick('/admin/NewCoupon')}
                         fullWidth
                         classes={{ root: activeButton === '/admin/NewCoupon' ? 'active-dashboard' : '' }}

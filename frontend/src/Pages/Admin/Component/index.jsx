@@ -94,10 +94,10 @@ export default function Components() {
             status: prostatus,
             page: page
         }
-        Axios.get('http://localhost:3000/component/getAllcomponent')
+        Axios.post('http://localhost:3000/component/filterComponent',json)
             .then((response) => {
-                setComponents(response.data)
-                setMaxPage(1)
+                setComponents(response.data.data)
+                setMaxPage(Math.ceil(response.data.lines.COUNT / 10))
             })
             .catch((error) => {
                 console.error('Error fetching data:', error)
@@ -252,8 +252,7 @@ export default function Components() {
                             </TableCell>
                             <TableCell>
                                 <div>
-                                    <div>Sửa</div>
-                                    <div></div>
+                                    <div><Button variant="contained" onClick={handleFilter}>FILTER</Button></div>
                                 </div>
                             </TableCell>
                         </TableRow>

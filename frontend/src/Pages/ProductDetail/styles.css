@@ -123,8 +123,8 @@
 #page-product > .product-container > .product > .product-detail > .option > .add-cart {
     width: max-content;
     padding: 5px;
-    background-color: #18dcff;
-    border-radius: 10px;
+    /* background-color: #18dcff; */
+    /* border-radius: 10px; */
     transition: all 0.2s linear;
     cursor: pointer;
     font-weight: 700;
@@ -133,11 +133,13 @@
     transform: scale(1.05);
 }
 #page-product > .product-container > .product > .product-detail > .buy:hover {
+    background: #1664c0;
     transform: scale(1.05);
 }
 #page-product > .product-container > .product > .product-detail > .buy {
+    color: white;
     margin: 100px 50px;
-    background-color: rgb(66, 237, 220);
+    background-color: #1a77e6;
     border-radius: 10px;
     transition: all 0.2s linear;
     cursor: pointer;
@@ -174,7 +176,7 @@
     background-color: aliceblue;
 }
 
-.popup-order{
+.popup-order {
     position: relative;
     /* height: 470px; */
     height: fit-content;
@@ -183,32 +185,32 @@
     padding: 45px;
     gap: 20px;
 }
- 
-.adr-container{
+
+.adr-container {
     width: 100%;
     display: flex;
     gap: 5%;
 }
 
-.phone-container{
+.phone-container {
     width: 85%;
 }
 
-.add-address-btn{
+.add-address-btn {
     width: 10%;
 }
 
-.curr-item{
-    width: 100%
+.curr-item {
+    width: 100%;
 }
 
-.popup-order > h1{
+.popup-order > h1 {
     font-size: 1.25em;
     font-weight: bold;
 }
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+    -webkit-appearance: none;
+    margin: 0;
 }
