@@ -31,12 +31,14 @@ import SecurePolicy from './Pages/NaviFooter/Policy/SecurePolicy'
 import About from './Pages/NaviFooter/Information/About'
 import Contact from './Pages/NaviFooter/Information/Contact'
 import Components from './Pages/Admin/Component'
+import Shipper from './Pages/ShipperPage'
 function App() {
     return (
         <div>
             <Routes>
                 <Route element={<UserLayout />} path="/">
                     <Route element={<Home />} path="" />
+                    <Route element={<Shipper />} path="/shipper" />
                     <Route element={<LoginCard />} path="/login" />
                     <Route
                         element={

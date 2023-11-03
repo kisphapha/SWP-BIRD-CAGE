@@ -1,4 +1,4 @@
-﻿import { Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material'
+import { Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material'
 import React, { useState, useEffect } from 'react'
 import MenuItem from '@mui/material/MenuItem'
 import { DataGrid } from '@mui/x-data-grid'
@@ -29,18 +29,20 @@ const columns = [
         // valueGetter: (params) => `${params.row.firstName || ''} ${params.row.lastName || ''}`
     },
     { field: 'total', headerName: 'Tổng tiền', width: 130 },
-    { field: 'updateAt', headerName: 'Ngày chỉnh sửa', width: 130 },
+    // { field: 'updateAt', headerName: 'Ngày chỉnh sửa', width: 130 },
     { field: 'note', headerName: 'Ghi chú', width: 130 }
 ]
 
-export default function Order() {
+export default function Shipper() {
     const [openPopup, setOpenPopup] = useState(false)
     const [cards, setCards] = useState([])
     const [order, setOrder] = useState('')
     const [orderItem, setOrderItem] = useState([])
     const [rows, setRows] = useState([])
-    const [btnState, setBtnState] = useState('')
 
+    const [sortModel, setSortModel] = useState([
+        { field: 'shipping', sort: 'desc' } // Sort by 'shipping' field in ascending order
+    ])
     const handleRowClick = async (params) => {
         const order = await getAnOrder(params.row.id)
         const detail = await fetchOrderItems(params.row.id)
@@ -64,9 +66,11 @@ export default function Order() {
             const ordersWithItems = []
 
             for (const order of jsonData) {
-                const items = await fetchOrderItems(order.Id)
-                const orderWithItems = { ...order, items }
-                ordersWithItems.push(orderWithItems)
+                if (order.Status_Shipping == 'Đang giao' || order.Status_Shipping == 'Đã giao') {
+                    const items = await fetchOrderItems(order.Id)
+                    const orderWithItems = { ...order, items }
+                    ordersWithItems.push(orderWithItems)
+                }
             }
             setCards(ordersWithItems)
         }
@@ -80,6 +84,7 @@ export default function Order() {
         alert('Order is updated')
         fetchOrder()
     }
+
     useEffect(() => {
         fetchOrder()
     }, [])
@@ -104,7 +109,7 @@ export default function Order() {
     }, [cards])
 
     //step
-    const buttonState = ['Duyệt', 'Đã bàn giao cho Shipper']
+    const buttonState = ['Duyệt', 'Đã bàn giao cho Shipper', 'Hoàn tất giao hàng']
     const steps = ['Chờ duyệt', 'Đang chuẩn bị', 'Đang giao', 'Đã giao']
     const getActiveStep = (status) => {
         return steps.indexOf(status)
@@ -119,8 +124,8 @@ export default function Order() {
     }, [])
 
     return (
-        <div className=" w-full flex flex-col">
-            <div className="m-10 font-bold pl-10">Users </div>
+        <div className=" ">
+            <div className="m-10 font-bold pl-10">Order </div>
             <div className="mx-10     pb-10 h-screen">
                 <DataGrid
                     rows={rows}
@@ -132,6 +137,7 @@ export default function Order() {
                     }}
                     pageSizeOptions={[10]}
                     onRowClick={handleRowClick}
+                    sortModel={sortModel}
                 />
                 <Popup
                     open={openPopup}
@@ -210,7 +216,7 @@ export default function Order() {
                                     </div>
                                     <div className="flex mx-2 place-content-between">
                                         <div className="flex gap-4">
-                                            {getActiveStep(order.Status_Shipping) < 2 && (
+                                            {getActiveStep(order.Status_Shipping) < 3 && (
                                                 <Button
                                                     variant="outlined"
                                                     onClick={() => {
