@@ -72,6 +72,7 @@ export default function Shipper() {
                     ordersWithItems.push(orderWithItems)
                 }
             }
+            // sdasd
             setCards(ordersWithItems)
         }
     }
