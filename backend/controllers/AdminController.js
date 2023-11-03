@@ -1,5 +1,5 @@
 const Admin =  require("../models/Admin");
-
+const Order =  require("../models/Order");
 
 const getOrderBy5Month = async (req, res) => {
     try {
@@ -74,7 +74,6 @@ const loadUnSeen = async (req, res) => {
     }
 }
 
-// cach dung cho tui frontend (luc user bam vao cai chuong thi no gui 2 tham so la id vs status = 1 xuong)
 const changetoSeen = async(req, res) => {
     try {
         const order = await Order.changetoSeen();

@@ -97,7 +97,6 @@ export default function ProductDetails() {
         // Store the updated cart in sessionStorage
         sessionStorage.setItem('cart', JSON.stringify(cart))
 
-        console.log(sessionStorage.getItem('cart'))
     }
 
     const handleBuy = () => {

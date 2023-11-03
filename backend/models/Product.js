@@ -378,7 +378,6 @@ const filterProduct = async (id, name, category, upper_price, lower_price, upper
 
         const linesResult = await poolConnection.request().query(linesQuery);
         json.lines = linesResult.recordset[0];
-        console.log(json)
         return json;
     } catch (error) {
         console.log("error: ", error);

@@ -39,6 +39,7 @@ export default function Order() {
     const [order, setOrder] = useState('')
     const [orderItem, setOrderItem] = useState([])
     const [rows, setRows] = useState([])
+    const [btnState, setBtnState] = useState('')
 
     const handleRowClick = async (params) => {
         const order = await getAnOrder(params.row.id)
@@ -47,6 +48,7 @@ export default function Order() {
         setOrderItem(detail)
         setOpenPopup(true)
     }
+
     async function getAnOrder(id) {
         const response = await axios.get(`http://localhost:3000/order/${id}`)
         return response.data
@@ -68,6 +70,15 @@ export default function Order() {
             }
             setCards(ordersWithItems)
         }
+    }
+
+    async function changeState(orderId, status) {
+        await axios.post(`http://localhost:3000/shipper/changeShippingState`, {
+            orderId: orderId,
+            status: status
+        })
+        alert('Order is updated')
+        fetchOrder()
     }
     useEffect(() => {
         fetchOrder()
@@ -93,10 +104,14 @@ export default function Order() {
     }, [cards])
 
     //step
-
-    const steps = ['Chờ duyệt', 'Đang chuẩn bị', 'Đang giao', 'Đã Giao']
+    const buttonState = ['Duyệt', 'Đã bàn giao cho Shipper', "Giao hoàn tất"]
+    const steps = ['Chờ duyệt', 'Đang chuẩn bị', 'Đang giao', 'Đã giao']
     const getActiveStep = (status) => {
         return steps.indexOf(status)
+    }
+
+    function getButtonStatus(status) {
+        return buttonState[steps.indexOf(status)]
     }
 
     useEffect(() => {
@@ -127,14 +142,14 @@ export default function Order() {
                     modal
                 >
                     {(close) => (
-                        <>
+                        <div>
                             {order && (
                                 <div>
                                     <div className="flex place-content-between align-middle">
                                         <div className="flex m-2">
                                             <div className="px-2">Mã đơn hàng: {order.Id} </div>
                                             <div>|</div>
-                                            <div className="px-2">Ngày đặt mua: {(order.CreateAt + '').substr(0, 10)} </div>
+                                            <div className="px-2">Ngày đặt mua: {(order.OrderDate + '').substr(0, 10)} </div>
                                         </div>
                                         <div className="m-2">
                                             {/* <TextField className="w-64" select label="Trạng thái" variant="filled">
@@ -143,7 +158,7 @@ export default function Order() {
                                             <MenuItem value={'Đang giao'}>Đang giao</MenuItem>
                                             <MenuItem value={'Đã giao'}>Đã giao</MenuItem>
                                         </TextField> */}
-                                            <Stepper activeStep={getActiveStep(cards.Status_Shipping)}>
+                                            <Stepper activeStep={getActiveStep(order.Status_Shipping)}>
                                                 {steps.map((label, index) => {
                                                     const stepProps = {}
                                                     const labelProps = {}
@@ -195,16 +210,19 @@ export default function Order() {
                                     </div>
                                     <div className="flex mx-2 place-content-between">
                                         <div className="flex gap-4">
-                                            <Button variant="outlined" onClick={close}>
-                                                Duyệt
-                                            </Button>
-                                            <Button variant="outlined" onClick={close}>
-                                                xong
-                                            </Button>
-                                            <Button variant="outlined" onClick={close} disabled>
-                                                Giao hàng
-                                            </Button>
+                                            {getActiveStep(order.Status_Shipping) < 3 && (
+                                                <Button
+                                                    variant="outlined"
+                                                    onClick={() => {
+                                                        changeState(order.Id, steps[parseInt(getActiveStep(order.Status_Shipping)) + 1])
+                                                        close()
+                                                    }}
+                                                >
+                                                    {getButtonStatus(order.Status_Shipping)}
+                                                </Button>
+                                            )}
                                         </div>
+
                                         <div>
                                             <Button variant="contained" onClick={close}>
                                                 Cancel
@@ -213,7 +231,7 @@ export default function Order() {
                                     </div>
                                 </div>
                             )}
-                        </>
+                        </div>
                     )}
                 </Popup>
             </div>

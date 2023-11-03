@@ -48,7 +48,7 @@ const getOrderById = async (id) => {
     }
 };
 
-const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentMethod, Status, Items) => {
+const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentMethod, Items) => {
     try {
         let poolConnection = await sql.connect(config);
         const orderQuery = `
@@ -65,7 +65,6 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                 [IsDeleted],
                 [CreateAt],
                 [UpdateAt],
-                [Status],
                 [View_Status],
                 [Status_Shipping],
                 [Status_Paid]
@@ -151,7 +150,7 @@ const getAllOrderItemByOrderID = async (id) => {
     try {
         let poolConnection = await sql.connect(config);
         const query = `
-            SELECT p.Id, p.Name, oi.CreatedAt, oi.Price, oi.Quantity, i.Url, o.Status, c.name AS Shape, p.discount
+            SELECT p.Id, p.Name, oi.CreatedAt, oi.Price, oi.Quantity, i.Url, c.name AS Shape, p.discount
             FROM OrderItem oi
             INNER JOIN Orders o ON o.Id = oi.OrdersId
             INNER JOIN Products p ON oi.ProductId = p.id

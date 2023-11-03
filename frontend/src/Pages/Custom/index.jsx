@@ -13,28 +13,25 @@ export default function Custom() {
     const [categories, setCategories] = useState([])
     const [components, setComponents] = useState([])
     const [tmpName, setTempName] = useState('')
-    const [tmpMaterial, setMaterial] = useState('')
-    const [tmpCate, setCate] = useState('')
     const [tmpDescription, setTempDescription] = useState('')
     const [selectedImage, setSelectedImage] = useState(null)
-    const [selectedComponents, setSelectedComponents] = useState([])
-
-    const handleCategoryChange = (event) => {
-        setCate(event.target.value)
-    }
+    // const [selectedComponents, setSelectedComponents] = useState([])
 
     const handleNameChange = (event) => {
         setTempName(event.target.value)
     }
 
-    const handleMaterialChange = (event) => {
-        setMaterial(event.target.value)
-    }
-
     const handleDescriptionChange = (event) => {
         setTempDescription(event.target.value)
     }
-
+    
+    const componentType = ["Móc", "Khung", "Nan", "Nắp", "Đáy", "Bình nước"]
+    const initialSelectedComponents = componentType.map(type => ({
+        type,
+        data: null
+    }));
+    const [selectedComponents, setSelectedComponents] = useState(initialSelectedComponents);
+    
     const handleSelectedComponentChange = (event, componentType) => {
         const selectedComponentData = components.find((component) => component.ID === event.target.value);
         setSelectedComponents((prevSelectedComponents) => {
@@ -77,7 +74,7 @@ export default function Custom() {
     function calculateTotalPrice(selectedComponents) {
         let total = 0;
         selectedComponents.forEach((selectedComponent) => {
-            total += selectedComponent.data.Price;
+            total += selectedComponent.data?.Price;
         });
         return total;
     }
@@ -91,6 +88,21 @@ export default function Custom() {
     const defaultImageClass = 'h-64 w-64 m-2 transition-transform transform-gpu rounded-lg'
     const selectedImageClass = 'h-52 w-52 m-2 hover:scale-105 border-2 border-blue-500'
 
+    const sortedSelectedComponents = selectedComponents.sort((a, b) => {
+        return componentType.indexOf(a.type) - componentType.indexOf(b.type);
+    });
+
+    const handleRemoveComponent = (componentType) => {
+        setSelectedComponents((prevSelectedComponents) => {
+            const updatedSelectedComponents = prevSelectedComponents.map((comp) => {
+                if (comp.type === componentType) {
+                    return { type: componentType, data: null }; // Clear data in the row
+                }
+                return comp;
+            });
+            return updatedSelectedComponents;
+        });
+    };
     return (
         <form action="">
             <div className="w-full">
@@ -128,173 +140,42 @@ export default function Custom() {
                         <div className="content-center w-1/4">
                             <div className="m-4 font-bold">Các thành phần của lồng </div>
                             <div className="w-full mx-4  flex-row space-y-4 pb-8 mb-16 bg-white">
-                                <div className="w-full pl-4">
-                                    <TextField fullWidth label="Tên sản phẩm" variant="standard" onChange={handleNameChange} value={tmpName} />
+                                <div className="w-full pt-4 pl-4 h-20">
+                                    <TextField helperText={`Đặt tên cho sản phẩm`} fullWidth label="Tên sản phẩm" variant="standard" onChange={handleNameChange} value={tmpName} />
                                 </div>
-                                <div className="w-full flex place-content-between">
-                                    <div className="w-72 pl-4">
-                                        <TextField
-                                            fullWidth
-                                            select
-                                            label="Móc"
-                                            helperText="Chọn móc"
-                                            variant="filled"
-                                            onChange={(event) => handleSelectedComponentChange(event, 'Móc')}
-                                        >
-                                            {components.map((component) => {
-                                                if (component.Type === 'Móc') {
-                                                    return (
-                                                        <MenuItem key={component.ID} value={component.ID}>
-                                                            {component.Name}
-                                                        </MenuItem>
-                                                    )
-                                                }
-                                            })}
-                                        </TextField>
-                                    </div>
-                                    <div className="py-2">
-                                        <IconButton>
-                                            <ClearIcon />
-                                        </IconButton>
-                                    </div>
-                                </div>
-                                <div className="w-full flex place-content-between">
-                                    <div className="w-72 pl-4">
-                                        <TextField
-                                            fullWidth
-                                            select
-                                            label="Khung"
-                                            helperText="Chọn khung"
-                                            variant="filled"
-                                            onChange={(event) => handleSelectedComponentChange(event, 'Khung')}
-                                        >
-                                            {components.map((component) => {
-                                                if (component.Type === 'Khung') {
-                                                    return (
-                                                        <MenuItem key={component.ID} value={component.ID}>
-                                                            {component.Name}
-                                                        </MenuItem>
-                                                    )
-                                                }
-                                            })}
-                                        </TextField>
-                                    </div>
-                                    <div className="py-2">
-                                        <IconButton>
-                                            <ClearIcon />
-                                        </IconButton>
-                                    </div>
-                                </div>
-                                <div className="w-full flex place-content-between">
-                                    <div className="w-72 pl-4">
-                                        <TextField
-                                            fullWidth
-                                            select
-                                            label="Nan"
-                                            helperText="Chọn nan"
-                                            variant="filled"
-                                            onChange={(event) => handleSelectedComponentChange(event, 'Nan')}
-                                        >
-                                            {components.map((component) => {
-                                                if (component.Type === 'Nan') {
-                                                    return (
-                                                        <MenuItem key={component.ID} value={component.ID}>
-                                                            {component.Name}
-                                                        </MenuItem>
-                                                    )
-                                                }
-                                            })}
-                                        </TextField>
-                                    </div>
-                                    <div className="py-2">
-                                        <IconButton>
-                                            <ClearIcon />
-                                        </IconButton>
-                                    </div>
-                                </div>
-
-                                <div className="w-full flex place-content-between">
-                                    <div className="w-72 pl-4">
-                                        <TextField
-                                            fullWidth
-                                            select
-                                            label="Nắp"
-                                            helperText="Chọn nắp"
-                                            variant="filled"
-                                            onChange={(event) => handleSelectedComponentChange(event, 'Nắp')}
-                                        >
-                                            {components.map((component) => {
-                                                if (component.Type === 'Nắp') {
-                                                    return (
-                                                        <MenuItem key={component.ID} value={component.ID}>
-                                                            {component.Name}
-                                                        </MenuItem>
-                                                    )
-                                                }
-                                            })}
-                                        </TextField>
-                                    </div>
-                                    <div className="py-2">
-                                        <IconButton>
-                                            <ClearIcon />
-                                        </IconButton>
-                                    </div>
-                                </div>
-                                <div className="w-full flex place-content-between">
-                                    <div className="w-72 pl-4">
-                                        <TextField
-                                            fullWidth
-                                            select
-                                            label="Đáy"
-                                            helperText="Chọn đáy "
-                                            variant="filled"
-                                            onChange={(event) => handleSelectedComponentChange(event, 'Đáy')}
-                                        >
-                                            {components.map((component) => {
-                                                if (component.Type === 'Đáy') {
-                                                    return (
-                                                        <MenuItem key={component.ID} value={component.ID}>
-                                                            {component.Name}
-                                                        </MenuItem>
-                                                    )
-                                                }
-                                            })}
-                                        </TextField>
-                                    </div>
-                                    <div className="py-2">
-                                        <IconButton>
-                                            <ClearIcon />
-                                        </IconButton>
-                                    </div>
-                                </div>
-
-                                <div className=" flex place-content-between">
-                                    <div className="w-72 pl-4">
-                                        <TextField
-                                            fullWidth
-                                            select
-                                            label="Bình nước"
-                                            helperText="Chọn bình nước"
-                                            variant="filled"
-                                            onChange={(event) => handleSelectedComponentChange(event, 'Bình nước')}
-                                        >
-                                            {components.map((component) => {
-                                                if (component.Type === 'Bình nước') {
-                                                    return (
-                                                        <MenuItem key={component.ID} value={component.ID}>
-                                                            {component.Name}
-                                                        </MenuItem>
-                                                    )
-                                                }
-                                            })}
-                                        </TextField>
-                                    </div>
-                                    <div className="py-2">
-                                        <IconButton>
-                                            <ClearIcon />
-                                        </IconButton>
-                                    </div>
-                                </div>
+                                {
+                                    componentType.map(type => {
+                                        return (
+                                            <div className="w-full h-24 flex place-content-between">
+                                                <div className="w-72 pl-4">
+                                                    <TextField
+                                                        fullWidth
+                                                        select
+                                                        helperText={`Chọn ${type.toLowerCase()}`}
+                                                        label={type}
+                                                        variant="filled"
+                                                        onChange={(event) => handleSelectedComponentChange(event, type)}
+                                                    >
+                                                        {components.map((component) => {
+                                                            if (component.Type === type) {
+                                                                return (
+                                                                    <MenuItem key={component.ID} value={component.ID}>
+                                                                        {component.Name}
+                                                                    </MenuItem>
+                                                                )
+                                                            }
+                                                        })}
+                                                    </TextField>
+                                                </div>
+                                                <div className="py-2">
+                                                    <IconButton>
+                                                        <ClearIcon onClick={() => handleRemoveComponent(type)}/>
+                                                    </IconButton>
+                                                </div>
+                                            </div>
+                                        )
+                                    })
+                                }
                                 <div className="w-full flex place-content-between">
                                     <div className="w-72 pl-4">
                                         <TextField
@@ -303,7 +184,6 @@ export default function Custom() {
                                             label="Size"
                                             helperText="Kích thước"
                                             variant="filled"
-                                            onChange={handleCategoryChange}
                                             disabled
                                         >
                                             {categories.map((option) => (
@@ -335,25 +215,25 @@ export default function Custom() {
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {selectedComponents.map((selectedComponent, index) => (
+                                        {sortedSelectedComponents.map((selectedComponent, index) => (
                                             <TableRow key={index}>
                                                 <TableCell>{selectedComponent.type}</TableCell>
                                                 <TableCell>
                                                     <div className="w-20 h-20">
                                                         <img
-                                                            src={selectedComponent.data?.Image || 'https://mengjinblog.files.wordpress.com/2021/06/17.jpg'}
+                                                            src={selectedComponent.data?.Picture}
                                                             alt=""
                                                         />
                                                     </div>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <div>{selectedComponent.data?.Description || 'No description available'}</div>
+                                                    <div>{selectedComponent.data?.Description || ''}</div>
                                                 </TableCell>
                                                 <TableCell>
                                                     <div>{selectedComponent.data?.ProductionTime || 'N/A'}</div>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <div>{selectedComponent.data?.Price.toLocaleString('vi', { style: 'currency', currency: 'VND' }) || 'N/A'}</div>
+                                                    <div>{selectedComponent.data?.Price.toLocaleString('vi', { style: 'currency', currency: 'VND' }) || ''}</div>
                                                 </TableCell>
                                             </TableRow>
                                         ))}
@@ -364,7 +244,7 @@ export default function Custom() {
                                 <div className="w-2/4 ">
                                     <TextField
                                         fullWidth
-                                        label={'Chú thích'}
+                                        label={'Ghi chú thêm cho cửa hàng'}
                                         variant="standard"
                                         onChange={handleDescriptionChange}
                                         value={tmpDescription}
