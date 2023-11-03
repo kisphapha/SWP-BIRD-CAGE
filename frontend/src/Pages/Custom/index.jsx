@@ -17,8 +17,7 @@ export default function Custom() {
     const [tmpCate, setCate] = useState('')
     const [tmpDescription, setTempDescription] = useState('')
     const [selectedImage, setSelectedImage] = useState(null)
-    const [componentType, setComponentType] = useState('')
-    const [selectedComponent, setSelectedComponent] = useState(null)
+    const [selectedComponents, setSelectedComponents] = useState([])
 
     const handleCategoryChange = (event) => {
         setCate(event.target.value)
@@ -36,13 +35,25 @@ export default function Custom() {
         setTempDescription(event.target.value)
     }
 
-    const handleComponentTypeChange = (event) => {
-        setComponentType(event.target.value)
-    }
+    const handleSelectedComponentChange = (event, componentType) => {
+        const selectedComponentData = components.find((component) => component.ID === event.target.value);
+        setSelectedComponents((prevSelectedComponents) => {
+            const updatedSelectedComponents = [...prevSelectedComponents];
+            const existingIndex = updatedSelectedComponents.findIndex((comp) => comp.type === componentType);
 
-    const handleSelectedComponentChange = (event) => {
-        const selectedComponentData = components.find((component) => component.ID === event.target.value)
-        setSelectedComponent(selectedComponentData)
+            if (existingIndex !== -1) {
+                updatedSelectedComponents[existingIndex] = {
+                    type: componentType,
+                    data: selectedComponentData,
+                };
+            } else {
+                updatedSelectedComponents.push({
+                    type: componentType,
+                    data: selectedComponentData,
+                });
+            }
+            return updatedSelectedComponents;
+        });
     }
 
     async function fetchCategories() {
@@ -63,6 +74,16 @@ export default function Custom() {
         }
     }
 
+    function calculateTotalPrice(selectedComponents) {
+        let total = 0;
+        selectedComponents.forEach((selectedComponent) => {
+            total += selectedComponent.data.Price;
+        });
+        return total;
+    }
+    const total = calculateTotalPrice(selectedComponents);
+
+
     useEffect(() => {
         fetchCategories()
     }, [])
@@ -80,7 +101,7 @@ export default function Custom() {
                 <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }]} current="Lồng tùy chỉnh" />
                 <div className="flex-row bg-slate-50 my-8 mx-32">
                     <div className="px-8 py-4 font-bold text-red-500"> Chọn kiểu lồng</div>
-                    <div className="grid grid-cols-4 place-items-center h">
+                    <div className="grid grid-cols-4 place-items-center">
                         {categories.map((category, index) => {
                             if (category.Allow_customize === true) {
                                 return (
@@ -92,7 +113,7 @@ export default function Custom() {
                                         }}
                                         key={index}
                                     >
-                                        <img className="max-h-52" src={category.imageUrl} alt="" />
+                                        <img className="max-h-52 mx-auto" src={category.imageUrl} alt="" />
                                         <div className="text-center">
                                             <h1 className="font-bold my-2">{category.name}</h1>
                                         </div>
@@ -118,7 +139,7 @@ export default function Custom() {
                                             label="Móc"
                                             helperText="Chọn móc"
                                             variant="filled"
-                                            onChange={handleSelectedComponentChange}
+                                            onChange={(event) => handleSelectedComponentChange(event, 'Móc')}
                                         >
                                             {components.map((component) => {
                                                 if (component.Type === 'Móc') {
@@ -145,7 +166,7 @@ export default function Custom() {
                                             label="Khung"
                                             helperText="Chọn khung"
                                             variant="filled"
-                                            onChange={handleSelectedComponentChange}
+                                            onChange={(event) => handleSelectedComponentChange(event, 'Khung')}
                                         >
                                             {components.map((component) => {
                                                 if (component.Type === 'Khung') {
@@ -172,7 +193,7 @@ export default function Custom() {
                                             label="Nan"
                                             helperText="Chọn nan"
                                             variant="filled"
-                                            onChange={handleSelectedComponentChange}
+                                            onChange={(event) => handleSelectedComponentChange(event, 'Nan')}
                                         >
                                             {components.map((component) => {
                                                 if (component.Type === 'Nan') {
@@ -200,7 +221,7 @@ export default function Custom() {
                                             label="Nắp"
                                             helperText="Chọn nắp"
                                             variant="filled"
-                                            onChange={handleSelectedComponentChange}
+                                            onChange={(event) => handleSelectedComponentChange(event, 'Nắp')}
                                         >
                                             {components.map((component) => {
                                                 if (component.Type === 'Nắp') {
@@ -227,7 +248,7 @@ export default function Custom() {
                                             label="Đáy"
                                             helperText="Chọn đáy "
                                             variant="filled"
-                                            onChange={handleSelectedComponentChange}
+                                            onChange={(event) => handleSelectedComponentChange(event, 'Đáy')}
                                         >
                                             {components.map((component) => {
                                                 if (component.Type === 'Đáy') {
@@ -255,7 +276,7 @@ export default function Custom() {
                                             label="Bình nước"
                                             helperText="Chọn bình nước"
                                             variant="filled"
-                                            onChange={handleSelectedComponentChange}
+                                            onChange={(event) => handleSelectedComponentChange(event, 'Bình nước')}
                                         >
                                             {components.map((component) => {
                                                 if (component.Type === 'Bình nước') {
@@ -314,126 +335,28 @@ export default function Custom() {
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        <TableRow>
-                                            <TableCell>Móc </TableCell>
-                                            <TableCell>
-                                                <div className="w-20 h-20">
-                                                    <img
-                                                        src={selectedComponent?.Image || 'https://mengjinblog.files.wordpress.com/2021/06/17.jpg'}
-                                                        alt=""
-                                                    />
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Mô tả: {selectedComponent?.Description || 'No description available'}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Thời gian chế tạo: {selectedComponent?.ProductionTime || 'N/A'}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Giá tiền: {selectedComponent?.Price || 'N/A'}</div>
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell>Khung </TableCell>
-                                            <TableCell>
-                                                <div className="w-20 h-20">
-                                                    <img
-                                                        src={selectedComponent?.Image || 'https://mengjinblog.files.wordpress.com/2021/06/17.jpg'}
-                                                        alt=""
-                                                    />
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Mô tả: {selectedComponent?.Description || 'No description available'}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Thời gian chế tạo: {selectedComponent?.ProductionTime || 'N/A'}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Giá tiền: {selectedComponent?.Price || 'N/A'}</div>
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell>Nan </TableCell>
-                                            <TableCell>
-                                                <div className="w-20 h-20">
-                                                    <img
-                                                        src={selectedComponent?.Image || 'https://mengjinblog.files.wordpress.com/2021/06/17.jpg'}
-                                                        alt=""
-                                                    />
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Mô tả: {selectedComponent?.Description || 'No description available'}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Thời gian chế tạo: {selectedComponent?.ProductionTime || 'N/A'}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Giá tiền: {selectedComponent?.Price || 'N/A'}</div>
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell>Nắp</TableCell>
-                                            <TableCell>
-                                                <div className="w-20 h-20">
-                                                    <img
-                                                        src={selectedComponent?.Image || 'https://mengjinblog.files.wordpress.com/2021/06/17.jpg'}
-                                                        alt=""
-                                                    />
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Mô tả: {selectedComponent?.Description || 'No description available'}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Thời gian chế tạo: {selectedComponent?.ProductionTime || 'N/A'}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Giá tiền: {selectedComponent?.Price || 'N/A'}</div>
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell>Đáy </TableCell>
-                                            <TableCell>
-                                                <div className="w-20 h-20">
-                                                    <img
-                                                        src={selectedComponent?.Image || 'https://mengjinblog.files.wordpress.com/2021/06/17.jpg'}
-                                                        alt=""
-                                                    />
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Mô tả: {selectedComponent?.Description || 'No description available'}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Thời gian chế tạo: {selectedComponent?.ProductionTime || 'N/A'}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Giá tiền: {selectedComponent?.Price || 'N/A'}</div>
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell>Bình nước </TableCell>
-                                            <TableCell>
-                                                <div className="w-20 h-20">
-                                                    <img
-                                                        src={selectedComponent?.Image || 'https://mengjinblog.files.wordpress.com/2021/06/17.jpg'}
-                                                        alt=""
-                                                    />
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Mô tả: {selectedComponent?.Description || 'No description available'}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Thời gian chế tạo: {selectedComponent?.ProductionTime || 'N/A'}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>Giá tiền: {selectedComponent?.Price || 'N/A'}</div>
-                                            </TableCell>
-                                        </TableRow>
+                                        {selectedComponents.map((selectedComponent, index) => (
+                                            <TableRow key={index}>
+                                                <TableCell>{selectedComponent.type}</TableCell>
+                                                <TableCell>
+                                                    <div className="w-20 h-20">
+                                                        <img
+                                                            src={selectedComponent.data?.Image || 'https://mengjinblog.files.wordpress.com/2021/06/17.jpg'}
+                                                            alt=""
+                                                        />
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div>{selectedComponent.data?.Description || 'No description available'}</div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div>{selectedComponent.data?.ProductionTime || 'N/A'}</div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div>{selectedComponent.data?.Price.toLocaleString('vi', { style: 'currency', currency: 'VND' }) || 'N/A'}</div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
                                     </TableBody>
                                 </Table>
                             </TableContainer>
@@ -449,18 +372,24 @@ export default function Custom() {
                                         rows={6}
                                     />
                                 </div>
-                                <div className="mt-8 w-1/4">
+                                <div className="mt-8 w-3/8">
                                     <div className="flex place-content-between">
                                         <div className=" font-bold">Thời gian hoàn thành dự kiến:</div>
-                                        {/* fetch */}
-                                        {/* <div>{...}</div> */}
                                     </div>
                                     <div className="flex place-content-between">
                                         <div className=" font-bold">Tổng cộng:</div>
-                                        {/* fetch */}
-                                        {/* <div> {...}</div> */}
+
                                     </div>
-                                    {/* <div className="my-8 text-center"></div> */}
+                                </div>
+                                <div className="mt-8 w-1/8">
+                                    <div className="flex place-content-between">
+                                        <div className=" font-bold">N/A</div>
+                                        {/* fetch */}
+
+                                    </div>
+                                    <div className="flex place-content-between">
+                                        <div className=" font-bold">{total.toLocaleString('vi', { style: 'currency', currency: 'VND' })}</div>
+                                    </div>
                                 </div>
                             </div>
                             <div className="text-right">
