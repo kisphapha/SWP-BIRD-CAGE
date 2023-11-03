@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react'
+﻿﻿import React, { useState, useEffect } from 'react'
 import CategoryNav from '../../components/features/CategoryNav'
 import MenuItem from '@mui/material/MenuItem'
 import { UserProvider } from '../../UserContext'
@@ -24,33 +24,33 @@ export default function Custom() {
     const handleDescriptionChange = (event) => {
         setTempDescription(event.target.value)
     }
-    
-    const componentType = ["Móc", "Khung", "Nan", "Nắp", "Đáy", "Bình nước"]
-    const initialSelectedComponents = componentType.map(type => ({
+
+    const componentType = ['Móc', 'Khung', 'Nan', 'Nắp', 'Đáy', 'Bình nước']
+    const initialSelectedComponents = componentType.map((type) => ({
         type,
         data: null
-    }));
-    const [selectedComponents, setSelectedComponents] = useState(initialSelectedComponents);
-    
+    }))
+    const [selectedComponents, setSelectedComponents] = useState(initialSelectedComponents)
+
     const handleSelectedComponentChange = (event, componentType) => {
-        const selectedComponentData = components.find((component) => component.ID === event.target.value);
+        const selectedComponentData = components.find((component) => component.ID === event.target.value)
         setSelectedComponents((prevSelectedComponents) => {
-            const updatedSelectedComponents = [...prevSelectedComponents];
-            const existingIndex = updatedSelectedComponents.findIndex((comp) => comp.type === componentType);
+            const updatedSelectedComponents = [...prevSelectedComponents]
+            const existingIndex = updatedSelectedComponents.findIndex((comp) => comp.type === componentType)
 
             if (existingIndex !== -1) {
                 updatedSelectedComponents[existingIndex] = {
                     type: componentType,
-                    data: selectedComponentData,
-                };
+                    data: selectedComponentData
+                }
             } else {
                 updatedSelectedComponents.push({
                     type: componentType,
-                    data: selectedComponentData,
-                });
+                    data: selectedComponentData
+                })
             }
-            return updatedSelectedComponents;
-        });
+            return updatedSelectedComponents
+        })
     }
 
     async function fetchCategories() {
@@ -72,14 +72,13 @@ export default function Custom() {
     }
 
     function calculateTotalPrice(selectedComponents) {
-        let total = 0;
+        let total = 0
         selectedComponents.forEach((selectedComponent) => {
-            total += selectedComponent.data?.Price;
-        });
-        return total;
+            total += selectedComponent.data?.Price
+        })
+        return total
     }
-    const total = calculateTotalPrice(selectedComponents);
-
+    const total = calculateTotalPrice(selectedComponents)
 
     useEffect(() => {
         fetchCategories()
@@ -89,20 +88,20 @@ export default function Custom() {
     const selectedImageClass = 'h-52 w-52 m-2 hover:scale-105 border-2 border-blue-500'
 
     const sortedSelectedComponents = selectedComponents.sort((a, b) => {
-        return componentType.indexOf(a.type) - componentType.indexOf(b.type);
-    });
+        return componentType.indexOf(a.type) - componentType.indexOf(b.type)
+    })
 
     const handleRemoveComponent = (componentType) => {
         setSelectedComponents((prevSelectedComponents) => {
             const updatedSelectedComponents = prevSelectedComponents.map((comp) => {
                 if (comp.type === componentType) {
-                    return { type: componentType, data: null }; // Clear data in the row
+                    return { type: componentType, data: null } // Clear data in the row
                 }
-                return comp;
-            });
-            return updatedSelectedComponents;
-        });
-    };
+                return comp
+            })
+            return updatedSelectedComponents
+        })
+    }
     return (
         <form action="">
             <div className="w-full">
@@ -141,57 +140,56 @@ export default function Custom() {
                             <div className="m-4 font-bold">Các thành phần của lồng </div>
                             <div className="w-full mx-4  flex-row space-y-4 pb-8 mb-16 bg-white">
                                 <div className="w-full pt-4 pl-4 h-20">
-                                    <TextField helperText={`Đặt tên cho sản phẩm`} fullWidth label="Tên sản phẩm" variant="standard" onChange={handleNameChange} value={tmpName} />
+                                    <TextField
+                                        helperText={`Đặt tên cho sản phẩm`}
+                                        fullWidth
+                                        label="Tên sản phẩm"
+                                        variant="standard"
+                                        onChange={handleNameChange}
+                                        value={tmpName}
+                                    />
                                 </div>
-                                {
-                                    componentType.map(type => {
-                                        return (
-                                            <div className="w-full h-24 flex place-content-between">
-                                                <div className="w-72 pl-4">
-                                                    <TextField
-                                                        fullWidth
-                                                        select
-                                                        helperText={`Chọn ${type.toLowerCase()}`}
-                                                        label={type}
-                                                        variant="filled"
-                                                        onChange={(event) => handleSelectedComponentChange(event, type)}
-                                                    >
-                                                        {components.map((component) => {
-                                                            if (component.Type === type) {
-                                                                return (
-                                                                    <MenuItem key={component.ID} value={component.ID}>
-                                                                        {component.Name}
-                                                                    </MenuItem>
-                                                                )
-                                                            }
-                                                        })}
-                                                    </TextField>
-                                                </div>
-                                                <div className="py-2">
-                                                    <IconButton>
-                                                        <ClearIcon onClick={() => handleRemoveComponent(type)}/>
-                                                    </IconButton>
-                                                </div>
+                                {componentType.map((type) => {
+                                    return (
+                                        <div key={type} className="w-full h-24 flex place-content-between">
+                                            <div className="w-72 pl-4">
+                                                <TextField
+                                                    fullWidth
+                                                    select
+                                                    helperText={`Chọn ${type.toLowerCase()}`}
+                                                    label={type}
+                                                    variant="filled"
+                                                    onChange={(event) => handleSelectedComponentChange(event, type)}
+                                                >
+                                                    {/* k load dc components  */}
+                                                    {components.map((component) => {
+                                                        if (component.Type === type) {
+                                                            return (
+                                                                <MenuItem key={component.ID} value={component.ID}>
+                                                                    {component.Name}
+                                                                </MenuItem>
+                                                            )
+                                                        }
+                                                    })}
+                                                </TextField>
                                             </div>
-                                        )
-                                    })
-                                }
+                                            <div className="py-2">
+                                                <IconButton>
+                                                    <ClearIcon onClick={() => handleRemoveComponent(type)} />
+                                                </IconButton>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
                                 <div className="w-full flex place-content-between">
                                     <div className="w-72 pl-4">
-                                        {/* <TextField
-                                            fullWidth
-                                            select
-                                            label="Size"
-                                            helperText="Kích thước"
-                                            variant="filled"
-                                            disabled
-                                        >
+                                        <TextField fullWidth select label="Size" helperText="Kích thước" variant="filled" disabled>
                                             {categories.map((option) => (
                                                 <MenuItem key={option.id} value={option.id}>
                                                     {option.name}
                                                 </MenuItem>
                                             ))}
-                                        </TextField> */}
+                                        </TextField>
                                     </div>
                                     <div className="py-2">
                                         <IconButton>
@@ -220,10 +218,7 @@ export default function Custom() {
                                                 <TableCell>{selectedComponent.type}</TableCell>
                                                 <TableCell>
                                                     <div className="w-20 h-20">
-                                                        <img
-                                                            src={selectedComponent.data?.Picture}
-                                                            alt=""
-                                                        />
+                                                        <img src={selectedComponent.data?.Picture} alt="" />
                                                     </div>
                                                 </TableCell>
                                                 <TableCell>
@@ -233,7 +228,10 @@ export default function Custom() {
                                                     <div>{selectedComponent.data?.ProductionTime || 'N/A'}</div>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <div>{selectedComponent.data?.Price.toLocaleString('vi', { style: 'currency', currency: 'VND' }) || ''}</div>
+                                                    <div>
+                                                        {selectedComponent.data?.Price.toLocaleString('vi', { style: 'currency', currency: 'VND' }) ||
+                                                            ''}
+                                                    </div>
                                                 </TableCell>
                                             </TableRow>
                                         ))}
@@ -258,14 +256,12 @@ export default function Custom() {
                                     </div>
                                     <div className="flex place-content-between">
                                         <div className=" font-bold">Tổng cộng:</div>
-
                                     </div>
                                 </div>
                                 <div className="mt-8 w-1/8">
                                     <div className="flex place-content-between">
                                         <div className=" font-bold">N/A</div>
                                         {/* fetch */}
-
                                     </div>
                                     <div className="flex place-content-between">
                                         <div className=" font-bold">{total.toLocaleString('vi', { style: 'currency', currency: 'VND' })}</div>
