@@ -52,6 +52,7 @@ const addOrderToDB = async (req, res) => {
 const getOrderItemByOrderID = async (req, res) => {
     try {
         const order = await Order.getAllOrderItemByOrderID(req.params.id);
+        console.log(order)
         res.json(order);
     } catch (error) {
         res.status(500).json({ message: error.message })
