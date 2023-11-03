@@ -1,4 +1,4 @@
-﻿﻿import React, { useState, useEffect } from 'react'
+﻿import React, { useState, useEffect } from 'react'
 import CategoryNav from '../../components/features/CategoryNav'
 import MenuItem from '@mui/material/MenuItem'
 import { UserProvider } from '../../UserContext'
@@ -15,7 +15,6 @@ export default function Custom() {
     const [tmpName, setTempName] = useState('')
     const [tmpDescription, setTempDescription] = useState('')
     const [selectedImage, setSelectedImage] = useState(null)
-    // const [selectedComponents, setSelectedComponents] = useState([])
 
     const handleNameChange = (event) => {
         setTempName(event.target.value)
@@ -26,10 +25,12 @@ export default function Custom() {
     }
 
     const componentType = ['Móc', 'Khung', 'Nan', 'Nắp', 'Đáy', 'Bình nước']
+
     const initialSelectedComponents = componentType.map((type) => ({
         type,
         data: null
     }))
+
     const [selectedComponents, setSelectedComponents] = useState(initialSelectedComponents)
 
     const handleSelectedComponentChange = (event, componentType) => {
@@ -87,9 +88,14 @@ export default function Custom() {
     const defaultImageClass = 'h-64 w-64 m-2 transition-transform transform-gpu rounded-lg'
     const selectedImageClass = 'h-52 w-52 m-2 hover:scale-105 border-2 border-blue-500'
 
-    const sortedSelectedComponents = selectedComponents.sort((a, b) => {
-        return componentType.indexOf(a.type) - componentType.indexOf(b.type)
-    })
+    const typeToColor = {
+        Móc: 'lightcoral',
+        Khung: 'lightblue',
+        Nan: 'lightgreen',
+        Nắp: 'lightpink',
+        Đáy: 'lightsalmon',
+        'Bình nước': 'lightseagreen'
+    }
 
     const handleRemoveComponent = (componentType) => {
         setSelectedComponents((prevSelectedComponents) => {
@@ -139,7 +145,7 @@ export default function Custom() {
                         <div className="content-center w-1/4">
                             <div className="m-4 font-bold">Các thành phần của lồng </div>
                             <div className="w-full mx-4  flex-row space-y-4 pb-8 mb-16 bg-white">
-                                <div className="w-full pt-4 pl-4 h-20">
+                                <div className="w-full pt-2 pl-4 h-20">
                                     <TextField
                                         helperText={`Đặt tên cho sản phẩm`}
                                         fullWidth
@@ -149,10 +155,13 @@ export default function Custom() {
                                         value={tmpName}
                                     />
                                 </div>
+
                                 {componentType.map((type) => {
                                     return (
                                         <div key={type} className="w-full h-24 flex place-content-between">
                                             <div className="w-72 pl-4">
+                                                <hr className="border" style={{ borderTop: `5px solid ${typeToColor[type] || 'gray'}` }} />
+
                                                 <TextField
                                                     fullWidth
                                                     select
@@ -161,7 +170,6 @@ export default function Custom() {
                                                     variant="filled"
                                                     onChange={(event) => handleSelectedComponentChange(event, type)}
                                                 >
-                                                    {/* k load dc components  */}
                                                     {components.map((component) => {
                                                         if (component.Type === type) {
                                                             return (
@@ -173,6 +181,7 @@ export default function Custom() {
                                                     })}
                                                 </TextField>
                                             </div>
+
                                             <div className="py-2">
                                                 <IconButton>
                                                     <ClearIcon onClick={() => handleRemoveComponent(type)} />
@@ -213,12 +222,18 @@ export default function Custom() {
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {sortedSelectedComponents.map((selectedComponent, index) => (
+                                        {selectedComponents.map((selectedComponent, index) => (
                                             <TableRow key={index}>
-                                                <TableCell>{selectedComponent.type}</TableCell>
+                                                <TableCell style={{ borderLeft: `5px solid ${typeToColor[selectedComponent.type] || 'gray'}` }}>
+                                                    {selectedComponent.type}
+                                                </TableCell>
                                                 <TableCell>
-                                                    <div className="w-20 h-20">
-                                                        <img src={selectedComponent.data?.Picture} alt="" />
+                                                    <div>
+                                                        {selectedComponent.data?.Picture ? (
+                                                            <img className="w-20 h-20" src={selectedComponent.data?.Picture} />
+                                                        ) : (
+                                                            <div className="h-20"></div>
+                                                        )}
                                                     </div>
                                                 </TableCell>
                                                 <TableCell>
@@ -261,7 +276,6 @@ export default function Custom() {
                                 <div className="mt-8 w-1/8">
                                     <div className="flex place-content-between">
                                         <div className=" font-bold">N/A</div>
-                                        {/* fetch */}
                                     </div>
                                     <div className="flex place-content-between">
                                         <div className=" font-bold">{total.toLocaleString('vi', { style: 'currency', currency: 'VND' })}</div>

@@ -10,16 +10,13 @@ const getAllComponent = async (CateID) => {
             select * from ComponentDetail
             JOIN dbo.ComponentDetail_Category 
             ON ComponentDetail_Category.ComponentID = ComponentDetail.ID
-            WHERE CateID = @CateID AND Status = 1
+            WHERE CateID = @CateID
         `)
         return result.recordset;
     } catch (error) {
         console.log("error: ", error)
     }
 }
-
-
-
 
 module.exports  = {
     getAllComponent

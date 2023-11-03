@@ -189,15 +189,17 @@ export default function ProductDetails() {
                                     +
                                 </button>
                             </div>
-                            <div className="add-cart" onClick={addToCart}>
-                                Thêm vào giỏ hàng
+                            <div>
+                                <Button variant="contained" className="add-cart" onClick={addToCart}>
+                                    Thêm vào giỏ hàng
+                                </Button>
+                                <ToastContainer />
                             </div>
-                            <ToastContainer />
                         </div>
 
                         <div className="buy" onClick={handleBuy}>
-                            <p className="t1">MUA NGAY</p>
-                            <p className="t2">Gọi điện xác nhận và giao hàng tận nơi</p>
+                            <p className="t1 py-1">MUA NGAY</p>
+                            <p className="t2 py-1">Gọi điện xác nhận và giao hàng tận nơi</p>
                         </div>
                     </div>
                 </div>
