@@ -80,10 +80,15 @@ export default function Cart() {
                     PaymentDate: null,
                     ShippingAddress: null,
                     PhoneNumber: JSON.parse(sessionStorage.loginedUser).PhoneNumber,
-                    Note: 'abcxyz',
+                    Note: '',
                     TotalAmount: calculateTotalPrice(),
                     PaymentMethod: paymentMethod,
+                    Status: 'UNPAID',
                     Items: JSON.parse(sessionStorage.cart).products
+                })
+                await axios.post('http://localhost:3000/users/updatePoint', {
+                    id: 17,
+                    point: 1000
                 })
                 console.log(res.data.orderid)
                 if (paymentMethod == 'vnpay') {
@@ -95,15 +100,15 @@ export default function Cart() {
                         phoneNumber: JSON.parse(sessionStorage.loginedUser).PhoneNumber,
                         orderid: res.data.orderid
                     })
-                    setTimeout(() => {
-                        alert('Đang chuyển tiếp đến VNPay')
-                    }, 2000)
+
+                    console.log(response.data.url)
                     window.location.href = response.data.url
                 } else {
                     alert('Đặt hàng thành công')
+                    sessionStorage.setItem('cart', '{"products":[]}')
+                    window.location.reload(false)
                 }
                 sessionStorage.setItem('cart', '{"products":[]}')
-                window.location.reload(false)
             } else {
                 alert('Đăng nhập để tiến hành thanh toán')
             }
