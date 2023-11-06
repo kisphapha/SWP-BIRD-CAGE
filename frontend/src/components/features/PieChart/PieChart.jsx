@@ -1,7 +1,39 @@
 import React, { useEffect, useState } from "react";
 import Chart from "react-apexcharts";
+import axios from "axios";
 
 function PieChart() {
+    const [data, setData] = useState([]);
+
+    function getOrderNumber() {
+        const orderNums = []
+        data.map((element) => {
+            orderNums.push(element.Cages)
+        })
+        console.log(orderNums)
+        return orderNums;
+    }
+    function getCates() {
+        const cates = []
+        data.map(element => {
+            cates.push(element.name)
+        })
+        console.log(cates)
+
+        return cates;
+    }
+
+    useEffect(() => {
+        async function fetchData() {
+            const res = await axios.get('http://localhost:3000/order/pieChartData')
+            if (res.data) {
+                setData(res.data);
+                console.log(res.data)
+            }
+        }
+
+        fetchData();
+    }, [])
   // const [pendingOrder, setPendingOrder] = useState([]);
   // const [approvedOrder, setApprovedOrder] = useState([]);
   // const [completedOrder, setCompletedOrder] = useState([]);
@@ -39,7 +71,7 @@ function PieChart() {
         type="pie"
         // height={200}
 
-        series={[1, 2, 3, 4]}
+        series={getOrderNumber()}
 
         
 
@@ -64,7 +96,7 @@ function PieChart() {
 
           noData:{text: "Hello? Data?"},
 
-        labels:['ABCD','BCDE','CDEF','DEFG']
+        labels:getCates()
         
         }}
         >

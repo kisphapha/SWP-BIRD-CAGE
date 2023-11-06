@@ -9,6 +9,7 @@ import { UserProvider } from './UserContext'
 import AdminLayout from './layouts/AdminLayout'
 import UserLayout from './layouts/UserLayout'
 import NewProduct from './Pages/Admin/NewProduct'
+import NewComponent from './Pages/Admin/NewComponent'
 import Products from './Pages/Admin/Products'
 import NewCoupon from './Pages/Admin/NewCoupon'
 import Dashboard from './Pages/Admin/Dashboard'
@@ -31,12 +32,14 @@ import SecurePolicy from './Pages/NaviFooter/Policy/SecurePolicy'
 import About from './Pages/NaviFooter/Information/About'
 import Contact from './Pages/NaviFooter/Information/Contact'
 import Components from './Pages/Admin/Component'
+import Shipper from './Pages/ShipperPage'
 function App() {
     return (
         <div>
             <Routes>
                 <Route element={<UserLayout />} path="/">
                     <Route element={<Home />} path="" />
+                    <Route element={<Shipper />} path="/shipper" />
                     <Route element={<LoginCard />} path="/login" />
                     <Route
                         element={
@@ -87,6 +90,7 @@ function App() {
                     <Route element={<Dashboard />} path="" />
                     <Route element={<NewCoupon />} path="NewCoupon" />
                     <Route element={<NewProduct />} path="NewProduct" />
+                    <Route element={<NewComponent />} path="NewComponent" />
                     <Route element={<Products />} path="Products" />
                     <Route element={<Components />} path="Components" />
                     <Route element={<Categories />} path="Categories" />

@@ -9,7 +9,7 @@ import './styles.css'
 function Dashboard() {
     return (
         <div className="dashboard ">
-            {/* Chao mung admin ...... fetch {user} */}
+            Chào mừng {JSON.parse(sessionStorage.loginedUser).Name}
             <div></div>
             <div className="px-4 font-bold">DashBoard</div>
             <div className="dashboard-detail my-8">

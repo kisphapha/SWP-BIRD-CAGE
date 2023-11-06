@@ -1,19 +1,24 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { UserContext, UserProvider } from '../../UserContext'
-import { Button, TextField, Rating, Avatar } from '@mui/material'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import Popup from 'reactjs-popup'
+import { useParams } from 'react-router-dom'
+import './styles.css'
+import { UserContext, UserProvider } from '../../UserContext'
 import Header from '../../components/common/Header'
 import Navbar from '../../components/common/Navbar'
-import LoginCard from '../../components/features/LoginCard'
 import CategoryNav from '../../components/features/CategoryNav'
 import AddressPopup from '../../components/features/AddressPopup/AddressPopup'
-import './styles.css'
-import 'reactjs-popup/dist/index.css'
+import LoginCard from '../../components/features/LoginCard'
+import { useNavigate } from 'react-router-dom'
+import ArrowBack from '@mui/icons-material/ArrowBack'
+import ArrowForward from '@mui/icons-material/ArrowForward'
+import { Button, TextField, Rating, Avatar } from '@mui/material'
+import Popup from 'reactjs-popup'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import { useContext } from 'react'
 
 export default function ProductDetails() {
-    const { user } = useContext(UserContext)
+    const {user } = useContext(UserContext)
     const [imgList, setImgList] = useState([])
     const { productId } = useParams()
     const [quantity, setQuantity] = useState(1)
@@ -24,7 +29,8 @@ export default function ProductDetails() {
     const [paymentMethod, setPaymentMethod] = useState('COD')
     const [orderAddress, setOrderAddress] = useState('')
     const [phoneNumber, setPhoneNumber] = useState('')
-    const [valid, setValid] = useState(true)
+    const [checkValidation, setCheckValidation] = useState(false)
+    const navigate = useNavigate()
 
     useEffect(() => {
         window.scrollTo(0, 0)
@@ -46,12 +52,10 @@ export default function ProductDetails() {
         fetchRatings()
         fetchImage()
     }, [productId])
-
     async function fetchAddresses() {
         const response = await axios.get(`http://localhost:3000/address/${user.Id}`)
         console.log(response.data)
         setAddressList(response.data)
-        console.log(addressList)
     }
 
     const getFeedback = () => {
@@ -73,27 +77,30 @@ export default function ProductDetails() {
             setQuantity((prevCount) => prevCount - 1)
         }
     }
-
     const handleIncrement = () => {
         if (quantity < 10) {
             // Change this condition to quantity < 10
             setQuantity((prevCount) => prevCount + 1)
         }
     }
+    const checkPattern = (inputValue, pattern) => {
+        const regex = new RegExp(pattern);
+        return regex.test(inputValue);
+    };
 
-    const handlePhoneChange = (e) => {
-        const inputPhoneNumber = e.target.value
+    const handlePattern = (event) => {
+        const inputValue = event.target.value;
+        const pattern = "[0-9]{10,12}"
 
-        // Regular expression pattern for a valid phone number. You can adjust it as needed.
-        const phonePattern = /^[0-9]{10,12}$/
-
-        if (phonePattern.test(inputPhoneNumber)) {
-            setValid(true)
-        } else {
-            setValid(false)
+        const isValid = checkPattern(inputValue, pattern)
+        if (isValid) {
+            setCheckValidation(!isValid)
         }
+        return isValid
+    };
 
-        setPhoneNumber(inputPhoneNumber)
+    const handlePhoneChange = (event) => {
+        setPhoneNumber(event.table.value)
     }
 
     const addToCart = () => {
@@ -110,7 +117,7 @@ export default function ProductDetails() {
         const existingProduct = cart.products.find((product) => product.id === productId)
 
         if (existingProduct) {
-            existingProduct.quantity = existingProduct.quantity + quantity
+            existingProduct.quantity = parseInt(existingProduct.quantity) + parseInt(quantity)
         } else {
             cart.products.push({
                 id: productId,
@@ -120,6 +127,7 @@ export default function ProductDetails() {
                 price: (product.Price * (100 - product.discount)) / 100
             })
         }
+        
 
         // Store the updated cart in sessionStorage
         sessionStorage.setItem('cart', JSON.stringify(cart))
@@ -132,64 +140,61 @@ export default function ProductDetails() {
             console.log(product)
             if (sessionStorage.loginedUser != null) {
                 if (orderAddress) {
-                    console.log(orderAddress)
+                    console.log(orderAddress);
                     if (phoneNumber) {
-                        if(valid){
-                            console.log(phoneNumber)
-                            const res = await axios.post('http://localhost:3000/order/addordertodb', {
-                                UserID: JSON.parse(sessionStorage.loginedUser).Id,
-                                OrderDate: new Date().toISOString().slice(0, 10),
-                                PaymentDate: null,
-                                AddressID: orderAddress,
-                                PhoneNumber: phoneNumber,
-                                Note: 'abcxyz',
-                                TotalAmount: ((product.Price * (100 - product.discount)) / 100) * quantity,
-                                PaymentMethod: paymentMethod,
-                                Status: 'UNPAID',
-                                Items: [
-                                    {
-                                        id: product.Id,
-                                        name: product.Name,
-                                        quantity: quantity,
-                                        url: product.Url,
-                                        price: ((product.Price * (100 - product.discount)) / 100) * quantity
-                                    }
-                                ]
+                        console.log(phoneNumber);
+                        const res = await axios.post('http://localhost:3000/order/addordertodb', {
+                            UserID: JSON.parse(sessionStorage.loginedUser).Id,
+                            OrderDate: new Date().toISOString().slice(0, 10),
+                            PaymentDate: null,
+                            AddressID: orderAddress,
+                            PhoneNumber: phoneNumber,
+                            Note: 'abcxyz',
+                            TotalAmount: ((product.Price * (100 - product.discount)) / 100) * quantity,
+                            PaymentMethod: paymentMethod,
+                            Status: 'UNPAID',
+                            Items: [
+                                {
+                                    id: product.Id,
+                                    name: product.Name,
+                                    quantity: quantity,
+                                    url: product.Url,
+                                    price: ((product.Price * (100 - product.discount)) / 100) * quantity
+                                }
+                            ]
+                        })
+                        // await axios.post('http://localhost:3000/users/updatePoint', {
+                        //     id: 17,
+                        //     point: 1000
+                        // })
+                        console.log(res.data.orderid)
+                        if (paymentMethod == 'vnpay') {
+                            const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
+                                amount: ((product.Price * (100 - product.discount)) / 100) * quantity,
+                                bankCode: '',
+                                language: 'vn',
+                                email: JSON.parse(sessionStorage.loginedUser).Email,
+                                phoneNumber: JSON.parse(sessionStorage.loginedUser).PhoneNumber,
+                                orderid: res.data.orderid
                             })
-                            // await axios.post('http://localhost:3000/users/updatePoint', {
-                            //     id: 17,
-                            //     point: 1000
-                            // })
-                            console.log(res.data.orderid)
-                            if (paymentMethod == 'vnpay') {
-                                const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
-                                    amount: ((product.Price * (100 - product.discount)) / 100) * quantity,
-                                    bankCode: '',
-                                    language: 'vn',
-                                    email: JSON.parse(sessionStorage.loginedUser).Email,
-                                    phoneNumber: JSON.parse(sessionStorage.loginedUser).PhoneNumber,
-                                    orderid: res.data.orderid
-                                })
-                                // setTimeout(() => {
-                                //     alert('Đang chuyển tiếp đến VNPay')
-                                // }, 2000)
-                                close()
-                                console.log(response.data.url)
-                                window.location.href = response.data.url
-                            } else {
-                                alert('Đặt hàng thành công')
-                                close()
-                                // sessionStorage.setItem('cart', '{"products":[]}')
-                                window.location.reload(false)
-                            }
-                        }else{
-                            alert('Xin hãy nhập lại số điện thoại');
+                            // setTimeout(() => {
+                            //     alert('Đang chuyển tiếp đến VNPay')
+                            // }, 2000)
+                            close()
+                            console.log(response.data.url)
+                            window.location.href = response.data.url
+                        } else {
+                            alert('Đặt hàng thành công')
+                            close()
+                            // sessionStorage.setItem('cart', '{"products":[]}')
+                            window.location.reload(false)
                         }
+                        // sessionStorage.setItem('cart', '{"products":[]}')
                     } else {
-                        alert('Xin hãy nhập số điện thoại')
+                        alert('Please enter your phone number')
                     }
                 } else {
-                    alert('Xin hãy nhập địa chỉ')
+                    alert('Please enter your address')
                 }
             } else {
                 alert('Đăng nhập để tiến hành thanh toán')
@@ -197,6 +202,22 @@ export default function ProductDetails() {
         } catch (error) {
             console.error('Lỗi thanh toán:', error)
         }
+        toast.dismiss()
+        toast.success('Sản phẩm đã được thêm vào', {
+            position: 'bottom-left',
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: 'colored'
+        })
+    }
+
+    const handleBuy = () => {
+        addToCart()
+        navigate('/cart')
     }
 
     return (
@@ -217,7 +238,7 @@ export default function ProductDetails() {
                 <div className="product">
                     <div className="img-container">
                         <div className="img-main">
-                            <img className="image" src={focusUrl} />
+                            <img src={focusUrl} />
                         </div>
                         <div className="img-more ">
                             {imgList.map((image) => (
@@ -269,8 +290,11 @@ export default function ProductDetails() {
                                     +
                                 </button>
                             </div>
-                            <div className="add-cart" onClick={addToCart}>
-                                Thêm vào giỏ hàng
+                            <div>
+                                <Button variant="contained" className="add-cart" onClick={addToCart}>
+                                    Thêm vào giỏ hàng
+                                </Button>
+                                <ToastContainer />
                             </div>
                         </div>
 
@@ -304,7 +328,7 @@ export default function ProductDetails() {
                                 position="right center"
                                 modal
                                 closeOnDocumentClick={false}
-                                // closeOnEscape={false}
+                            // closeOnEscape={false}
                             >
                                 {(close) => (
                                     <div className="popup-order">
@@ -353,13 +377,8 @@ export default function ProductDetails() {
                                                 className="user-input"
                                                 id="phoneNumber"
                                                 size="small"
-                                                inputProps={{
-                                                    maxLength: 12,
-                                                }}
-                                                value={phoneNumber}
-                                                onChange={handlePhoneChange}
-                                                error={!valid}
-                                                helperText={!valid ? 'Please enter a valid phone number' : ''}
+                                                onChange={{ handlePhoneChange }}
+                                                error={checkValidation}
                                             ></TextField>
                                         </div>
                                         <h1>Sản phẩm</h1>
@@ -433,9 +452,7 @@ export default function ProductDetails() {
                                             </Button>
                                             <Button
                                                 variant="contained"
-                                                onClick={() => {
-                                                    handlePayment()
-                                                }}
+                                                onClick={() => { handlePayment() }}
                                             >
                                                 Đặt hàng
                                             </Button>
