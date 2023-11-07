@@ -34,6 +34,9 @@ export default function Components() {
     const [pageList, setPageList] = useState([])
 
     const [cate, setCate] = useState([])
+    const [cageCate, setCageCate] = useState([])
+    const [selectedCageCate, setSelectedCageCate] = useState('All')
+
     const [id, setId] = useState('')
     const [name, setName] = useState('')
     const [category, setCategory] = useState('')
@@ -51,6 +54,9 @@ export default function Components() {
 
     const handleCategoryChange = (event) => {
         setCategory(event.target.value)
+    }
+    const handleCageCate = (event) => {
+        setSelectedCageCate(event.target.value)
     }
 
     const handleUpperPriceChange = (event) => {
@@ -92,6 +98,7 @@ export default function Components() {
             upper_stock: upperStock,
             lower_stock: lowerStock,
             status: prostatus,
+            application : selectedCageCate,
             page: page
         }
         Axios.post('http://localhost:3000/component/filterComponent',json)
@@ -108,6 +115,10 @@ export default function Components() {
             "Móc","Nắp","Đáy","Nan","Bình nước","Khung","Cửa"
         ])
     }
+    async function fetchCageCates() {
+        const response = await axios.get('http://localhost:3000/category/')
+        setCageCate(response.data)
+    }
 
     useEffect(() => {
         setPageList(Array.from({ length: maxPage }))
@@ -116,6 +127,7 @@ export default function Components() {
     useEffect(() => {
         handleFilter()
         fetchCates()
+        fetchCageCates()
     }, [page])
     const status = [
         {
@@ -138,7 +150,19 @@ export default function Components() {
                 <div className="my-5">Component</div>
                 {/* <Button onClick={() => '/admin/NewComponent'}>New Component</Button> */}
             </div>
-
+            <div>Áp dung cho</div>
+            <div>
+                <TextField className="w-64" select label="Loại" variant="filled" onChange={handleCageCate}>
+                    <MenuItem value={'All'}>All</MenuItem>
+                    {cageCate.map((cate) => (
+                        cate.Allow_customize == 1 && (
+                            <MenuItem key={cate.id} value={cate.id}>
+                                {cate.name}
+                            </MenuItem>
+                        )
+                    ))}
+                </TextField>
+            </div>
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>

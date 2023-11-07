@@ -83,14 +83,12 @@ export default function Cart() {
                     Note: '',
                     TotalAmount: calculateTotalPrice(),
                     PaymentMethod: paymentMethod,
-                    Status: 'UNPAID',
-                    Items: JSON.parse(sessionStorage.cart).products
+                    Items: JSON.parse(sessionStorage.getItem('cart')).products
                 })
                 await axios.post('http://localhost:3000/users/updatePoint', {
                     id: 17,
                     point: 1000
                 })
-                console.log(res.data.orderid)
                 if (paymentMethod == 'vnpay') {
                     const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
                         amount: calculateTotalPrice(),

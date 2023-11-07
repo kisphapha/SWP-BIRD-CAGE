@@ -36,7 +36,6 @@ const addNewComponent = async (req, res) => {
         const status = req.body.Status;
         const url = req.body.Urls;
         const application = req.body.Application
-
         const response = await component.addNewComponent(name, category, material, color, description, price, stock, status,url,application);
         res.json(response);
     } catch (error) {
@@ -56,8 +55,9 @@ const filterComponent = async (req, res) => {
         const lower_stock = req.body.lower_stock;
         const page = req.body.page;
         const status = req.body.status;
+        const application = req.body.application
 
-        const response = await component.filterComponents(id, name, category, upper_price, lower_price, upper_stock, lower_stock, status, page);
+        const response = await component.filterComponents(id, name, category, upper_price, lower_price, upper_stock, lower_stock, status,application, page);
         res.json(response);
     } catch (error) {
         res.status(500).json({ message: error.message });
