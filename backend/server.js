@@ -59,9 +59,9 @@ app.listen(port, hostname, () => {
 
     // dùng để xóa data rác nên demo 15s
     // hiện là phút thứ 55 sẽ chạy câu lệnh
-    // cron.schedule('* 55 * * * *',async () => {
-    //     const res = await axios.get("http://localhost:3000/admin/deleteJunkData")
-    //     console.log(res.data);
-    //     // http://localhost:3000/admin/deleteJunkData
-    // });
+    cron.schedule('* 55 * * * *',async () => {
+        const res = await axios.get("http://localhost:3000/admin/deleteJunkData")
+        console.log(res.data);
+        // http://localhost:3000/admin/deleteJunkData
+    });
 });
