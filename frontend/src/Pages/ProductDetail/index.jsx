@@ -9,8 +9,6 @@ import CategoryNav from '../../components/features/CategoryNav'
 import AddressPopup from '../../components/features/AddressPopup/AddressPopup'
 import LoginCard from '../../components/features/LoginCard'
 import { useNavigate } from 'react-router-dom'
-import ArrowBack from '@mui/icons-material/ArrowBack'
-import ArrowForward from '@mui/icons-material/ArrowForward'
 import { Button, TextField, Rating, Avatar } from '@mui/material'
 import Popup from 'reactjs-popup'
 import { ToastContainer, toast } from 'react-toastify'
@@ -18,7 +16,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import { useContext } from 'react'
 
 export default function ProductDetails() {
-    const {user } = useContext(UserContext)
+    const { user } = useContext(UserContext)
     const [imgList, setImgList] = useState([])
     const { productId } = useParams()
     const [quantity, setQuantity] = useState(1)
@@ -29,13 +27,13 @@ export default function ProductDetails() {
     const [paymentMethod, setPaymentMethod] = useState('COD')
     const [orderAddress, setOrderAddress] = useState('')
     const [phoneNumber, setPhoneNumber] = useState('')
-    const [checkValidation, setCheckValidation] = useState(false)
-    const navigate = useNavigate();
-    
-    window.addEventListener("popstate", function () {
+    const [checkValidation, setCheckValidation] = useState(true)
+    const navigate = useNavigate()
+
+    window.addEventListener('popstate', function () {
         // This function will be triggered when the window is unloaded, including when it's reloaded.
-        sessionStorage.setItem('quantity',1)
-    });
+        sessionStorage.setItem('quantity', 1)
+    })
 
     useEffect(() => {
         window.scrollTo(0, 0)
@@ -59,7 +57,7 @@ export default function ProductDetails() {
         fetchImage()
         sesQuantity ? setQuantity(sesQuantity) : setQuantity(1)
     }, [productId])
-      
+
     async function fetchAddresses() {
         const response = await axios.get(`http://localhost:3000/address/${user.Id}`)
         console.log(response.data)
@@ -84,53 +82,52 @@ export default function ProductDetails() {
         if (quantity > 1) {
             setQuantity((prevCount) => prevCount - 1)
         }
-        sessionStorage.setItem('quantity',quantity-1)
+        sessionStorage.setItem('quantity', quantity - 1)
     }
     const handleIncrement = () => {
         if (quantity < 10) {
             // Change this condition to quantity < 10
             setQuantity((prevCount) => prevCount + 1)
         }
-        sessionStorage.setItem('quantity',quantity+1)
+        sessionStorage.setItem('quantity', quantity + 1)
     }
 
     function isOrderAddressEmpty(orderAddress) {
-        return !orderAddress || orderAddress.trim() === '';
+        return !orderAddress || orderAddress.trim() === ''
     }
 
     const checkPattern = (inputValue, pattern) => {
-        const regex = new RegExp(pattern);
-        return regex.test(inputValue);
-    };
+        const regex = new RegExp(pattern)
+        return regex.test(inputValue)
+    }
 
     const handlePhoneChange = (event) => {
-        let inputPhoneNumber = event.target.value;
+        let inputPhoneNumber = event.target.value
 
         // Remove unwanted characters "e", "+", and "-"
-        inputPhoneNumber = inputPhoneNumber.replace(/[e+-]/gi, '');
-    
+        inputPhoneNumber = inputPhoneNumber.replace(/[e+-]/gi, '')
+
         // Regular expression pattern for a valid phone number. You can adjust it as needed.
-        const phonePattern = "0[0-9]{9}";
-        
-        if (inputPhoneNumber.length <= 12) {
+        const phonePattern = '0[0-9]{9,10}'
+
+        if (inputPhoneNumber.length <= 11) {
             if (checkPattern(inputPhoneNumber, phonePattern)) {
-                setCheckValidation(true);
+                setCheckValidation(true)
             } else {
-                setCheckValidation(false);
+                setCheckValidation(false)
             }
         } else {
-            setValid(false);
+            setValid(false)
         }
-    
-        setPhoneNumber(inputPhoneNumber);
-    };
+        setPhoneNumber(event.target.value)
+    }
 
     const handleKeyDown = (event) => {
         // Prevent the characters "e", "+", and "-" from being entered.
-        if (["e", "+", "-", "."].includes(event.key)) {
-          event.preventDefault();
+        if (['e', '+', '-', '.'].includes(event.key)) {
+            event.preventDefault()
         }
-      };
+    }
 
     const addToCart = () => {
         let cart = sessionStorage.getItem('cart')
@@ -156,6 +153,17 @@ export default function ProductDetails() {
                 price: (product.Price * (100 - product.discount)) / 100
             })
         }
+        toast.dismiss()
+        toast.success('Đã thêm vào giỏ hàng', {
+            position: 'bottom-left',
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: 'colored'
+        })
 
         // Store the updated cart in sessionStorage
         sessionStorage.setItem('cart', JSON.stringify(cart))
@@ -168,9 +176,9 @@ export default function ProductDetails() {
             console.log(product)
             if (sessionStorage.loginedUser != null) {
                 if (orderAddress) {
-                    console.log(orderAddress);
+                    console.log(orderAddress)
                     if (phoneNumber) {
-                        console.log(phoneNumber);
+                        console.log(phoneNumber)
                         const res = await axios.post('http://localhost:3000/order/addordertodb', {
                             UserID: JSON.parse(sessionStorage.loginedUser).Id,
                             OrderDate: new Date().toISOString().slice(0, 10),
@@ -211,7 +219,7 @@ export default function ProductDetails() {
                             close()
                             console.log(response.data.url)
                             window.location.href = response.data.url
-                        } else {            
+                        } else {
                             toast.dismiss()
                             toast.success('Đặt hàng thành công', {
                                 position: 'bottom-left',
@@ -350,64 +358,65 @@ export default function ProductDetails() {
                                 position="right center"
                                 modal
                                 closeOnDocumentClick={false}
-                            // closeOnEscape={false}
+                                // closeOnEscape={false}
                             >
                                 {(close) => (
                                     <div className="popup-order">
-                                        {/* <AddressPopup user={user} close={close} /> */}
                                         <h1>Thông tin người nhận</h1>
-                                        <div className="adr-container">
-                                            <TextField
-                                                select
-                                                required
-                                                fullWidth
-                                                label="Chọn địa chỉ của bạn"
-                                                className="user-input"
-                                                id="adrress"
-                                                size="small"
-                                                SelectProps={{
-                                                    native: true
-                                                }}
-                                                onChange={(event) => {
-                                                    setOrderAddress(event.target.value)
-                                                }}     
-                                                error={isOrderAddressEmpty(orderAddress)}
-                                                helperText={isOrderAddressEmpty(orderAddress) ? 'Xin hãy chọn địa chỉ' : ''}
-                                            >
-                                                <option value="" selected></option>
-                                                {addressList.map((adr) => (
-                                                    <option key={adr} value={adr.ID}>
-                                                        {adr.SoNha + ', ' + adr.PhuongXa + ', ' + adr.QuanHuyen + ', ' + adr.TinhTP}
-                                                    </option>
-                                                ))}
-                                            </TextField>
-                                            <div className="add-address-btn">
-                                                <Popup trigger={<Button variant="contained">Thêm</Button>} position="right center" modal>
-                                                    {(close) => (
-                                                        <div className="popup-address">
-                                                            <h1>Thêm địa chỉ</h1>
-                                                            <AddressPopup user={user} fetchAddresses={fetchAddresses} close={close} />
-                                                        </div>
-                                                    )}
-                                                </Popup>
+                                        <div className="container">
+                                            <div className="adr-container">
+                                                <TextField
+                                                    select
+                                                    required
+                                                    fullWidth
+                                                    label="Chọn địa chỉ của bạn"
+                                                    className="user-input"
+                                                    id="adrress"
+                                                    size="small"
+                                                    SelectProps={{
+                                                        native: true
+                                                    }}
+                                                    onChange={(event) => {
+                                                        setOrderAddress(event.target.value)
+                                                    }}
+                                                    error={isOrderAddressEmpty(orderAddress)}
+                                                    helperText={isOrderAddressEmpty(orderAddress) ? 'Xin hãy chọn địa chỉ' : ''}
+                                                >
+                                                    <option value="" selected></option>
+                                                    {addressList.map((adr) => (
+                                                        <option key={adr} value={adr.ID}>
+                                                            {adr.SoNha + ', ' + adr.PhuongXa + ', ' + adr.QuanHuyen + ', ' + adr.TinhTP}
+                                                        </option>
+                                                    ))}
+                                                </TextField>
+                                                <div className="add-address-btn">
+                                                    <Popup trigger={<Button variant="contained">Thêm</Button>} position="right center" modal>
+                                                        {(close) => (
+                                                            <div className="popup-address">
+                                                                <h1>Thêm địa chỉ</h1>
+                                                                <AddressPopup user={user} fetchAddresses={fetchAddresses} close={close} />
+                                                            </div>
+                                                        )}
+                                                    </Popup>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="phone-container">
-                                        <TextField
-                                            type="number"
-                                            required
-                                            fullWidth
-                                            label="Số điện thoại"
-                                            className="user-input"
-                                            id="phoneNumber"
-                                            size="small"
-                                            value={phoneNumber}
-                                            onChange={handlePhoneChange}
-                                            onKeyDown={handleKeyDown}
-                                            error={!checkValidation}
-                                        ></TextField>
-                                        </div>
+                                            <div className="phone-container">
+                                                <TextField
+                                                    type="number"
+                                                    required
+                                                    fullWidth
+                                                    label="Số điện thoại"
+                                                    className="user-input"
+                                                    id="phoneNumber"
+                                                    size="small"
+                                                    value={phoneNumber}
+                                                    onChange={handlePhoneChange}
+                                                    onKeyDown={handleKeyDown}
+                                                    error={!checkValidation}
+                                                ></TextField>
+                                            </div>
                                         <h1>Sản phẩm</h1>
+                                        </div>
                                         <div className="curr-item-container">
                                             <table className="curr-item">
                                                 <tr>
@@ -452,7 +461,7 @@ export default function ProductDetails() {
                                             <label>
                                                 <input
                                                     type="radio"
-                                                    name="paymentMethod"
+                                                    className="paymentMethod"
                                                     value="COD"
                                                     checked={paymentMethod === 'COD'}
                                                     onChange={() => setPaymentMethod('COD')}
@@ -462,7 +471,7 @@ export default function ProductDetails() {
                                             <label>
                                                 <input
                                                     type="radio"
-                                                    name="paymentMethod"
+                                                    className="paymentMethod"
                                                     value="vnpay"
                                                     checked={paymentMethod === 'vnpay'}
                                                     onChange={() => setPaymentMethod('vnpay')}
@@ -478,7 +487,9 @@ export default function ProductDetails() {
                                             </Button>
                                             <Button
                                                 variant="contained"
-                                                onClick={() => { handlePayment() }}
+                                                onClick={() => {
+                                                    handlePayment()
+                                                }}
                                             >
                                                 Đặt hàng
                                             </Button>
