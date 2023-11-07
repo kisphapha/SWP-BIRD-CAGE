@@ -91,7 +91,7 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                 GETDATE(),
                 0,
                 N'Chờ duyệt',
-                'UnPaid'
+                'ChưaThanh Toán'
             );
         `;
         const orderRequest = poolConnection.request()
