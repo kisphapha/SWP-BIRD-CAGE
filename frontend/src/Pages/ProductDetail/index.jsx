@@ -30,10 +30,16 @@ export default function ProductDetails() {
     const [orderAddress, setOrderAddress] = useState('')
     const [phoneNumber, setPhoneNumber] = useState('')
     const [checkValidation, setCheckValidation] = useState(false)
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    
+    window.addEventListener("popstate", function () {
+        // This function will be triggered when the window is unloaded, including when it's reloaded.
+        sessionStorage.setItem('quantity',1)
+    });
 
     useEffect(() => {
         window.scrollTo(0, 0)
+        const sesQuantity = parseInt(sessionStorage.getItem('quantity'))
         const fetchProduct = async () => {
             const response = await axios.get(`http://localhost:3000/products/${productId}`)
             setProduct(response.data)
@@ -51,7 +57,9 @@ export default function ProductDetails() {
         fetchProduct()
         fetchRatings()
         fetchImage()
+        sesQuantity ? setQuantity(sesQuantity) : setQuantity(1)
     }, [productId])
+      
     async function fetchAddresses() {
         const response = await axios.get(`http://localhost:3000/address/${user.Id}`)
         console.log(response.data)
@@ -76,32 +84,53 @@ export default function ProductDetails() {
         if (quantity > 1) {
             setQuantity((prevCount) => prevCount - 1)
         }
+        sessionStorage.setItem('quantity',quantity-1)
     }
     const handleIncrement = () => {
         if (quantity < 10) {
             // Change this condition to quantity < 10
             setQuantity((prevCount) => prevCount + 1)
         }
+        sessionStorage.setItem('quantity',quantity+1)
     }
+
+    function isOrderAddressEmpty(orderAddress) {
+        return !orderAddress || orderAddress.trim() === '';
+    }
+
     const checkPattern = (inputValue, pattern) => {
         const regex = new RegExp(pattern);
         return regex.test(inputValue);
     };
 
-    const handlePattern = (event) => {
-        const inputValue = event.target.value;
-        const pattern = "[0-9]{10,12}"
+    const handlePhoneChange = (event) => {
+        let inputPhoneNumber = event.target.value;
 
-        const isValid = checkPattern(inputValue, pattern)
-        if (isValid) {
-            setCheckValidation(!isValid)
+        // Remove unwanted characters "e", "+", and "-"
+        inputPhoneNumber = inputPhoneNumber.replace(/[e+-]/gi, '');
+    
+        // Regular expression pattern for a valid phone number. You can adjust it as needed.
+        const phonePattern = "0[0-9]{9}";
+        
+        if (inputPhoneNumber.length <= 12) {
+            if (checkPattern(inputPhoneNumber, phonePattern)) {
+                setCheckValidation(true);
+            } else {
+                setCheckValidation(false);
+            }
+        } else {
+            setValid(false);
         }
-        return isValid
+    
+        setPhoneNumber(inputPhoneNumber);
     };
 
-    const handlePhoneChange = (event) => {
-        setPhoneNumber(event.table.value)
-    }
+    const handleKeyDown = (event) => {
+        // Prevent the characters "e", "+", and "-" from being entered.
+        if (["e", "+", "-", "."].includes(event.key)) {
+          event.preventDefault();
+        }
+      };
 
     const addToCart = () => {
         let cart = sessionStorage.getItem('cart')
@@ -127,7 +156,6 @@ export default function ProductDetails() {
                 price: (product.Price * (100 - product.discount)) / 100
             })
         }
-        
 
         // Store the updated cart in sessionStorage
         sessionStorage.setItem('cart', JSON.stringify(cart))
@@ -183,8 +211,18 @@ export default function ProductDetails() {
                             close()
                             console.log(response.data.url)
                             window.location.href = response.data.url
-                        } else {
-                            alert('Đặt hàng thành công')
+                        } else {            
+                            toast.dismiss()
+                            toast.success('Đặt hàng thành công', {
+                                position: 'bottom-left',
+                                autoClose: 1000,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: false,
+                                draggable: true,
+                                progress: undefined,
+                                theme: 'colored'
+                            })
                             close()
                             // sessionStorage.setItem('cart', '{"products":[]}')
                             window.location.reload(false)
@@ -202,22 +240,6 @@ export default function ProductDetails() {
         } catch (error) {
             console.error('Lỗi thanh toán:', error)
         }
-        toast.dismiss()
-        toast.success('Sản phẩm đã được thêm vào', {
-            position: 'bottom-left',
-            autoClose: 1000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: true,
-            progress: undefined,
-            theme: 'colored'
-        })
-    }
-
-    const handleBuy = () => {
-        addToCart()
-        navigate('/cart')
     }
 
     return (
@@ -348,7 +370,9 @@ export default function ProductDetails() {
                                                 }}
                                                 onChange={(event) => {
                                                     setOrderAddress(event.target.value)
-                                                }}
+                                                }}     
+                                                error={isOrderAddressEmpty(orderAddress)}
+                                                helperText={isOrderAddressEmpty(orderAddress) ? 'Xin hãy chọn địa chỉ' : ''}
                                             >
                                                 <option value="" selected></option>
                                                 {addressList.map((adr) => (
@@ -369,17 +393,19 @@ export default function ProductDetails() {
                                             </div>
                                         </div>
                                         <div className="phone-container">
-                                            <TextField
-                                                type="number"
-                                                required
-                                                fullWidth
-                                                label="Số điện thoại"
-                                                className="user-input"
-                                                id="phoneNumber"
-                                                size="small"
-                                                onChange={{ handlePhoneChange }}
-                                                error={checkValidation}
-                                            ></TextField>
+                                        <TextField
+                                            type="number"
+                                            required
+                                            fullWidth
+                                            label="Số điện thoại"
+                                            className="user-input"
+                                            id="phoneNumber"
+                                            size="small"
+                                            value={phoneNumber}
+                                            onChange={handlePhoneChange}
+                                            onKeyDown={handleKeyDown}
+                                            error={!checkValidation}
+                                        ></TextField>
                                         </div>
                                         <h1>Sản phẩm</h1>
                                         <div className="curr-item-container">
