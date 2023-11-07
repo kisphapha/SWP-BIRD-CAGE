@@ -178,7 +178,6 @@
 
 .popup-order {
     position: relative;
-    /* height: 470px; */
     height: fit-content;
     display: flex;
     flex-direction: column;
@@ -188,12 +187,14 @@
 
 .adr-container {
     width: 100%;
+    min-height: 67.91px;
     display: flex;
     gap: 5%;
 }
 
 .phone-container {
     width: 85%;
+    min-height: 67.91px;
 }
 
 /* .add-address-btn {
@@ -204,10 +205,15 @@
     width: 100%;
 }
 
-.popup-order > h1 {
+.popup-order > .container > h1 {
     font-size: 1.25em;
     font-weight: bold;
 }
+
+.paymentMethod{
+    padding-left: 5em;
+}
+
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
