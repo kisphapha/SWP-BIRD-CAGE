@@ -33,26 +33,29 @@ const getAllComponent = async () => {
 
 
 
-const filterComponents = async (id, name, category, upper_price, lower_price, upper_stock, lower_stock, status, page) => {
+const filterComponents = async (id, name, category, upper_price, lower_price, upper_stock, lower_stock, status,application, page) => {
     try {
         const perPage = 10;
         const poolConnection = await sql.connect(config);
 
         const conditions = [];
-        if (id) conditions.push(`id = ${id}`);
-        if (name) conditions.push(`Name LIKE N'%${name}%'`);
-        if (category && category !== "All") conditions.push(`Type = N'${category}'`);
-        if (status && status !== "All") conditions.push(`Status = '${status}'`);
-        if (upper_price) conditions.push(`Price <= ${upper_price}`);
-        if (lower_price) conditions.push(`Price >= ${lower_price}`);
-        if (upper_stock) conditions.push(`Stock <= ${upper_stock}`);
-        if (lower_stock) conditions.push(`Stock >= ${lower_stock}`);
+        conditions.push(`cc.ComponentID = cd.ID`)
+        if (id) conditions.push(`cd.id = ${id}`);
+        if (name) conditions.push(`cd.Name LIKE N'%${name}%'`);
+        if (category && category !== "All") conditions.push(`cd.Type = N'${category}'`);
+        if (status && status !== "All") conditions.push(`cd.Status = '${status}'`);
+        if (upper_price) conditions.push(`cd.Price <= ${upper_price}`);
+        if (lower_price) conditions.push(`cd.Price >= ${lower_price}`);
+        if (upper_stock) conditions.push(`cd.Stock <= ${upper_stock}`);
+        if (lower_stock) conditions.push(`cd.Stock >= ${lower_stock}`);
+        if (application && application !== "All") conditions.push(`cc.CateID = '${application}'`);
+
 
         const conditionString = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
         const query = `
-            select * 
-            from ComponentDetail 
+            select distinct cd.* 
+            from ComponentDetail cd, ComponentDetail_Category cc 
             ${conditionString}
             ORDER BY Id ASC
             OFFSET ${(page - 1) * perPage} ROWS
@@ -62,9 +65,11 @@ const filterComponents = async (id, name, category, upper_price, lower_price, up
         const result = await poolConnection.request().query(query);
         const json = { data: result.recordset };
 
-        const linesQuery = `
-            select COUNT(*) AS COUNT from ComponentDetail
-            ${conditionString}
+        const linesQuery = `            
+             select COUNT(*) AS COUNT  
+            from ( select distinct cd.* 
+                 from ComponentDetail cd, ComponentDetail_Category cc 
+                 ${conditionString}) r
         `;
 
         const linesResult = await poolConnection.request().query(linesQuery);

@@ -36,10 +36,9 @@ const addOrderToDB = async (req, res) => {
         const Note = req.body.Note;
         const TotalAmount = req.body.TotalAmount;
         const PaymentId = req.body.PaymentId;
-        const Status = req.body.Status;
         const Items = req.body.Items;
 
-        var id = await Order.addOrderToDB(UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentId, Status, Items);
+        var id = await Order.addOrderToDB(UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentId, Items);
         res.json({
             message: "done",
             orderid: id
