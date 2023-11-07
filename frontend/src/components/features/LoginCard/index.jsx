@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import jwtDecode from 'jwt-decode'
 import logo from '../../../image/icons/logo.png'
@@ -7,7 +6,6 @@ import logo from '../../../image/icons/logo.png'
 function LoginCard() {
     const [email, setEmail] = useState('')
     const [googleUser, setGoogleUser] = useState('')
-    const navigate = useNavigate()
 
     function handlecallbackResponse(response) {
         document.getElementById('google').hidden = true
@@ -44,7 +42,6 @@ function LoginCard() {
                 )
                 await fetchUsers()
             }
-            // navigate('/')
             window.location.reload()
         }
 
@@ -52,10 +49,6 @@ function LoginCard() {
             fetchUsers()
         }
     })
-
-    const handleClick = () => {
-        navigate('/')
-    }
 
     return (
         <div
@@ -74,7 +67,7 @@ function LoginCard() {
                     alignItems: 'center'
                 }}
             >
-                <img src={logo} style={{ height: '128px', width: '128px' }} />
+                <img src={logo} style={{ height: '128px', width: '128px' }}/>
                 <h1>Đăng nhập</h1>
             </div>
             <div
