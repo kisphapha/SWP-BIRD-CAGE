@@ -126,7 +126,7 @@ export default function Shipper() {
 
     return (
         <div className=" ">
-            <div className="m-10 font-bold pl-10">Order </div>
+            <div className="m-10 font-bold pl-10">Shipper</div>
             <div className="mx-10     pb-10 h-screen">
                 <DataGrid
                     rows={rows}
