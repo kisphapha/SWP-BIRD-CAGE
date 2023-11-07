@@ -6,8 +6,9 @@ const getOrderBy5Month = async () => {
         let poolConnection = await sql.connect(config);
         const result = await poolConnection
             .request()
-            .query(`SELECT name
-                    FROM dbo.Category`
+            .query(`
+                
+            `
             );
         return result.recordset;
     } catch (error) {

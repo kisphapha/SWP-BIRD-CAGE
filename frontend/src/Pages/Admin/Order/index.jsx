@@ -73,7 +73,7 @@ export default function Order() {
     }
 
     async function changeState(orderId, status) {
-        await axios.post(`http://localhost:3000/shipper/changeShippingState`, {
+        await axios.post(`http://localhost:3000/shipper/change`, {
             orderId: orderId,
             status: status
         })
@@ -120,7 +120,7 @@ export default function Order() {
 
     return (
         <div className=" w-full flex flex-col">
-            <div className="m-10 font-bold pl-10">Users </div>
+            <div className="m-10 font-bold pl-10">Order management </div>
             <div className="mx-10     pb-10 h-screen">
                 <DataGrid
                     rows={rows}

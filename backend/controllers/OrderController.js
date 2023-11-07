@@ -36,10 +36,9 @@ const addOrderToDB = async (req, res) => {
         const Note = req.body.Note;
         const TotalAmount = req.body.TotalAmount;
         const PaymentId = req.body.PaymentId;
-        const Status = req.body.Status;
         const Items = req.body.Items;
 
-        var id = await Order.addOrderToDB(UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentId, Status, Items);
+        var id = await Order.addOrderToDB(UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentId, Items);
         res.json({
             message: "done",
             orderid: id
@@ -52,7 +51,6 @@ const addOrderToDB = async (req, res) => {
 const getOrderItemByOrderID = async (req, res) => {
     try {
         const order = await Order.getAllOrderItemByOrderID(req.params.id);
-        console.log(order)
         res.json(order);
     } catch (error) {
         res.status(500).json({ message: error.message })
@@ -109,4 +107,3 @@ module.exports = {
     changetoSeen,
     pieChartData
 }
-

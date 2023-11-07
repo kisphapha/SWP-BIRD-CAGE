@@ -91,7 +91,7 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                 GETDATE(),
                 0,
                 N'Chờ duyệt',
-                N'Chưa thanh toán'
+                'ChưaThanh Toán'
             );
         `;
         const orderRequest = poolConnection.request()
@@ -133,7 +133,6 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
         console.log("error: ", error);
     }
 };
-
 const changeStatus_Paid = async (id) => {
     try {
         let poolConnection = await sql.connect(config);

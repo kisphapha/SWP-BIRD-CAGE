@@ -181,7 +181,7 @@
     height: fit-content;
     display: flex;
     flex-direction: column;
-    padding: 45px;
+    padding: 15px;
     gap: 20px;
 }
 
@@ -197,9 +197,9 @@
     min-height: 67.91px;
 }
 
-.add-address-btn {
+/* .add-address-btn {
     width: 10%;
-}
+} */
 
 .curr-item {
     width: 100%;
