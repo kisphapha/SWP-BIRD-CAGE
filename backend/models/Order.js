@@ -56,7 +56,7 @@ const getOrderById = async (id) => {
     }
 };
 
-const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentMethod, Status, Items) => {
+const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentMethod, Items) => {
     try {
         let poolConnection = await sql.connect(config);
         const orderQuery = `
@@ -89,7 +89,6 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                 @PaymentMethod,
                 0,
                 GETDATE(),
-                @Status,
                 0,
                 N'Chờ duyệt',
                 'UnPaid'
@@ -104,7 +103,6 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
             .input('Note', sql.NVarChar, Note)
             .input('TotalAmount', sql.Int, TotalAmount)
             .input('PaymentMethod', sql.NVarChar, PaymentMethod)
-            .input('Status', sql.NVarChar, Status);
         const orderResult = await orderRequest.query(orderQuery);
         const orderId = orderResult.recordset[0].Id;
         for (const item of Items) {
