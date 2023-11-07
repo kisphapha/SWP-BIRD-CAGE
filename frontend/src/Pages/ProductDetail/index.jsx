@@ -11,14 +11,14 @@ import LoginCard from '../../components/features/LoginCard'
 import { useNavigate } from 'react-router-dom'
 import ArrowBack from '@mui/icons-material/ArrowBack'
 import ArrowForward from '@mui/icons-material/ArrowForward'
-import { Button, TextField, Rating, Avatar } from '@mui/material'
+import { Button, TextField, Rating, Avatar, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material'
 import Popup from 'reactjs-popup'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { useContext } from 'react'
 
 export default function ProductDetails() {
-    const {user } = useContext(UserContext)
+    const { user } = useContext(UserContext)
     const [imgList, setImgList] = useState([])
     const { productId } = useParams()
     const [quantity, setQuantity] = useState(1)
@@ -84,20 +84,20 @@ export default function ProductDetails() {
         }
     }
     const checkPattern = (inputValue, pattern) => {
-        const regex = new RegExp(pattern);
-        return regex.test(inputValue);
-    };
+        const regex = new RegExp(pattern)
+        return regex.test(inputValue)
+    }
 
     const handlePattern = (event) => {
-        const inputValue = event.target.value;
-        const pattern = "[0-9]{10,12}"
+        const inputValue = event.target.value
+        const pattern = '[0-9]{10,12}'
 
         const isValid = checkPattern(inputValue, pattern)
         if (isValid) {
             setCheckValidation(!isValid)
         }
         return isValid
-    };
+    }
 
     const handlePhoneChange = (event) => {
         setPhoneNumber(event.table.value)
@@ -127,7 +127,6 @@ export default function ProductDetails() {
                 price: (product.Price * (100 - product.discount)) / 100
             })
         }
-        
 
         // Store the updated cart in sessionStorage
         sessionStorage.setItem('cart', JSON.stringify(cart))
@@ -140,9 +139,9 @@ export default function ProductDetails() {
             console.log(product)
             if (sessionStorage.loginedUser != null) {
                 if (orderAddress) {
-                    console.log(orderAddress);
+                    console.log(orderAddress)
                     if (phoneNumber) {
-                        console.log(phoneNumber);
+                        console.log(phoneNumber)
                         const res = await axios.post('http://localhost:3000/order/addordertodb', {
                             UserID: JSON.parse(sessionStorage.loginedUser).Id,
                             OrderDate: new Date().toISOString().slice(0, 10),
@@ -328,7 +327,7 @@ export default function ProductDetails() {
                                 position="right center"
                                 modal
                                 closeOnDocumentClick={false}
-                            // closeOnEscape={false}
+                                // closeOnEscape={false}
                             >
                                 {(close) => (
                                     <div className="popup-order">
@@ -382,8 +381,9 @@ export default function ProductDetails() {
                                             ></TextField>
                                         </div>
                                         <h1>Sản phẩm</h1>
-                                        <div className="curr-item-container">
+                                        {/* <div className="curr-item-container">
                                             <table className="curr-item">
+                                                
                                                 <tr>
                                                     <th>Ảnh</th>
                                                     <th>Tên sản phẩm</th>
@@ -391,6 +391,7 @@ export default function ProductDetails() {
                                                     <th>Số lượng</th>
                                                     <th>Tổng</th>
                                                 </tr>
+                                                
                                                 <tr>
                                                     <td className="text-center">
                                                         <img className="h-full w-16 rounded-md" src={product.Url} alt={product.name} />
@@ -420,42 +421,107 @@ export default function ProductDetails() {
                                                     </td>
                                                 </tr>
                                             </table>
-                                        </div>
-
+                                        </div> */}
                                         <div>
-                                            <label>
-                                                <input
-                                                    type="radio"
-                                                    name="paymentMethod"
-                                                    value="COD"
-                                                    checked={paymentMethod === 'COD'}
-                                                    onChange={() => setPaymentMethod('COD')}
-                                                />
-                                                Thanh toán khi nhận hàng
-                                            </label>
-                                            <label>
-                                                <input
-                                                    type="radio"
-                                                    name="paymentMethod"
-                                                    value="vnpay"
-                                                    checked={paymentMethod === 'vnpay'}
-                                                    onChange={() => setPaymentMethod('vnpay')}
-                                                />
-                                                Thanh toán nhanh cùng VNPay
-                                            </label>
+                                            <TableContainer className=" " component={Paper}>
+                                                <Table aria-label="simple table">
+                                                    <TableHead>
+                                                        <TableRow>
+                                                            <TableCell>
+                                                                <div className="text-center">Ảnh</div>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <div className="text-center">Tên sản phẩm</div>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <div className="text-center">Giá</div>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <div className="text-center">Số lượng</div>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <div className="text-center">Tổng</div>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    </TableHead>
+                                                    <TableBody>
+                                                        <TableRow>
+                                                            <TableCell>
+                                                                <div className="items-center">
+                                                                    <img className="h-full w-16 rounded-md" src={product.Url} alt={product.name} />
+                                                                </div>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <div className="text-center">{product.Name}</div>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <div className="text-center">
+                                                                    {parseInt((product.Price * (100 - product.discount)) / 100).toLocaleString('vi', {
+                                                                        style: 'currency',
+                                                                        currency: 'VND'
+                                                                    })}{' '}
+                                                                </div>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <div className="text-center">{quantity}</div>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <div className="text-center">
+                                                                    {parseInt(
+                                                                        ((product.Price * (100 - product.discount)) / 100) * quantity
+                                                                    ).toLocaleString('vi', {
+                                                                        style: 'currency',
+                                                                        currency: 'VND'
+                                                                    })}{' '}
+                                                                </div>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    </TableBody>
+                                                </Table>
+                                            </TableContainer>
                                         </div>
 
-                                        <div className="buttons">
-                                            {/* <button className="decision" onClick={close}></button> */}
-                                            <Button variant="contained" onClick={close}>
-                                                Hủy
-                                            </Button>
-                                            <Button
-                                                variant="contained"
-                                                onClick={() => { handlePayment() }}
-                                            >
-                                                Đặt hàng
-                                            </Button>
+                                        <hr className="border  border-slate-300 my-2 w-full" />
+
+                                        <div className="flex place-content-between">
+                                            <div>
+                                                <div className="">
+                                                    <input
+                                                        type="radio"
+                                                        name="paymentMethod"
+                                                        value="COD"
+                                                        checked={paymentMethod === 'COD'}
+                                                        onChange={() => setPaymentMethod('COD')}
+                                                    />
+                                                    Thanh toán khi nhận hàng
+                                                </div>
+
+                                                <div className=" ">
+                                                    <input
+                                                        type="radio"
+                                                        name="paymentMethod"
+                                                        value="vnpay"
+                                                        checked={paymentMethod === 'vnpay'}
+                                                        onChange={() => setPaymentMethod('vnpay')}
+                                                    />
+                                                    Thanh toán nhanh cùng VNPay
+                                                </div>
+                                            </div>
+
+                                            <div className="buttons">
+                                                {/* <button className="decision" onClick={close}></button> */}
+                                                <Button variant="contained" onClick={close}>
+                                                    Hủy
+                                                </Button>
+                                                <Button
+                                                    variant="contained"
+                                                    onClick={() => {
+                                                        handlePayment()
+                                                    }}
+                                                >
+                                                    Đặt hàng
+                                                </Button>
+                                            </div>
                                         </div>
                                     </div>
                                 )}
