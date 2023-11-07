@@ -62,11 +62,8 @@ export default function Custom() {
     }
 
     async function fetchComponents(categoryId) {
-        const response = await axios.get('http://localhost:3000/component/getAllComponent', {
-            params: {
-                CateID: categoryId
-            }
-        })
+        const response = await axios.get('http://localhost:3000/component/getAllComponentByCate/'+categoryId)
+           
         if (response.data) {
             setComponents(response.data)
         }

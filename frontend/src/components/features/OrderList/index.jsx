@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Popup from 'reactjs-popup'
 
-const steps = ['Chờ duyệt', 'Đang chuẩn bị', 'Đang giao', 'Đã Giao']
+const steps = ['Chờ duyệt', 'Đang chuẩn bị', 'Đang giao', 'Đã giao']
 const OrderList = (props) => {
     const [cards, setCards] = useState([])
     const [orders, setOrders] = useState([])
@@ -43,7 +43,6 @@ const OrderList = (props) => {
             StarPoint: rating,
             Content: feedbackContent
         }
-        console.log(json)
         if (json.StarPoint > 0) {
             await axios.post(`http://localhost:3000/products/rating/`, json)
             alert('Chúng tôi đã ghi nhận. Chân thành cảm ơn bạn!')
@@ -86,7 +85,7 @@ const OrderList = (props) => {
                         <div className="flex">
                             <div className="px-2">Mã đơn hàng: {card.Id} </div>
                             <div>|</div>
-                            <div className="px-2">Ngày đặt mua: {(card.CreateAt + '').substr(0, 10)} </div>
+                            <div className="px-2">Ngày đặt mua: {(card.OrderDate + '').substr(0, 10)} </div>
                         </div>
                         <div className="flex">
                             <Stepper activeStep={getActiveStep(card.Status_Shipping)}>
@@ -183,9 +182,13 @@ const OrderList = (props) => {
                     </div>
                     <div className="flex-col ">
                         {/* <hr className="border  border-slate-950 " /> */}
+                        <div className="text-left mx-8 my-4  text-500 text-2xl">{card.Status_Paid}</div>
+
                         <div className="text-right mx-8 my-4  text-red-500 text-2xl">
                             {parseInt(card.TotalAmount).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+
                         </div>
+
                     </div>
                 </div>
             ))}

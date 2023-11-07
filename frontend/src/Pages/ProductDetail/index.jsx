@@ -2,25 +2,34 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useParams } from 'react-router-dom'
 import './styles.css'
-import { UserProvider } from '../../UserContext'
+import { UserContext, UserProvider } from '../../UserContext'
 import Header from '../../components/common/Header'
 import Navbar from '../../components/common/Navbar'
 import CategoryNav from '../../components/features/CategoryNav'
+import AddressPopup from '../../components/features/AddressPopup/AddressPopup'
+import LoginCard from '../../components/features/LoginCard'
 import { useNavigate } from 'react-router-dom'
 import ArrowBack from '@mui/icons-material/ArrowBack'
 import ArrowForward from '@mui/icons-material/ArrowForward'
 import { Button, TextField, Rating, Avatar } from '@mui/material'
-
+import Popup from 'reactjs-popup'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { useContext } from 'react'
 
 export default function ProductDetails() {
+    const {user } = useContext(UserContext)
     const [imgList, setImgList] = useState([])
     const { productId } = useParams()
     const [quantity, setQuantity] = useState(1)
     const [product, setProduct] = useState([])
     const [ratingsData, setRatingsData] = useState([])
     const [focusUrl, setFocusUrl] = useState('')
+    const [addressList, setAddressList] = useState([])
+    const [paymentMethod, setPaymentMethod] = useState('COD')
+    const [orderAddress, setOrderAddress] = useState('')
+    const [phoneNumber, setPhoneNumber] = useState('')
+    const [checkValidation, setCheckValidation] = useState(false)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -43,6 +52,11 @@ export default function ProductDetails() {
         fetchRatings()
         fetchImage()
     }, [productId])
+    async function fetchAddresses() {
+        const response = await axios.get(`http://localhost:3000/address/${user.Id}`)
+        console.log(response.data)
+        setAddressList(response.data)
+    }
 
     const getFeedback = () => {
         if (sessionStorage.loginedUser != null) {
@@ -63,12 +77,30 @@ export default function ProductDetails() {
             setQuantity((prevCount) => prevCount - 1)
         }
     }
-
     const handleIncrement = () => {
         if (quantity < 10) {
             // Change this condition to quantity < 10
             setQuantity((prevCount) => prevCount + 1)
         }
+    }
+    const checkPattern = (inputValue, pattern) => {
+        const regex = new RegExp(pattern);
+        return regex.test(inputValue);
+    };
+
+    const handlePattern = (event) => {
+        const inputValue = event.target.value;
+        const pattern = "[0-9]{10,12}"
+
+        const isValid = checkPattern(inputValue, pattern)
+        if (isValid) {
+            setCheckValidation(!isValid)
+        }
+        return isValid
+    };
+
+    const handlePhoneChange = (event) => {
+        setPhoneNumber(event.table.value)
     }
 
     const addToCart = () => {
@@ -95,12 +127,81 @@ export default function ProductDetails() {
                 price: (product.Price * (100 - product.discount)) / 100
             })
         }
+        
 
         // Store the updated cart in sessionStorage
         sessionStorage.setItem('cart', JSON.stringify(cart))
 
         console.log(sessionStorage.getItem('cart'))
+    }
 
+    const handlePayment = async () => {
+        try {
+            console.log(product)
+            if (sessionStorage.loginedUser != null) {
+                if (orderAddress) {
+                    console.log(orderAddress);
+                    if (phoneNumber) {
+                        console.log(phoneNumber);
+                        const res = await axios.post('http://localhost:3000/order/addordertodb', {
+                            UserID: JSON.parse(sessionStorage.loginedUser).Id,
+                            OrderDate: new Date().toISOString().slice(0, 10),
+                            PaymentDate: null,
+                            AddressID: orderAddress,
+                            PhoneNumber: phoneNumber,
+                            Note: 'abcxyz',
+                            TotalAmount: ((product.Price * (100 - product.discount)) / 100) * quantity,
+                            PaymentMethod: paymentMethod,
+                            Status: 'UNPAID',
+                            Items: [
+                                {
+                                    id: product.Id,
+                                    name: product.Name,
+                                    quantity: quantity,
+                                    url: product.Url,
+                                    price: ((product.Price * (100 - product.discount)) / 100) * quantity
+                                }
+                            ]
+                        })
+                        // await axios.post('http://localhost:3000/users/updatePoint', {
+                        //     id: 17,
+                        //     point: 1000
+                        // })
+                        console.log(res.data.orderid)
+                        if (paymentMethod == 'vnpay') {
+                            const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
+                                amount: ((product.Price * (100 - product.discount)) / 100) * quantity,
+                                bankCode: '',
+                                language: 'vn',
+                                email: JSON.parse(sessionStorage.loginedUser).Email,
+                                phoneNumber: JSON.parse(sessionStorage.loginedUser).PhoneNumber,
+                                orderid: res.data.orderid
+                            })
+                            // setTimeout(() => {
+                            //     alert('Đang chuyển tiếp đến VNPay')
+                            // }, 2000)
+                            close()
+                            console.log(response.data.url)
+                            window.location.href = response.data.url
+                        } else {
+                            alert('Đặt hàng thành công')
+                            close()
+                            // sessionStorage.setItem('cart', '{"products":[]}')
+                            window.location.reload(false)
+                        }
+                        // sessionStorage.setItem('cart', '{"products":[]}')
+                    } else {
+                        alert('Please enter your phone number')
+                    }
+                } else {
+                    alert('Please enter your address')
+                }
+            } else {
+                alert('Đăng nhập để tiến hành thanh toán')
+            }
+        } catch (error) {
+            console.error('Lỗi thanh toán:', error)
+        }
         toast.dismiss()
         toast.success('Sản phẩm đã được thêm vào', {
             position: 'bottom-left',
@@ -197,10 +298,169 @@ export default function ProductDetails() {
                             </div>
                         </div>
 
-                        <div className="buy" onClick={handleBuy}>
-                            <p className="t1 py-1">MUA NGAY</p>
-                            <p className="t2 py-1">Gọi điện xác nhận và giao hàng tận nơi</p>
-                        </div>
+                        {user == null ? (
+                            <Popup
+                                contentStyle={{ width: '500px', height: '250px', borderRadius: '10px' }}
+                                trigger={
+                                    <div className="buy">
+                                        <p className="t1">MUA NGAY</p>
+                                        <p className="t2">Gọi điện xác nhận và giao hàng tận nơi</p>
+                                    </div>
+                                }
+                                position="center"
+                                modal
+                            >
+                                {(close) => (
+                                    <div className="login-popup">
+                                        <LoginCard />
+                                    </div>
+                                )}
+                            </Popup>
+                        ) : (
+                            <Popup
+                                trigger={
+                                    <div className="buy">
+                                        <p className="t1">MUA NGAY</p>
+                                        <p className="t2">Gọi điện xác nhận và giao hàng tận nơi</p>
+                                    </div>
+                                }
+                                onOpen={fetchAddresses}
+                                position="right center"
+                                modal
+                                closeOnDocumentClick={false}
+                            // closeOnEscape={false}
+                            >
+                                {(close) => (
+                                    <div className="popup-order">
+                                        {/* <AddressPopup user={user} close={close} /> */}
+                                        <h1>Thông tin người nhận</h1>
+                                        <div className="adr-container">
+                                            <TextField
+                                                select
+                                                required
+                                                fullWidth
+                                                label="Chọn địa chỉ của bạn"
+                                                className="user-input"
+                                                id="adrress"
+                                                size="small"
+                                                SelectProps={{
+                                                    native: true
+                                                }}
+                                                onChange={(event) => {
+                                                    setOrderAddress(event.target.value)
+                                                }}
+                                            >
+                                                <option value="" selected></option>
+                                                {addressList.map((adr) => (
+                                                    <option key={adr} value={adr.ID}>
+                                                        {adr.SoNha + ', ' + adr.PhuongXa + ', ' + adr.QuanHuyen + ', ' + adr.TinhTP}
+                                                    </option>
+                                                ))}
+                                            </TextField>
+                                            <div className="add-address-btn">
+                                                <Popup trigger={<Button variant="contained">Thêm</Button>} position="right center" modal>
+                                                    {(close) => (
+                                                        <div className="popup-address">
+                                                            <h1>Thêm địa chỉ</h1>
+                                                            <AddressPopup user={user} fetchAddresses={fetchAddresses} close={close} />
+                                                        </div>
+                                                    )}
+                                                </Popup>
+                                            </div>
+                                        </div>
+                                        <div className="phone-container">
+                                            <TextField
+                                                type="number"
+                                                required
+                                                fullWidth
+                                                label="Số điện thoại"
+                                                className="user-input"
+                                                id="phoneNumber"
+                                                size="small"
+                                                onChange={{ handlePhoneChange }}
+                                                error={checkValidation}
+                                            ></TextField>
+                                        </div>
+                                        <h1>Sản phẩm</h1>
+                                        <div className="curr-item-container">
+                                            <table className="curr-item">
+                                                <tr>
+                                                    <th>Ảnh</th>
+                                                    <th>Tên sản phẩm</th>
+                                                    <th>Giá</th>
+                                                    <th>Số lượng</th>
+                                                    <th>Tổng</th>
+                                                </tr>
+                                                <tr>
+                                                    <td className="text-center">
+                                                        <img className="h-full w-16 rounded-md" src={product.Url} alt={product.name} />
+                                                    </td>
+                                                    <td className="text-center">
+                                                        <div>{product.Name}</div>
+                                                    </td>
+                                                    <td className="text-center">
+                                                        {parseInt((product.Price * (100 - product.discount)) / 100).toLocaleString('vi', {
+                                                            style: 'currency',
+                                                            currency: 'VND'
+                                                        })}{' '}
+                                                    </td>
+                                                    <td className="text-center">
+                                                        <div>{quantity}</div>
+                                                    </td>
+                                                    <td>
+                                                        <div>
+                                                            {parseInt(((product.Price * (100 - product.discount)) / 100) * quantity).toLocaleString(
+                                                                'vi',
+                                                                {
+                                                                    style: 'currency',
+                                                                    currency: 'VND'
+                                                                }
+                                                            )}{' '}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+
+                                        <div>
+                                            <label>
+                                                <input
+                                                    type="radio"
+                                                    name="paymentMethod"
+                                                    value="COD"
+                                                    checked={paymentMethod === 'COD'}
+                                                    onChange={() => setPaymentMethod('COD')}
+                                                />
+                                                Thanh toán khi nhận hàng
+                                            </label>
+                                            <label>
+                                                <input
+                                                    type="radio"
+                                                    name="paymentMethod"
+                                                    value="vnpay"
+                                                    checked={paymentMethod === 'vnpay'}
+                                                    onChange={() => setPaymentMethod('vnpay')}
+                                                />
+                                                Thanh toán nhanh cùng VNPay
+                                            </label>
+                                        </div>
+
+                                        <div className="buttons">
+                                            {/* <button className="decision" onClick={close}></button> */}
+                                            <Button variant="contained" onClick={close}>
+                                                Hủy
+                                            </Button>
+                                            <Button
+                                                variant="contained"
+                                                onClick={() => { handlePayment() }}
+                                            >
+                                                Đặt hàng
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
+                            </Popup>
+                        )}
                     </div>
                 </div>
                 <div className="description">
