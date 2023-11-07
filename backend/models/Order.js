@@ -89,7 +89,6 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                 @PaymentMethod,
                 0,
                 GETDATE(),
-                @Status,
                 0,
                 N'Chờ duyệt',
                 'UnPaid'

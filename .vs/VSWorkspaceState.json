@@ -2,15 +2,9 @@
   "ExpandedNodes": [
     "",
     "\\backend",
-    "\\backend\\controllers",
+    "\\backend\\models",
     "\\frontend",
-    "\\frontend\\src",
-    "\\frontend\\src\\Pages",
-    "\\frontend\\src\\Pages\\Admin",
-    "\\frontend\\src\\Pages\\Admin\\Component",
-    "\\frontend\\src\\Pages\\Admin\\NewComponent",
-    "\\frontend\\src\\Pages\\Admin\\User"
+    "\\frontend\\src"
   ],
-  "SelectedNode": "\\backend\\controllers\\ComponentController.js",
   "PreviewInSolutionExplorer": false
 }
