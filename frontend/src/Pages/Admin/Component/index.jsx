@@ -17,7 +17,7 @@ import {
     TableRow,
     TextField
 } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { Component, useEffect, useState } from 'react'
 import MenuItem from '@mui/material/MenuItem'
 import Axios from 'axios'
 import Popup from 'reactjs-popup'
@@ -98,10 +98,10 @@ export default function Components() {
             upper_stock: upperStock,
             lower_stock: lowerStock,
             status: prostatus,
-            application : selectedCageCate,
+            application: selectedCageCate,
             page: page
         }
-        Axios.post('http://localhost:3000/component/filterComponent',json)
+        Axios.post('http://localhost:3000/component/filterComponent', json)
             .then((response) => {
                 setComponents(response.data.data)
                 setMaxPage(Math.ceil(response.data.lines.COUNT / 10))
@@ -111,9 +111,7 @@ export default function Components() {
             })
     }
     async function fetchCates() {
-        setCate([
-            "Móc","Nắp","Đáy","Nan","Bình nước","Khung","Cửa"
-        ])
+        setCate(['Móc', 'Nắp', 'Đáy', 'Nan', 'Bình nước', 'Khung', 'Cửa'])
     }
     async function fetchCageCates() {
         const response = await axios.get('http://localhost:3000/category/')
@@ -144,6 +142,14 @@ export default function Components() {
         }
     ]
 
+    //
+    ///active button
+    const [activeButton, setActiveButton] = useState(null)
+
+    const handleButtonClick = (buttonName) => {
+        setActiveButton(buttonName)
+    }
+
     return (
         <div className="px-2 py-2 w-full  mb-96">
             <div className="flex-col">
@@ -152,16 +158,40 @@ export default function Components() {
             </div>
             <div>Áp dung cho</div>
             <div>
-                <TextField className="w-64" select label="Loại" variant="filled" onChange={handleCageCate}>
-                    <MenuItem value={'All'}>All</MenuItem>
-                    {cageCate.map((cate) => (
-                        cate.Allow_customize == 1 && (
-                            <MenuItem key={cate.id} value={cate.id}>
-                                {cate.name}
-                            </MenuItem>
-                        )
-                    ))}
-                </TextField>
+                <div className="flex">
+                    <div>
+                        <button
+                            className={`p-2 rounded-t-md ${activeButton === 'lucgiac' ? 'bg-white' : 'bg-slate-300'}`}
+                            onClick={() => handleButtonClick('lucgiac')}
+                        >
+                            Lồng lục giác
+                        </button>
+                    </div>
+                    <div>
+                        <button
+                            className={`p-2 rounded-t-md ${activeButton === 'singapore' ? 'bg-white' : 'bg-slate-300'}`}
+                            onClick={() => handleButtonClick('singapore')}
+                        >
+                            Lồng kiểu Singapore
+                        </button>
+                    </div>
+                    <div>
+                        <button
+                            className={`p-2 rounded-t-md ${activeButton === 'tron' ? 'bg-white' : 'bg-slate-300'}`}
+                            onClick={() => handleButtonClick('tron')}
+                        >
+                            Lồng trụ tròn
+                        </button>
+                    </div>
+                    <div>
+                        <button
+                            className={`p-2 rounded-t-md ${activeButton === 'vuong' ? 'bg-white' : 'bg-slate-300'}`}
+                            onClick={() => handleButtonClick('vuong')}
+                        >
+                            Lồng vuông
+                        </button>
+                    </div>
+                </div>
             </div>
             <TableContainer component={Paper}>
                 <Table>
@@ -276,58 +306,81 @@ export default function Components() {
                             </TableCell>
                             <TableCell>
                                 <div>
-                                    <div><Button variant="contained" onClick={handleFilter}>FILTER</Button></div>
+                                    <div>
+                                        <Button variant="contained" onClick={handleFilter}>
+                                            FILTER
+                                        </Button>
+                                    </div>
                                 </div>
                             </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {Components.map((Component) => (
-                            <TableRow>
-                                <TableCell>{Component.ID}</TableCell>
-                                <TableCell>
-                                    <img className="w-16 h-16   " src={Component.Picture} />
-                                </TableCell>
-                                <TableCell>{Component.Name}</TableCell>
-                                <TableCell>{Component.Price.toLocaleString('vi', { style: 'currency', currency: 'VND' })}</TableCell>
-                                <TableCell>{Component.Stock}</TableCell>
-                                <TableCell>{Component.Type}</TableCell>
-                                <TableCell>{Component.Status}</TableCell>
-                                <TableCell>
-                                    {' '}
-                                    <div className="flex justify-end">
-                                        <Popup
-                                            trigger={
-                                                <button className="">
-                                                    <ModeEditIcon fontSize="medium" />
-                                                </button>
-                                            }
-                                            position="right center"
-                                            modal
-                                            closeOnDocumentClick={false}
-                                            closeOnEscape={false}
-                                        >
-                                            {(close) => (
-                                                <div>
-                                                    <div className="flex place-content-between ">
-                                                        <div className="m-4 font-bold text-lg">Chỉnh sửa sản phẩm </div>
-                                                        <div>
-                                                            <Button variant="outlined" className="" onClick={close}>
-                                                                X
-                                                            </Button>
+                        {
+                            // cageCate.filter((cate) => {
+                            //     if (activeButton === 'vuong') {
+                            //         return cate.Id.trim() === 'LV'
+                            //     }
+                            //     if (activeButton === 'tron') {
+                            //         return cate.Id.trim() === 'LT'
+                            //     }
+                            //     if (activeButton === 'lucgiac') {
+                            //         return cate.Id.trim() === 'LG'
+                            //     }
+                            //     if (activeButton === 'singapore') {
+                            //         return cate.Id.trim() === 'LS'
+                            //     }
+                            //     return true // Show all by default
+                            // })
+                            // const compo = await axios.get(`http://localhost:3000/getAllComponentByCate/${cageCate[0].Id.trim()}`)
+                            // setComponents(compo.data)
+                            Components.map((Component) => (
+                                <TableRow>
+                                    <TableCell>{Component.ID}</TableCell>
+                                    <TableCell>
+                                        <img className="w-16 h-16   " src={Component.Picture} />
+                                    </TableCell>
+                                    <TableCell>{Component.Name}</TableCell>
+                                    <TableCell>{Component.Price.toLocaleString('vi', { style: 'currency', currency: 'VND' })}</TableCell>
+                                    <TableCell>{Component.Stock}</TableCell>
+                                    <TableCell>{Component.Type}</TableCell>
+                                    <TableCell>{Component.Status}</TableCell>
+                                    <TableCell>
+                                        {' '}
+                                        <div className="flex justify-end">
+                                            <Popup
+                                                trigger={
+                                                    <button className="">
+                                                        <ModeEditIcon fontSize="medium" />
+                                                    </button>
+                                                }
+                                                position="right center"
+                                                modal
+                                                closeOnDocumentClick={false}
+                                                closeOnEscape={false}
+                                            >
+                                                {(close) => (
+                                                    <div>
+                                                        <div className="flex place-content-between ">
+                                                            <div className="m-4 font-bold text-lg">Chỉnh sửa sản phẩm </div>
+                                                            <div>
+                                                                <Button variant="outlined" className="" onClick={close}>
+                                                                    X
+                                                                </Button>
+                                                            </div>
                                                         </div>
+                                                        <EditComponentForm ComponentId={Component.Id} close={close} handleFilter={handleFilter} />
                                                     </div>
-                                                    <EditComponentForm ComponentId={Component.Id} close={close} handleFilter={handleFilter} />
-                                                </div>
-                                            )}
-                                        </Popup>
-                                        <button onClick={() => handleDelete(Component.Id)}>
-                                            <DeleteIcon fontSize="medium" />
-                                        </button>
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                        ))}
+                                                )}
+                                            </Popup>
+                                            <button onClick={() => handleDelete(Component.Id)}>
+                                                <DeleteIcon fontSize="medium" />
+                                            </button>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        }
                     </TableBody>
                 </Table>
             </TableContainer>

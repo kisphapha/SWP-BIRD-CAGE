@@ -16,6 +16,8 @@ import Popup from 'reactjs-popup'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { useContext } from 'react'
+import VNPay from '../../image/icons/VNPay.svg'
+import COD from '../../image/icons/COD.svg'
 
 export default function ProductDetails() {
     const { user } = useContext(UserContext)
@@ -525,42 +527,56 @@ export default function ProductDetails() {
 
                                         <div className="flex place-content-between">
                                             <div>
-                                                <div className="">
-                                                    <input
-                                                        type="radio"
-                                                        name="paymentMethod"
-                                                        value="COD"
-                                                        checked={paymentMethod === 'COD'}
-                                                        onChange={() => setPaymentMethod('COD')}
-                                                    />
-                                                    Thanh toán khi nhận hàng
+                                                <div className="flex mb-2">
+                                                    <label className="flex">
+                                                        <input
+                                                            type="radio"
+                                                            name="paymentMethod"
+                                                            value="COD"
+                                                            checked={paymentMethod === 'COD'}
+                                                            onChange={() => setPaymentMethod('COD')}
+                                                        />
+                                                        <div className="flex align-middle items-center text-lg">
+                                                            Thanh toán khi nhận hàng
+                                                            <img className="w-1/12 mx-2" src={COD} alt="" />
+                                                        </div>
+                                                    </label>
                                                 </div>
 
-                                                <div className=" ">
-                                                    <input
-                                                        type="radio"
-                                                        name="paymentMethod"
-                                                        value="vnpay"
-                                                        checked={paymentMethod === 'vnpay'}
-                                                        onChange={() => setPaymentMethod('vnpay')}
-                                                    />
-                                                    Thanh toán nhanh cùng VNPay
+                                                <div className="flex">
+                                                    <label className="flex">
+                                                        <input
+                                                            type="radio"
+                                                            name="paymentMethod"
+                                                            value="vnpay"
+                                                            checked={paymentMethod === 'vnpay'}
+                                                            onChange={() => setPaymentMethod('vnpay')}
+                                                        />
+                                                        <div className="flex items-center text-lg">
+                                                            Thanh toán nhanh cùng VNPay
+                                                            <img className="w-2/12 m-2" src={VNPay} alt="" />
+                                                        </div>
+                                                    </label>
                                                 </div>
                                             </div>
 
-                                            <div className="buttons">
+                                            <div className="flex gap-4 items-center ">
                                                 {/* <button className="decision" onClick={close}></button> */}
-                                                <Button variant="contained" onClick={close}>
-                                                    Hủy
-                                                </Button>
-                                                <Button
-                                                    variant="contained"
-                                                    onClick={() => {
-                                                        handlePayment()
-                                                    }}
-                                                >
-                                                    Đặt hàng
-                                                </Button>
+                                                <div>
+                                                    <Button
+                                                        variant="contained"
+                                                        onClick={() => {
+                                                            handlePayment()
+                                                        }}
+                                                    >
+                                                        Đặt hàng
+                                                    </Button>
+                                                </div>
+                                                <div>
+                                                    <Button variant="contained" onClick={close}>
+                                                        Hủy
+                                                    </Button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
