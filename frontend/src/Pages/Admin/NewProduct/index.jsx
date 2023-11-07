@@ -20,21 +20,36 @@ export default function NewProduct() {
     const [tmpStock, setStock] = useState('')
     const [tmpHeight, setHeight] = useState('')
     const [tmpWidth, setWidth] = useState('')
-    const [tmpUrls, setUrls] = useState([])
     const [tmpCate, setCate] = useState('')
     const [tmpStatus, setStatus] = useState('')
+    const [tmpUrls, setUrls] = useState([])
 
-   
-    async function fetchCategories() {
-        const response = await axios.get('http://localhost:3000/category/')
-        if (response.data) {
-            setCategories(response.data)
-        }
+
+    async function uploadToHost() {
+        const API_key = "d924a9e7cb663c6ceaf42becb5b52542";
+        const host = "https://api.imgbb.com/1/upload";
+        const expiration = 1800000;
+        const urls = [];
+
+        // Use Promise.all to wait for all the asynchronous requests to complete
+        await Promise.all(images.map(async (image) => {
+            const response = await axios.postForm(`${host}?expiration=${expiration}&key=${API_key}`, {
+                image: image.data_url.substring(image.data_url.indexOf(',') + 1)
+            });
+            if (response.data) {
+                urls.push(response.data.data.url);
+            }
+        }));
+
+        console.log(urls);
+        handleAdd(urls)
+        
     }
 
-    async function handleAdd(event) {
-        const _size = (tmpWidth + ',' + tmpHeight)
-        if (!tmpDiscount) setDiscount(0)
+    
+    async function handleAdd(urls) {
+        const _size = (tmpWidth + ',' + tmpHeight);
+        if (!tmpDiscount) setDiscount(0);
         const json = {
             Name: tmpName,
             Category: tmpCate,
@@ -46,15 +61,25 @@ export default function NewProduct() {
             SuitableBird: tmpBird,
             discount: tmpDiscount,
             Status: tmpStatus,
-            Urls: tmpUrls
+            Urls: urls
         }
+
         if (json.Stock && json.Name && json.Category && json.Price && json.Status) {
-            await axios.post(`http://localhost:3000/products/add`, json)
-            alert('Đã thêm sản phẩm')
+            await axios.post(`http://localhost:3000/products/add`, json);
+            alert('Đã thêm sản phẩm');
+            window.location.reload();
         } else {
-            alert('Vui lòng điền đủ thông tin')
+            alert('Vui lòng điền đủ thông tin');
         }
     }
+
+    async function fetchCategories() {
+        const response = await axios.get('http://localhost:3000/category/')
+        if (response.data) {
+            setCategories(response.data)
+        }
+    }
+
 
     const handleNameChange = (event) => {
         setTempName(event.target.value)
@@ -189,7 +214,7 @@ export default function NewProduct() {
                 </div>
                 <div className="px-4 pl-40 flex flex-col basis-1/2 items-start gap-4 py-10">
                     <div>Hình ảnh </div>
-                    <ImageUploader images={images} setImages={setImages} maxNumber={maxNumber} setUrls={setUrls} />
+                    <ImageUploader images={images} setImages={setImages} maxNumber={maxNumber}/>
                     <div>
                         {tmpCate != 'PK' && (
                             <>
@@ -243,7 +268,9 @@ export default function NewProduct() {
                         />
                         </div>
                     </div>
-                    <Button variant="contained" onClick={handleAdd}> update</Button>
+                    <Button variant="contained" onClick={() => {
+                        uploadToHost()
+                    }}> update</Button>
                 </div>
             </div>
         </form>

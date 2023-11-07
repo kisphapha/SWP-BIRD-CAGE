@@ -3,11 +3,13 @@ import { React, useState, useEffect } from 'react'
 import { Button } from '@mui/material'
 import MenuItem from '@mui/material/MenuItem'
 import axios from 'axios'
+import ImageUploader from '../../../components/features/ImageUploader/index'
 
 export default function EditProductForm({ productId, close, handleFilter }) {
-    const [materials, setMaterials] = useState([])
     const [categories, setCategories] = useState([])
     const [product, setProduct] = useState('')
+    const [images, setImages] = useState([]);
+
     //temp varible
     const [tmpName, setTempName] = useState('')
     const [tmpDescription, setTempDescription] = useState('')
@@ -18,7 +20,7 @@ export default function EditProductForm({ productId, close, handleFilter }) {
     const [tmpStock, setStock] = useState('')
     const [tmpHeight, setHeight] = useState('')
     const [tmpWidth, setWidth] = useState('')
-    const [tmpUrl, setUrl] = useState('')
+    const [tmpUrls, setUrls] = useState([])
     const [tmpCate, setCate] = useState('')
     const [tmpStatus, setStatus] = useState('')
 
@@ -28,12 +30,37 @@ export default function EditProductForm({ productId, close, handleFilter }) {
             setCategories(response.data)
         }
     }
+    function createImageObject(url) {
+        return {
+            data_url: url,
+        };
+    }
+
+    function createImageListFromUrls(urls) {
+        return urls.map(createImageObject);
+    }
+
+    // Usage
+    const imagesFromUrls = createImageListFromUrls(tmpUrls);
+
+    function getImageList() {
+        const imagesFromUrls = createImageListFromUrls(tmpUrls);
+        setImages(imagesFromUrls);
+    }
+
+    async function fetchImage(id) {
+        const response = await axios.get('http://localhost:3000/products/img/' + id)
+        if (response.data) {
+            setUrls(response.data);
+        }
+    }
 
     async function fetchProductDetails(id) {
         const response = await axios.get('http://localhost:3000/products/' + id)
         if (response.data) {
             setProduct(response.data)
         }
+        fetchImage(id);
     }
 
     async function handleUpdate(event) {
@@ -53,7 +80,7 @@ export default function EditProductForm({ productId, close, handleFilter }) {
             SuitableBird: _cate != 'PK' ? (tmpBird ? tmpBird : product.SuitableBird) : '',
             discount: tmpDiscount ? tmpDiscount : product.discount,
             Status: tmpStatus ? tmpStatus : product.Status,
-            Url: tmpUrl ? tmpUrl : product.Url
+            Url: tmpUrls ? tmpUrls : product.Urls
         }
         console.log(json)
         await axios.post(`http://localhost:3000/products/update`, json)
@@ -89,9 +116,6 @@ export default function EditProductForm({ productId, close, handleFilter }) {
     const handleWidthChange = (event) => {
         setWidth(event.target.value)
     }
-    const handleUrlChange = (event) => {
-        setUrl(event.target.value)
-    }
     const handleCategoryChange = (event) => {
         setCate(event.target.value)
     }
@@ -102,6 +126,7 @@ export default function EditProductForm({ productId, close, handleFilter }) {
     useEffect(() => {
         fetchCategories()
         fetchProductDetails(productId)
+        getImageList()
     }, [productId])
 
     return (
@@ -274,23 +299,16 @@ export default function EditProductForm({ productId, close, handleFilter }) {
                             </div>
                         </div>
                     </div>
-                    <div className="">
-                        <div>
-                            <div className="">
-                                {/* <div>description</div> */}
-                                <TextField
-                                    InputLabelProps={{ shrink: true }}
-                                    fullWidth
-                                    label={'Image-url'}
-                                    variant="standard"
-                                    multiline
-                                    rows={6}
-                                    onChange={handleUrlChange}
-                                    value={tmpUrl ? tmpUrl : product.Url}
-                                />
-                            </div>
-                        </div>
+                    <div>
+                        <ImageUploader images={images} setImages={setImages} maxNumber={6} />
+
+                        {tmpUrls.map((img) => (
+                            <td key={img.Id}>
+                                <img className="w-32" src={img.Url}></img>
+                            </td>
+                        )) }
                     </div>
+                    
                     <div className="my-2 text-right">
                         <Button onClick={handleUpdate} className="py-full" variant="contained">
                             update

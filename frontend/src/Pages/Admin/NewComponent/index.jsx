@@ -34,8 +34,24 @@ export default function NewComponent() {
             "Móc", "Nắp", "Đáy", "Nan", "Bình nước", "Khung", "Cửa"
         ])
     }
+    async function uploadToHost() {
+        const API_key = "d924a9e7cb663c6ceaf42becb5b52542"
+        const host = "https://api.imgbb.com/1/upload"
+        const expiration = 1800000
+        const urls = []
+        await Promise.all(images.map(async (image) => {
+            const response = await axios.postForm(`${host}?expiration=${expiration}&key=${API_key}`, {
+                image: image.data_url.substring(image.data_url.indexOf(',') + 1)
+            })
+            if (response.data) {
+                urls.push(response.data.data.url)
+            }
+        }))
+        console.log(urls)
+        handleAdd(urls)
+    }
 
-    async function handleAdd(event) {
+    async function handleAdd(urls) {
         const json = {
             Name: tmpName,
             Category: tmpCate,
@@ -45,16 +61,19 @@ export default function NewComponent() {
             Price: tmpPrice,
             Stock: tmpStock,
             Status: tmpStatus,
-            Urls: tmpUrls[0],
+            Urls: urls[0],
             Application : appliedFor
         }
         if (json.Stock && json.Name && json.Category && json.Price && json.Status) {
             await axios.post(`http://localhost:3000/component/new`, json)
             alert('Đã thêm sản phẩm')
+            window.location.reload()
+
         } else {
             alert('Vui lòng điền đủ thông tin')
         }
     }
+
 
     const handleApplyForChange = (event) => {
         const newCate = event.target.value;
@@ -214,7 +233,10 @@ export default function NewComponent() {
                             )
                         ))}
                     </div>
-                    <Button variant="contained" onClick={handleAdd}> update</Button>
+                    <Button variant="contained" onClick={() => {
+                        uploadToHost()
+                        handleAdd()
+                    }}> update</Button>
                 </div>
             </div>
         </form>

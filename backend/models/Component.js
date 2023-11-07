@@ -1,4 +1,4 @@
-const config = require("../config/db.config");
+﻿const config = require("../config/db.config");
 const sql = require("mssql");
 
 const getByComponentCate = async (CateID) => {
@@ -84,7 +84,7 @@ const addNewComponent = async (Name, Type, Material, Color, Description, Price, 
     try {
         let poolConnection = await sql.connect(config);
         const request = poolConnection.request();
-
+        const unit = Material == "Nan" ? "Cái" : "Bộ"
         request.input('Name', sql.NVarChar, Name);
         request.input('Description', sql.NVarChar, Description);
         request.input('Price', sql.Int, Price);
@@ -94,7 +94,7 @@ const addNewComponent = async (Name, Type, Material, Color, Description, Price, 
         request.input('Material', sql.NVarChar, Material);
         request.input('Color', sql.NVarChar, Color);
         request.input('Picture', sql.NVarChar, Urls);
-
+        request.input('Unit', sql.NVarChar, unit)
         const result = await request.query(`
             INSERT INTO dbo.ComponentDetail
             (
@@ -107,6 +107,7 @@ const addNewComponent = async (Name, Type, Material, Color, Description, Price, 
             ,[Material]
             ,[Color]
             ,[Picture]
+            ,[Unit]
             )
             VALUES
             (
@@ -118,7 +119,8 @@ const addNewComponent = async (Name, Type, Material, Color, Description, Price, 
                 @Type, 
                 @Material,
                 @Color, 
-                @Picture
+                @Picture,
+                @Unit
             );
         `);
 
