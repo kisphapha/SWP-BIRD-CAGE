@@ -119,7 +119,7 @@ export default function ProductDetails() {
                 setCheckValidation(false)
             }
         } else {
-            setValid(false)
+            // setValid(false)
         }
 
         setPhoneNumber(inputPhoneNumber)
