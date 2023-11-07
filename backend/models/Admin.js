@@ -21,20 +21,27 @@ const getBestSellingProducts = async () => {
         let poolConnection = await sql.connect(config);
         const result  = await poolConnection.request()
             .query(`
+            WITH sales_data AS (
                 SELECT
-                    P.Id,
-                    P.Name,
-                    SUM(OI.quantity) AS total_quantity_sold
+                ProductId,
+                SUM(quantity) AS total_quantity_sold
                 FROM
-                    Products P
+                orders
                 JOIN
-                    dbo.OrderItem OI ON P.Id = OI.OrdersId
-                JOIN
-                    Orders O ON OI.OrdersId = O.Id
+                dbo.OrderItem ON OrderItem.OrdersId = Orders.Id
                 GROUP BY
-                    P.Id, P.Name
+                ProductId
+                )
+                SELECT
+                products.Id,
+                products.Name,
+                sales_data.total_quantity_sold
+                FROM
+                products
+                JOIN
+                sales_data ON products.Id = sales_data.ProductId
                 ORDER BY
-                    total_quantity_sold DESC;
+                sales_data.total_quantity_sold DESC
             `);
         return result.recordset;
     }catch (error) {
@@ -150,8 +157,7 @@ const deleteJunkData = async() => {
             DELETE dbo.OrderItem WHERE OrdersId IN (  SELECT id FROM dbo.Orders
             WHERE PaymentDate IS NULL AND AddressID IS NULL )
             DELETE dbo.Orders
-            WHERE PaymentDate IS NULL AND AddressID IS NULL a
-          
+            WHERE PaymentDate IS NULL AND AddressID IS NULL 
         `) 
     } catch (error) {
         console.log("error: ", error);
