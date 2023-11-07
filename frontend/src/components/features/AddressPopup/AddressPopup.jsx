@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react'
 import axios from 'axios'
 import { Button, TextField } from '@mui/material'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import "./AddressPopup.css"
 
 function AddressPopup(props) {
@@ -38,7 +40,17 @@ function AddressPopup(props) {
             await axios.post(
                 `http://localhost:3000/address/new?city=${tinhTP}&district=${quanHuyen}&ward=${phuongXa}&location=${soNha}&userid=${props.user.Id}`
             )
-            alert('Address added')
+            toast.dismiss()
+            toast.success('Thêm địa chỉ thành công', {
+                position: 'bottom-left',
+                autoClose: 1000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                progress: undefined,
+                theme: 'colored'
+            })
             fetchAddresses()
             close()
         } else {

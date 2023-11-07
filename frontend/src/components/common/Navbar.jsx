@@ -20,8 +20,7 @@ export default function Navbar() {
             setCartData(JSON.parse(cartDataFromSession))
         }
         setLoading(false)
-    }, [])
-
+    }, [cartData])
 
     const totalProductQuantity = () => {
         let total = 0

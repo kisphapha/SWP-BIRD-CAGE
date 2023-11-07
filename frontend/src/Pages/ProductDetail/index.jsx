@@ -32,8 +32,14 @@ export default function ProductDetails() {
     const [checkValidation, setCheckValidation] = useState(false)
     const navigate = useNavigate()
 
+    window.addEventListener('popstate', function () {
+        // This function will be triggered when the window is unloaded, including when it's reloaded.
+        sessionStorage.setItem('quantity', 1)
+    })
+
     useEffect(() => {
         window.scrollTo(0, 0)
+        const sesQuantity = parseInt(sessionStorage.getItem('quantity'))
         const fetchProduct = async () => {
             const response = await axios.get(`http://localhost:3000/products/${productId}`)
             setProduct(response.data)
@@ -51,7 +57,9 @@ export default function ProductDetails() {
         fetchProduct()
         fetchRatings()
         fetchImage()
+        sesQuantity ? setQuantity(sesQuantity) : setQuantity(1)
     }, [productId])
+
     async function fetchAddresses() {
         const response = await axios.get(`http://localhost:3000/address/${user.Id}`)
         console.log(response.data)
@@ -76,31 +84,52 @@ export default function ProductDetails() {
         if (quantity > 1) {
             setQuantity((prevCount) => prevCount - 1)
         }
+        sessionStorage.setItem('quantity', quantity - 1)
     }
     const handleIncrement = () => {
         if (quantity < 10) {
             // Change this condition to quantity < 10
             setQuantity((prevCount) => prevCount + 1)
         }
+        sessionStorage.setItem('quantity', quantity + 1)
     }
+
+    function isOrderAddressEmpty(orderAddress) {
+        return !orderAddress || orderAddress.trim() === ''
+    }
+
     const checkPattern = (inputValue, pattern) => {
         const regex = new RegExp(pattern)
         return regex.test(inputValue)
     }
 
-    const handlePattern = (event) => {
-        const inputValue = event.target.value
-        const pattern = '[0-9]{10,12}'
+    const handlePhoneChange = (event) => {
+        let inputPhoneNumber = event.target.value
 
-        const isValid = checkPattern(inputValue, pattern)
-        if (isValid) {
-            setCheckValidation(!isValid)
+        // Remove unwanted characters "e", "+", and "-"
+        inputPhoneNumber = inputPhoneNumber.replace(/[e+-]/gi, '')
+
+        // Regular expression pattern for a valid phone number. You can adjust it as needed.
+        const phonePattern = '0[0-9]{9}'
+
+        if (inputPhoneNumber.length <= 12) {
+            if (checkPattern(inputPhoneNumber, phonePattern)) {
+                setCheckValidation(true)
+            } else {
+                setCheckValidation(false)
+            }
+        } else {
+            // setValid(false)
         }
-        return isValid
+
+        setPhoneNumber(inputPhoneNumber)
     }
 
-    const handlePhoneChange = (event) => {
-        setPhoneNumber(event.table.value)
+    const handleKeyDown = (event) => {
+        // Prevent the characters "e", "+", and "-" from being entered.
+        if (['e', '+', '-', '.'].includes(event.key)) {
+            event.preventDefault()
+        }
     }
 
     const addToCart = () => {
@@ -117,7 +146,7 @@ export default function ProductDetails() {
         const existingProduct = cart.products.find((product) => product.id === productId)
 
         if (existingProduct) {
-            existingProduct.quantity = parseInt(existingProduct.quantity) + parseInt(quantity)
+            existingProduct.quantity = existingProduct.quantity + quantity
         } else {
             cart.products.push({
                 id: productId,
@@ -132,6 +161,17 @@ export default function ProductDetails() {
         sessionStorage.setItem('cart', JSON.stringify(cart))
 
         console.log(sessionStorage.getItem('cart'))
+        toast.dismiss()
+        toast.success('Sản phẩm đã được thêm vào', {
+            position: 'bottom-left',
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: 'colored'
+        })
     }
 
     const handlePayment = async () => {
@@ -183,7 +223,17 @@ export default function ProductDetails() {
                             console.log(response.data.url)
                             window.location.href = response.data.url
                         } else {
-                            alert('Đặt hàng thành công')
+                            toast.dismiss()
+                            toast.success('Đặt hàng thành công', {
+                                position: 'bottom-left',
+                                autoClose: 1000,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: false,
+                                draggable: true,
+                                progress: undefined,
+                                theme: 'colored'
+                            })
                             close()
                             // sessionStorage.setItem('cart', '{"products":[]}')
                             window.location.reload(false)
@@ -201,22 +251,6 @@ export default function ProductDetails() {
         } catch (error) {
             console.error('Lỗi thanh toán:', error)
         }
-        toast.dismiss()
-        toast.success('Sản phẩm đã được thêm vào', {
-            position: 'bottom-left',
-            autoClose: 1000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: true,
-            progress: undefined,
-            theme: 'colored'
-        })
-    }
-
-    const handleBuy = () => {
-        addToCart()
-        navigate('/cart')
     }
 
     return (
@@ -334,29 +368,33 @@ export default function ProductDetails() {
                                         {/* <AddressPopup user={user} close={close} /> */}
                                         <h1>Thông tin người nhận</h1>
                                         <div className="adr-container">
-                                            <TextField
-                                                select
-                                                required
-                                                fullWidth
-                                                label="Chọn địa chỉ của bạn"
-                                                className="user-input"
-                                                id="adrress"
-                                                size="small"
-                                                SelectProps={{
-                                                    native: true
-                                                }}
-                                                onChange={(event) => {
-                                                    setOrderAddress(event.target.value)
-                                                }}
-                                            >
-                                                <option value="" selected></option>
-                                                {addressList.map((adr) => (
-                                                    <option key={adr} value={adr.ID}>
-                                                        {adr.SoNha + ', ' + adr.PhuongXa + ', ' + adr.QuanHuyen + ', ' + adr.TinhTP}
-                                                    </option>
-                                                ))}
-                                            </TextField>
-                                            <div className="add-address-btn">
+                                            <div className="w-3/4">
+                                                <TextField
+                                                    select
+                                                    required
+                                                    fullWidth
+                                                    label="Chọn địa chỉ của bạn"
+                                                    className="user-input"
+                                                    id="adrress"
+                                                    size="small"
+                                                    SelectProps={{
+                                                        native: true
+                                                    }}
+                                                    onChange={(event) => {
+                                                        setOrderAddress(event.target.value)
+                                                    }}
+                                                    error={isOrderAddressEmpty(orderAddress)}
+                                                    helperText={isOrderAddressEmpty(orderAddress) ? 'Xin hãy chọn địa chỉ' : ''}
+                                                >
+                                                    <option value="" selected></option>
+                                                    {addressList.map((adr) => (
+                                                        <option key={adr} value={adr.ID}>
+                                                            {adr.SoNha + ', ' + adr.PhuongXa + ', ' + adr.QuanHuyen + ', ' + adr.TinhTP}
+                                                        </option>
+                                                    ))}
+                                                </TextField>
+                                            </div>
+                                            <div className="">
                                                 <Popup trigger={<Button variant="contained">Thêm</Button>} position="right center" modal>
                                                     {(close) => (
                                                         <div className="popup-address">
@@ -367,7 +405,7 @@ export default function ProductDetails() {
                                                 </Popup>
                                             </div>
                                         </div>
-                                        <div className="phone-container">
+                                        <div className="phone-container w-3/4">
                                             <TextField
                                                 type="number"
                                                 required
@@ -376,8 +414,10 @@ export default function ProductDetails() {
                                                 className="user-input"
                                                 id="phoneNumber"
                                                 size="small"
-                                                onChange={{ handlePhoneChange }}
-                                                error={checkValidation}
+                                                value={phoneNumber}
+                                                onChange={handlePhoneChange}
+                                                onKeyDown={handleKeyDown}
+                                                error={!checkValidation}
                                             ></TextField>
                                         </div>
                                         <h1>Sản phẩm</h1>
@@ -428,34 +468,34 @@ export default function ProductDetails() {
                                                     <TableHead>
                                                         <TableRow>
                                                             <TableCell>
-                                                                <div className="text-center">Ảnh</div>
+                                                                <div className="text-center  font-bold text-base">Ảnh</div>
                                                             </TableCell>
                                                             <TableCell>
-                                                                <div className="text-center">Tên sản phẩm</div>
+                                                                <div className="text-center font-bold  text-base">Tên sản phẩm</div>
                                                             </TableCell>
                                                             <TableCell>
-                                                                <div className="text-center">Giá</div>
+                                                                <div className="text-center font-bold  text-base">Giá</div>
                                                             </TableCell>
                                                             <TableCell>
-                                                                <div className="text-center">Số lượng</div>
+                                                                <div className="text-center font-bold  text-base">Số lượng</div>
                                                             </TableCell>
                                                             <TableCell>
-                                                                <div className="text-center">Tổng</div>
+                                                                <div className="text-center font-bold  text-base">Tổng</div>
                                                             </TableCell>
                                                         </TableRow>
                                                     </TableHead>
                                                     <TableBody>
                                                         <TableRow>
                                                             <TableCell>
-                                                                <div className="items-center">
+                                                                <div className="     flex justify-center">
                                                                     <img className="h-full w-16 rounded-md" src={product.Url} alt={product.name} />
                                                                 </div>
                                                             </TableCell>
                                                             <TableCell>
-                                                                <div className="text-center">{product.Name}</div>
+                                                                <div className="text-center text-base">{product.Name}</div>
                                                             </TableCell>
                                                             <TableCell>
-                                                                <div className="text-center">
+                                                                <div className="text-center text-base">
                                                                     {parseInt((product.Price * (100 - product.discount)) / 100).toLocaleString('vi', {
                                                                         style: 'currency',
                                                                         currency: 'VND'
@@ -463,10 +503,10 @@ export default function ProductDetails() {
                                                                 </div>
                                                             </TableCell>
                                                             <TableCell>
-                                                                <div className="text-center">{quantity}</div>
+                                                                <div className="text-center text-base">{quantity}</div>
                                                             </TableCell>
                                                             <TableCell>
-                                                                <div className="text-center">
+                                                                <div className="text-center text-base">
                                                                     {parseInt(
                                                                         ((product.Price * (100 - product.discount)) / 100) * quantity
                                                                     ).toLocaleString('vi', {
