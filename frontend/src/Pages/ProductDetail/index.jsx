@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import axios from 'axios'
 import { useParams } from 'react-router-dom'
 import './styles.css'
@@ -8,12 +8,10 @@ import Navbar from '../../components/common/Navbar'
 import CategoryNav from '../../components/features/CategoryNav'
 import AddressPopup from '../../components/features/AddressPopup/AddressPopup'
 import LoginCard from '../../components/features/LoginCard'
-import { useNavigate } from 'react-router-dom'
-import { Button, TextField, Rating, Avatar } from '@mui/material'
 import Popup from 'reactjs-popup'
+import { Button, TextField, Rating, Avatar, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { useContext } from 'react'
 
 export default function ProductDetails() {
     const { user } = useContext(UserContext)
@@ -28,7 +26,6 @@ export default function ProductDetails() {
     const [orderAddress, setOrderAddress] = useState('')
     const [phoneNumber, setPhoneNumber] = useState('')
     const [checkValidation, setCheckValidation] = useState(true)
-    const navigate = useNavigate()
 
     window.addEventListener('popstate', function () {
         // This function will be triggered when the window is unloaded, including when it's reloaded.
@@ -60,7 +57,6 @@ export default function ProductDetails() {
 
     async function fetchAddresses() {
         const response = await axios.get(`http://localhost:3000/address/${user.Id}`)
-        console.log(response.data)
         setAddressList(response.data)
     }
 
@@ -108,7 +104,7 @@ export default function ProductDetails() {
         inputPhoneNumber = inputPhoneNumber.replace(/[e+-]/gi, '')
 
         // Regular expression pattern for a valid phone number. You can adjust it as needed.
-        const phonePattern = '0[0-9]{9,10}'
+        const phonePattern = '(032|033|034|035|036|037|038|039|096|097|098|086|083|084|085|081|082|088|091|094|070|079|077|076|078|090|093|089|056|058|092|059|099)[0-9]{7}'
 
         if (inputPhoneNumber.length <= 11) {
             if (checkPattern(inputPhoneNumber, phonePattern)) {
@@ -168,7 +164,6 @@ export default function ProductDetails() {
         // Store the updated cart in sessionStorage
         sessionStorage.setItem('cart', JSON.stringify(cart))
 
-        console.log(sessionStorage.getItem('cart'))
         toast.dismiss()
         toast.success('Sản phẩm đã được thêm vào', {
             position: 'bottom-left',
@@ -184,14 +179,9 @@ export default function ProductDetails() {
 
     const handlePayment = async () => {
         try {
-            console.log(product)
             if (sessionStorage.loginedUser != null) {
                 if (orderAddress) {
-                    console.log(orderAddress)
-                    console.log(orderAddress)
                     if (phoneNumber) {
-                        console.log(phoneNumber)
-                        console.log(phoneNumber)
                         const res = await axios.post('http://localhost:3000/order/addordertodb', {
                             UserID: JSON.parse(sessionStorage.loginedUser).Id,
                             OrderDate: new Date().toISOString().slice(0, 10),
@@ -212,11 +202,6 @@ export default function ProductDetails() {
                                 }
                             ]
                         })
-                        // await axios.post('http://localhost:3000/users/updatePoint', {
-                        //     id: 17,
-                        //     point: 1000
-                        // })
-                        console.log(res.data.orderid)
                         if (paymentMethod == 'vnpay') {
                             const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
                                 amount: ((product.Price * (100 - product.discount)) / 100) * quantity,
@@ -230,7 +215,6 @@ export default function ProductDetails() {
                             //     alert('Đang chuyển tiếp đến VNPay')
                             // }, 2000)
                             close()
-                            console.log(response.data.url)
                             window.location.href = response.data.url
                         } else {
                             toast.dismiss()
@@ -246,7 +230,7 @@ export default function ProductDetails() {
                             })
                             close()
                             // sessionStorage.setItem('cart', '{"products":[]}')
-                            window.location.reload(false)
+                            // window.location.reload(false)
                         }
                         // sessionStorage.setItem('cart', '{"products":[]}')
                     } else {
@@ -378,31 +362,33 @@ export default function ProductDetails() {
                                         <h1>Thông tin người nhận</h1>
                                         <div className="container">
                                             <div className="adr-container">
-                                                <TextField
-                                                    select
-                                                    required
-                                                    fullWidth
-                                                    label="Chọn địa chỉ của bạn"
-                                                    className="user-input"
-                                                    id="adrress"
-                                                    size="small"
-                                                    SelectProps={{
-                                                        native: true
-                                                    }}
-                                                    onChange={(event) => {
-                                                        setOrderAddress(event.target.value)
-                                                    }}
-                                                    error={isOrderAddressEmpty(orderAddress)}
-                                                    helperText={isOrderAddressEmpty(orderAddress) ? 'Xin hãy chọn địa chỉ' : ''}
-                                                >
-                                                    <option value="" selected></option>
-                                                    {addressList.map((adr) => (
-                                                        <option key={adr} value={adr.ID}>
-                                                            {adr.SoNha + ', ' + adr.PhuongXa + ', ' + adr.QuanHuyen + ', ' + adr.TinhTP}
-                                                        </option>
-                                                    ))}
-                                                </TextField>
-                                                <div className="add-address-btn">
+                                                <div className="w-3/4">
+                                                    <TextField
+                                                        select
+                                                        required
+                                                        fullWidth
+                                                        label="Chọn địa chỉ của bạn"
+                                                        className="user-input"
+                                                        id="adrress"
+                                                        size="small"
+                                                        SelectProps={{
+                                                            native: true
+                                                        }}
+                                                        onChange={(event) => {
+                                                            setOrderAddress(event.target.value)
+                                                        }}
+                                                        error={isOrderAddressEmpty(orderAddress)}
+                                                        helperText={isOrderAddressEmpty(orderAddress) ? 'Xin hãy chọn địa chỉ' : ''}
+                                                    >
+                                                        <option value="" selected></option>
+                                                        {addressList.map((adr) => (
+                                                            <option key={adr} value={adr.ID}>
+                                                                {adr.SoNha + ', ' + adr.PhuongXa + ', ' + adr.QuanHuyen + ', ' + adr.TinhTP}
+                                                            </option>
+                                                        ))}
+                                                    </TextField>
+                                                </div>
+                                                <div>
                                                     <Popup trigger={<Button variant="contained">Thêm</Button>} position="right center" modal>
                                                         {(close) => (
                                                             <div className="popup-address">
@@ -413,7 +399,7 @@ export default function ProductDetails() {
                                                     </Popup>
                                                 </div>
                                             </div>
-                                            <div className="phone-container">
+                                            <div className="phone-container w-3/4">
                                                 <TextField
                                                     type="number"
                                                     required
@@ -426,103 +412,12 @@ export default function ProductDetails() {
                                                     onChange={handlePhoneChange}
                                                     onKeyDown={handleKeyDown}
                                                     error={!checkValidation}
+                                                    helperText={!checkValidation ? "Số điện thoại không hợp lệ" : ''}
                                                 ></TextField>
                                             </div>
-                                        <div className="adr-container">
-                                            <div className="w-3/4">
-                                                <TextField
-                                                    select
-                                                    required
-                                                    fullWidth
-                                                    label="Chọn địa chỉ của bạn"
-                                                    className="user-input"
-                                                    id="adrress"
-                                                    size="small"
-                                                    SelectProps={{
-                                                        native: true
-                                                    }}
-                                                    onChange={(event) => {
-                                                        setOrderAddress(event.target.value)
-                                                    }}
-                                                    error={isOrderAddressEmpty(orderAddress)}
-                                                    helperText={isOrderAddressEmpty(orderAddress) ? 'Xin hãy chọn địa chỉ' : ''}
-                                                >
-                                                    <option value="" selected></option>
-                                                    {addressList.map((adr) => (
-                                                        <option key={adr} value={adr.ID}>
-                                                            {adr.SoNha + ', ' + adr.PhuongXa + ', ' + adr.QuanHuyen + ', ' + adr.TinhTP}
-                                                        </option>
-                                                    ))}
-                                                </TextField>
-                                            </div>
-                                            <div className="">
-                                                <Popup trigger={<Button variant="contained">Thêm</Button>} position="right center" modal>
-                                                    {(close) => (
-                                                        <div className="popup-address">
-                                                            <h1>Thêm địa chỉ</h1>
-                                                            <AddressPopup user={user} fetchAddresses={fetchAddresses} close={close} />
-                                                        </div>
-                                                    )}
-                                                </Popup>
-                                            </div>
+                                            <hr className="border  border-slate-300 my-2 w-full" />
+                                            <h1>Sản phẩm</h1>
                                         </div>
-                                        <div className="phone-container w-3/4">
-                                            <TextField
-                                                type="number"
-                                                required
-                                                fullWidth
-                                                label="Số điện thoại"
-                                                className="user-input"
-                                                id="phoneNumber"
-                                                size="small"
-                                                value={phoneNumber}
-                                                onChange={handlePhoneChange}
-                                                onKeyDown={handleKeyDown}
-                                                error={!checkValidation}
-                                            ></TextField>
-                                        </div>
-                                        <h1>Sản phẩm</h1>
-                                        {/* <div className="curr-item-container">
-                                            <table className="curr-item">
-                                                
-                                                <tr>
-                                                    <th>Ảnh</th>
-                                                    <th>Tên sản phẩm</th>
-                                                    <th>Giá</th>
-                                                    <th>Số lượng</th>
-                                                    <th>Tổng</th>
-                                                </tr>
-                                                
-                                                <tr>
-                                                    <td className="text-center">
-                                                        <img className="h-full w-16 rounded-md" src={product.Url} alt={product.name} />
-                                                    </td>
-                                                    <td className="text-center">
-                                                        <div>{product.Name}</div>
-                                                    </td>
-                                                    <td className="text-center">
-                                                        {parseInt((product.Price * (100 - product.discount)) / 100).toLocaleString('vi', {
-                                                            style: 'currency',
-                                                            currency: 'VND'
-                                                        })}{' '}
-                                                    </td>
-                                                    <td className="text-center">
-                                                        <div>{quantity}</div>
-                                                    </td>
-                                                    <td>
-                                                        <div>
-                                                            {parseInt(((product.Price * (100 - product.discount)) / 100) * quantity).toLocaleString(
-                                                                'vi',
-                                                                {
-                                                                    style: 'currency',
-                                                                    currency: 'VND'
-                                                                }
-                                                            )}{' '}
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </div> */}
                                         <div>
                                             <TableContainer className=" " component={Paper}>
                                                 <Table aria-label="simple table">
@@ -548,7 +443,7 @@ export default function ProductDetails() {
                                                     <TableBody>
                                                         <TableRow>
                                                             <TableCell>
-                                                                <div className="     flex justify-center">
+                                                                <div className="flex justify-center">
                                                                     <img className="h-full w-16 rounded-md" src={product.Url} alt={product.name} />
                                                                 </div>
                                                             </TableCell>
@@ -609,19 +504,20 @@ export default function ProductDetails() {
                                                 </div>
                                             </div>
 
-                                        <div className="buttons">
-                                            {/* <button className="decision" onClick={close}></button> */}
-                                            <Button variant="contained" onClick={close}>
-                                                Hủy
-                                            </Button>
-                                            <Button
-                                                variant="contained"
-                                                onClick={() => {
-                                                    handlePayment()
-                                                }}
-                                            >
-                                                Đặt hàng
-                                            </Button>
+                                            <div className="buttons">
+                                                {/* <button className="decision" onClick={close}></button> */}
+                                                <Button variant="contained" onClick={close}>
+                                                    Hủy
+                                                </Button>
+                                                <Button
+                                                    variant="contained"
+                                                    onClick={() => {
+                                                        handlePayment()
+                                                    }}
+                                                >
+                                                    Đặt hàng
+                                                </Button>
+                                            </div>
                                         </div>
                                     </div>
                                 )}
