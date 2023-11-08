@@ -43,15 +43,6 @@ const updateUser = async (req, res) => {
 };
 
 
-
-// const deleteUser = async (req, res) => {
-//     try {
-//     const
-//     }catch (error){
-//         res.status(500).json({message: error.message})
-//     }
-// }
-
 const getPointForUser = async (req, res) =>{
     try {
         const id = req.body.id;

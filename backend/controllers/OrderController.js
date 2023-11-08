@@ -96,6 +96,31 @@ const pieChartData = async(req, res) => {
     }
 }
 
+const addCustomProduct = async(req, res) => {
+    try {
+        
+        const productName = req.body.productName;
+        const Description = req.body.Description;
+        const Price = req.body.Price;
+        const Category = req.body.Category;
+        const Size = req.body.Size;
+        const material = req.body.material;
+
+        const userId = req.body.userId;
+        const AddressID = req.body.AddressID;
+        const PhoneNumber = req.body.PhoneNumber;
+        const TotalAmount = req.body.TotalAmount;
+        const PaymentMethod = req.body.PaymentMethod;
+        const Quantity = req.body.Quantity;
+
+        const ComponentItems  = req.body.ComponentItems;
+        const order = await Order.addCustomProduct(productName, Description, Price,Category, Size, material,Quantity , userId, AddressID, PhoneNumber, TotalAmount, PaymentMethod, ComponentItems);
+        res.json({ status: "Success", result: respone });
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+}
+
 module.exports = {
     getAllOrder,
     getOrderById,
@@ -105,5 +130,6 @@ module.exports = {
     changeStatus_Paid,
     loadUnSeen,
     changetoSeen,
-    pieChartData
+    pieChartData,
+    addCustomProduct
 }
