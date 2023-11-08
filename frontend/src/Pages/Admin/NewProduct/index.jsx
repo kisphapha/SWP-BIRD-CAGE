@@ -119,9 +119,9 @@ export default function NewProduct() {
 
     return (
         <form action="" className="w-full mb-96">
-            <div className="text-xl font-bold">Thêm mới thành phần </div>
+            <div className="text-xl font-bold">Thêm mới sản phẩm </div>
             <div className="flex mx-60 my-2 gap-4">
-                <div className="px-4 flex flex-col basis-1/2 items-center gap-4 py-10 justify-start bg-red-200    rounded-lg  mx-2">
+                <div className="px-4 flex flex-col basis-1/2 items-center gap-4 py-10 justify-start bg-white    rounded-lg  mx-2">
                     <div className="w-3/4">
                         {/* <div>name</div> */}
                         <TextField fullWidth label={'Tên sản phẩm'} variant="standard" onChange={handleNameChange} value={tmpName} />
@@ -180,7 +180,7 @@ export default function NewProduct() {
                         {/*/>*/}
                     </div>
                 </div>
-                <div className="px-4 pl-40 flex flex-col basis-1/2 items-start gap-4 py-10 bg-red-50 rounded-lg mx-2">
+                <div className="px-4 pl-40 flex flex-col basis-1/2 items-start gap-4 py-10 bg-white rounded-lg mx-2">
                     <div>Hình ảnh </div>
                     <ImageUploader images={images} setImages={setImages} maxNumber={maxNumber}/>
                     <div>

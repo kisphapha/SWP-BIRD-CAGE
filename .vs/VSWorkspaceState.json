@@ -1,17 +1,16 @@
 {
   "ExpandedNodes": [
     "",
+    "\\backend",
+    "\\backend\\models",
     "\\frontend",
     "\\frontend\\src",
     "\\frontend\\src\\components",
-    "\\frontend\\src\\components\\features",
-    "\\frontend\\src\\components\\features\\ImageUploader",
     "\\frontend\\src\\Pages",
     "\\frontend\\src\\Pages\\Admin",
     "\\frontend\\src\\Pages\\Admin\\Component",
-    "\\frontend\\src\\Pages\\Admin\\EditComponentForm",
-    "\\frontend\\src\\Pages\\Admin\\EditProductForm"
+    "\\frontend\\src\\Pages\\Admin\\Order"
   ],
-  "SelectedNode": "\\frontend\\src\\components\\features\\ImageUploader\\index.jsx",
+  "SelectedNode": "\\backend\\models\\Component.js",
   "PreviewInSolutionExplorer": false
 }

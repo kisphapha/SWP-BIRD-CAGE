@@ -45,15 +45,19 @@ export default function ImageUploader({ images, setImages, maxNumber }) {
                         </Button>
                         &nbsp;
                         <Button variant="outlined" onClick={onImageRemoveAll}>Xóa hết ảnh</Button>
-                        {imageList.map((image, index) => (
-                            <div key={index} className="image-item">
-                                <img src={image['data_url']} alt="" width="100" />
-                                <div className="image-item__btn-wrapper">
-                                    <Button onClick={() => onImageUpdate(index)}>Update</Button>
-                                    <Button onClick={() => onImageRemove(index)}>Remove</Button>
+                        <div className="flex flex-wrap">
+                            {imageList.map((image, index) => (
+                                <div key={index} className="image-item p-2">
+                                    <img src={image.data_url} alt="" className="object-fit w-24 h-24" />
+                                    <div className="image-item__btn-wrapper mt-2">
+                                        <Button onClick={() => onImageUpdate(index)}>Update</Button>
+                                        <Button onClick={() => onImageRemove(index)}>Remove</Button>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
+
+
                     </div>
                 )}
             </ImageUploading>

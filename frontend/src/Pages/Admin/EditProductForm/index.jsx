@@ -30,29 +30,21 @@ export default function EditProductForm({ productId, close, handleFilter }) {
             setCategories(response.data)
         }
     }
-    function createImageObject(url) {
-        return {
-            data_url: url,
-        };
+
+    function getImageList(images) {
+        const imagesFromUrls = images.map((image) => ({
+            data_url: image.Url,
+        }));
+        return (imagesFromUrls);
     }
 
-    function createImageListFromUrls(urls) {
-        return urls.map(createImageObject);
-    }
-
-    // Usage
-    const imagesFromUrls = createImageListFromUrls(tmpUrls);
-
-    function getImageList() {
-        const imagesFromUrls = createImageListFromUrls(tmpUrls);
-        setImages(imagesFromUrls);
-    }
 
     async function fetchImage(id) {
         const response = await axios.get('http://localhost:3000/products/img/' + id)
         if (response.data) {
             setUrls(response.data);
         }
+        setImages(getImageList(response.data))
     }
 
     async function fetchProductDetails(id) {
@@ -62,8 +54,24 @@ export default function EditProductForm({ productId, close, handleFilter }) {
         }
         fetchImage(id);
     }
+    async function uploadToHost() {
+        const API_key = "d924a9e7cb663c6ceaf42becb5b52542"
+        const host = "https://api.imgbb.com/1/upload"
+        const expiration = 1800000
+        const urls = []
+        await Promise.all(images.map(async (image) => {
+            const response = await axios.postForm(`${host}?expiration=${expiration}&key=${API_key}`, {
+                image: image.data_url.substring(image.data_url.indexOf(',') + 1)
+            })
+            if (response.data) {
+                urls.push(response.data.data.url)
+            }
+        }))
+        console.log(urls)
+        handleUpdate(urls)
+    }
 
-    async function handleUpdate(event) {
+    async function handleUpdate(urls) {
         const _cate = (tmpCate ? tmpCate : product.Category).trim()
         const _size =
             _cate != 'PK' ? (tmpWidth ? tmpWidth : product.Size.split(',')[0]) + ',' + (tmpHeight ? tmpHeight : product.Size.split(',')[1]) : ''
@@ -80,7 +88,7 @@ export default function EditProductForm({ productId, close, handleFilter }) {
             SuitableBird: _cate != 'PK' ? (tmpBird ? tmpBird : product.SuitableBird) : '',
             discount: tmpDiscount ? tmpDiscount : product.discount,
             Status: tmpStatus ? tmpStatus : product.Status,
-            Url: tmpUrls ? tmpUrls : product.Urls
+            Url: urls
         }
         console.log(json)
         await axios.post(`http://localhost:3000/products/update`, json)
@@ -126,7 +134,6 @@ export default function EditProductForm({ productId, close, handleFilter }) {
     useEffect(() => {
         fetchCategories()
         fetchProductDetails(productId)
-        getImageList()
     }, [productId])
 
     return (
@@ -214,76 +221,6 @@ export default function EditProductForm({ productId, close, handleFilter }) {
                                     value={tmpDiscount ? tmpDiscount : product.discount}
                                 />
                             </div>
-                        </div>
-                        <div className=" flex gap-8 ">
-                            {(tmpCate ? tmpCate.trim() : product.Category.trim()) != 'PK' && (
-                                <div className="">
-                                    <div className="my-2">Kích thước</div>
-                                    <div className="flex gap-4">
-                                        <div className="w-12 ">
-                                            {/* <div>height</div> */}
-                                            <div>
-                                                <TextField
-                                                    InputLabelProps={{ shrink: true }}
-                                                    fullWidth
-                                                    label={'Height'}
-                                                    variant="standard"
-                                                    onChange={handleHeightChange}
-                                                    value={tmpHeight ? tmpHeight : product.Size ? product.Size.split(',')[1] : ''}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="w-12 ">
-                                            {/* <div>width</div> */}
-                                            <div>
-                                                <TextField
-                                                    InputLabelProps={{ shrink: true }}
-                                                    fullWidth
-                                                    label={'Width'}
-                                                    variant="standard"
-                                                    onChange={handleWidthChange}
-                                                    value={tmpWidth ? tmpHeight : product.Size ? product.Size.split(',')[0] : ''}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                            <div className="w-20 my-2">
-                                <div>Số Lượng</div>
-                                <TextField
-                                    InputLabelProps={{ shrink: true }}
-                                    fullWidth
-                                    label={''}
-                                    variant="standard"
-                                    onChange={handleStockChange}
-                                    value={tmpStock ? tmpStock : product.Stock}
-                                />
-                            </div>
-                            <div className="my-2">
-                                <FormControl>
-                                    <FormLabel id="status">
-                                        <div className="font-bold">Status</div>
-                                    </FormLabel>
-                                    <RadioGroup
-                                        className=""
-                                        aria-labelledby="status"
-                                        onChange={handleStatusChange}
-                                        defaultValue={product.Status == 'Enable' ? 'Enable' : 'Disable'}
-                                    >
-                                        <div>
-                                            <FormControlLabel value="Enable" control={<Radio />} label="Enable" />
-                                        </div>
-                                        <div>
-                                            <FormControlLabel value="Disable" control={<Radio />} label="Disable" />
-                                        </div>
-                                    </RadioGroup>
-                                </FormControl>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="">
-                        <div>
                             <div className="">
                                 {/* <div>description</div> */}
                                 <TextField
@@ -297,20 +234,87 @@ export default function EditProductForm({ productId, close, handleFilter }) {
                                     value={tmpDescription ? tmpDescription : product.Description}
                                 />
                             </div>
+                            
+                        </div>
+                        <div className="w-1/2 my-2  ">
+                            <div className=" flex gap-8 ">
+                                {(tmpCate ? tmpCate.trim() : product.Category.trim()) != 'PK' && (
+                                    <div className="">
+                                        <div className="my-2">Kích thước</div>
+                                        <div className="flex gap-4">
+                                            <div className="w-12 ">
+                                                {/* <div>height</div> */}
+                                                <div>
+                                                    <TextField
+                                                        InputLabelProps={{ shrink: true }}
+                                                        fullWidth
+                                                        label={'Height'}
+                                                        variant="standard"
+                                                        onChange={handleHeightChange}
+                                                        value={tmpHeight ? tmpHeight : product.Size ? product.Size.split(',')[1] : ''}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="w-12 ">
+                                                {/* <div>width</div> */}
+                                                <div>
+                                                    <TextField
+                                                        InputLabelProps={{ shrink: true }}
+                                                        fullWidth
+                                                        label={'Width'}
+                                                        variant="standard"
+                                                        onChange={handleWidthChange}
+                                                        value={tmpWidth ? tmpHeight : product.Size ? product.Size.split(',')[0] : ''}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                <div className="w-20 my-2">
+                                    <div>Số Lượng</div>
+                                    <TextField
+                                        InputLabelProps={{ shrink: true }}
+                                        fullWidth
+                                        label={''}
+                                        variant="standard"
+                                        onChange={handleStockChange}
+                                        value={tmpStock ? tmpStock : product.Stock}
+                                    />
+                                </div>
+                                <div className="my-2">
+                                    <FormControl>
+                                        <FormLabel id="status">
+                                            <div className="font-bold">Status</div>
+                                        </FormLabel>
+                                        <RadioGroup
+                                            className=""
+                                            aria-labelledby="status"
+                                            onChange={handleStatusChange}
+                                            defaultValue={product.Status == 'Enable' ? 'Enable' : 'Disable'}
+                                        >
+                                            <div>
+                                                <FormControlLabel value="Enable" control={<Radio />} label="Enable" />
+                                            </div>
+                                            <div>
+                                                <FormControlLabel value="Disable" control={<Radio />} label="Disable" />
+                                            </div>
+                                        </RadioGroup>
+                                    </FormControl>
+                                </div>
+                            </div>
+                            <div>
+                                    <ImageUploader images={images} setImages={setImages} maxNumber={6} />
+
+                            </div>
                         </div>
                     </div>
-                    <div>
-                        <ImageUploader images={images} setImages={setImages} maxNumber={6} />
 
-                        {tmpUrls.map((img) => (
-                            <td key={img.Id}>
-                                <img className="w-32" src={img.Url}></img>
-                            </td>
-                        )) }
-                    </div>
+                   
+                    
                     
                     <div className="my-2 text-right">
-                        <Button onClick={handleUpdate} className="py-full" variant="contained">
+                        <Button onClick={uploadToHost} className="py-full" variant="contained">
                             update
                         </Button>
                     </div>

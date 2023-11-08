@@ -120,8 +120,9 @@ export default function NewComponent() {
 
     return (
         <form action="" className="w-full mb-96">
+            <div className="text-xl font-bold">Thêm mới thành phần lồng </div>
             <div className="flex mx-60 my-2 ">
-                <div className="px-4 flex flex-col basis-1/2 items-center gap-4 py-10 justify-start">
+                <div className="px-4 flex flex-col basis-1/2 items-center gap-4 py-10 justify-start bg-white">
                     <div>Chung</div>
                     <div className="w-3/4">
                         {/* <div>name</div> */}
@@ -154,6 +155,7 @@ export default function NewComponent() {
                             value={tmpMaterial}
                         />
                     </div>
+                    
                     <div className="w-3/4">
                         {/* <div>material</div> */}
                         <TextField
@@ -197,7 +199,7 @@ export default function NewComponent() {
                         
                         </div>
                 </div>
-                <div className="px-4 pl-40 flex flex-col basis-1/2 items-start gap-4 py-10">
+                <div className="px-4 pl-40 flex flex-col basis-1/2 items-start gap-4 py-10 bg-white">
                     <div>
                         <div>Hình ảnh </div>
                         <ImageUploader images={images} setImages={setImages} maxNumber={maxNumber} setUrls={setUrls} />
@@ -228,7 +230,7 @@ export default function NewComponent() {
                         {categories.map((cate) => (
                             cate.Allow_customize && (
                             <div key={cate.id}>
-                                    <Checkbox value={cate.id} onChange={handleApplyForChange } />{cate.name }
+                                    <Checkbox value={cate.id} onChange={handleApplyForChange} />{cate.name }
                                 </div>
                             )
                         ))}
