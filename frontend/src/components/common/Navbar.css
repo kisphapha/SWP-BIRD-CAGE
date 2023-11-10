@@ -59,7 +59,7 @@
     padding: 10px 20px 10px 10px;
 }
 
-#navbar >.nav >.cart-button > .nav-content{
+#navbar > .nav > .cart-button > .nav-content {
     padding: 7.725px 10px 7.725px 10px;
     display: flex;
     justify-content: center;
@@ -76,5 +76,5 @@
 
 .nav .active {
     font-weight: bold;
-    background-color: darkgray;
+    background-color: rgb(238, 238, 238);
 }

@@ -51,7 +51,7 @@ export default function TabAdmin() {
                     >
                         New Component
                     </Button>
-                    <Button
+                    {/* <Button
                         onClick={() => handleButtonClick('/admin/NewCoupon')}
                         fullWidth
                         classes={{ root: activeButton === '/admin/NewCoupon' ? 'active-dashboard' : '' }}
@@ -59,7 +59,7 @@ export default function TabAdmin() {
                         disabled
                     >
                         New Coupon
-                    </Button>
+                    </Button> */}
 
                     <Button
                         startIcon={<Inventory />}
@@ -89,7 +89,7 @@ export default function TabAdmin() {
                     >
                         Categories
                     </Button>
-                    <Button
+                    {/* <Button
                         onClick={() => handleButtonClick('/admin/Collection')}
                         fullWidth
                         classes={{ root: activeButton === '/admin/Collection' ? 'active-dashboard' : '' }}
@@ -97,8 +97,8 @@ export default function TabAdmin() {
                         disabled
                     >
                         Collection
-                    </Button>
-                    <Button
+                    </Button> */}
+                    {/* <Button
                         onClick={() => handleButtonClick('/admin/Attribute')}
                         fullWidth
                         classes={{ root: activeButton === '/admin/Attribute' ? 'active-dashboard' : '' }}
@@ -106,7 +106,7 @@ export default function TabAdmin() {
                         disabled
                     >
                         Attribute
-                    </Button>
+                    </Button> */}
                     <Button
                         startIcon={<Person />}
                         onClick={() => handleButtonClick('/admin/Users')}
@@ -128,7 +128,7 @@ export default function TabAdmin() {
                         Orders
                     </Button>
 
-                    <Button
+                    {/* <Button
                         onClick={() => handleButtonClick('/admin/Coupons')}
                         fullWidth
                         classes={{ root: activeButton === '/admin/Coupons' ? 'active-dashboard' : '' }}
@@ -136,7 +136,7 @@ export default function TabAdmin() {
                         disabled
                     >
                         Coupons
-                    </Button>
+                    </Button> */}
                 </div>
             </div>
         </Tabs>

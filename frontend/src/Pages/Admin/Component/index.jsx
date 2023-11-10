@@ -153,12 +153,12 @@ export default function Components() {
     return (
         <div className="px-2 py-2 w-full  mb-96">
             <div className="flex-col">
-                <div className="my-5">Component</div>
+                <div className="my-5 text-2xl">Component</div>
                 {/* <Button onClick={() => '/admin/NewComponent'}>New Component</Button> */}
             </div>
-            <div>Áp dung cho</div>
             <div>
                 <div className="flex">
+                    <div className="mt-4 mr-2">Áp dung cho:</div>
                     <div>
                         <button
                             className={`p-2 rounded-t-md ${activeButton === 'lucgiac' ? 'bg-white' : 'bg-slate-300'}`}

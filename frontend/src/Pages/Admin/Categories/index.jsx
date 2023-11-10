@@ -27,9 +27,9 @@ export default function Categories() {
         }
     ]
     return (
-        <div className="px-8 py-12 w-full ml-8 mb-96s pb-56">
+        <div className="px-8 py-12 w-full ml-8 mb-60 pb-80  ">
             <div className="flex-col">
-                <div className="my-5">Categories</div>
+                <div className="my-5 text-2xl font-bold">Categories</div>
                 {/* <Button onClick={() => '/admin/NewProduct'}>New Product</Button> */}
             </div>
             <table className="bg-white px-4   gap-14 w-full">
