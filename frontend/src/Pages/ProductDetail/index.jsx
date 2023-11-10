@@ -12,6 +12,9 @@ import Popup from 'reactjs-popup'
 import { Button, TextField, Rating, Avatar, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+// import { useContext } from 'react'
+import VNPay from '../../image/icons/VNPay.svg'
+import COD from '../../image/icons/COD.svg'
 
 export default function ProductDetails() {
     const { user } = useContext(UserContext)
@@ -104,7 +107,8 @@ export default function ProductDetails() {
         inputPhoneNumber = inputPhoneNumber.replace(/[e+-]/gi, '')
 
         // Regular expression pattern for a valid phone number. You can adjust it as needed.
-        const phonePattern = '(032|033|034|035|036|037|038|039|096|097|098|086|083|084|085|081|082|088|091|094|070|079|077|076|078|090|093|089|056|058|092|059|099)[0-9]{7}'
+        const phonePattern =
+            '(032|033|034|035|036|037|038|039|096|097|098|086|083|084|085|081|082|088|091|094|070|079|077|076|078|090|093|089|056|058|092|059|099)[0-9]{7}'
 
         if (inputPhoneNumber.length <= 11) {
             if (checkPattern(inputPhoneNumber, phonePattern)) {
@@ -412,7 +416,7 @@ export default function ProductDetails() {
                                                     onChange={handlePhoneChange}
                                                     onKeyDown={handleKeyDown}
                                                     error={!checkValidation}
-                                                    helperText={!checkValidation ? "Số điện thoại không hợp lệ" : ''}
+                                                    helperText={!checkValidation ? 'Số điện thoại không hợp lệ' : ''}
                                                 ></TextField>
                                             </div>
                                             <hr className="border  border-slate-300 my-2 w-full" />
@@ -481,42 +485,56 @@ export default function ProductDetails() {
 
                                         <div className="flex place-content-between">
                                             <div>
-                                                <div className="">
-                                                    <input
-                                                        type="radio"
-                                                        name="paymentMethod"
-                                                        value="COD"
-                                                        checked={paymentMethod === 'COD'}
-                                                        onChange={() => setPaymentMethod('COD')}
-                                                    />
-                                                    Thanh toán khi nhận hàng
+                                                <div className="flex mb-2">
+                                                    <label className="flex">
+                                                        <input
+                                                            type="radio"
+                                                            name="paymentMethod"
+                                                            value="COD"
+                                                            checked={paymentMethod === 'COD'}
+                                                            onChange={() => setPaymentMethod('COD')}
+                                                        />
+                                                        <div className="flex align-middle items-center text-lg">
+                                                            Thanh toán khi nhận hàng
+                                                            <img className="w-1/12 mx-2" src={COD} alt="" />
+                                                        </div>
+                                                    </label>
                                                 </div>
 
-                                                <div className=" ">
-                                                    <input
-                                                        type="radio"
-                                                        name="paymentMethod"
-                                                        value="vnpay"
-                                                        checked={paymentMethod === 'vnpay'}
-                                                        onChange={() => setPaymentMethod('vnpay')}
-                                                    />
-                                                    Thanh toán nhanh cùng VNPay
+                                                <div className="flex">
+                                                    <label className="flex">
+                                                        <input
+                                                            type="radio"
+                                                            name="paymentMethod"
+                                                            value="vnpay"
+                                                            checked={paymentMethod === 'vnpay'}
+                                                            onChange={() => setPaymentMethod('vnpay')}
+                                                        />
+                                                        <div className="flex items-center text-lg">
+                                                            Thanh toán nhanh cùng VNPay
+                                                            <img className="w-2/12 m-2" src={VNPay} alt="" />
+                                                        </div>
+                                                    </label>
                                                 </div>
                                             </div>
 
-                                            <div className="buttons">
+                                            <div className="flex gap-4 items-center ">
                                                 {/* <button className="decision" onClick={close}></button> */}
-                                                <Button variant="contained" onClick={close}>
-                                                    Hủy
-                                                </Button>
-                                                <Button
-                                                    variant="contained"
-                                                    onClick={() => {
-                                                        handlePayment()
-                                                    }}
-                                                >
-                                                    Đặt hàng
-                                                </Button>
+                                                <div>
+                                                    <Button
+                                                        variant="contained"
+                                                        onClick={() => {
+                                                            handlePayment()
+                                                        }}
+                                                    >
+                                                        Đặt hàng
+                                                    </Button>
+                                                </div>
+                                                <div>
+                                                    <Button variant="contained" onClick={close}>
+                                                        Hủy
+                                                    </Button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

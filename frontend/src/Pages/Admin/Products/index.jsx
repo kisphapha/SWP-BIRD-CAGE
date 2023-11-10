@@ -148,26 +148,65 @@ export default function Products() {
                         <TableRow>
                             <TableCell>
                                 <div className="flex-row">
-                                    {/* <div>Mã SP</div> */}
+                                    <div className="font-bold text-lg ">Mã SP</div>
+                                </div>
+                            </TableCell>
+                            <TableCell>
+                                <div>
+                                    <div className="font-bold text-lg ">Ảnh</div>
+                                </div>
+                            </TableCell>
+                            <TableCell>
+                                <div>
+                                    <div className="font-bold text-lg ">Tên sản phẩm</div>
+                                </div>
+                            </TableCell>
+                            <TableCell>
+                                <div>
+                                    <div className="font-bold text-lg ">Giá</div>
+                                </div>
+                            </TableCell>
+                            <TableCell>
+                                <div>
+                                    <div className="font-bold text-lg ">Số lượng</div>
+                                </div>
+                            </TableCell>
+                            <TableCell>
+                                <div>
+                                    <div className="font-bold text-lg ">Phân loại</div>
+                                </div>
+                            </TableCell>
+                            <TableCell>
+                                <div>
+                                    <div className="font-bold text-lg "> Trạng thái</div>
+                                </div>
+                            </TableCell>
+                            <TableCell></TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>
+                                <div className="flex-row">
                                     <div>
-                                        <TextField className="w-16" id="outlined-basic" label="Mã SP" variant="standard" onChange={handleIdChange} />
+                                        <TextField
+                                            className="w-16"
+                                            id="outlined-basic"
+                                            placeholder="###"
+                                            variant="standard"
+                                            onChange={handleIdChange}
+                                        />
                                     </div>
                                 </div>
                             </TableCell>
                             <TableCell>
-                                <div>
-                                    <div>Image</div>
-                                    <div>.</div>
-                                </div>
+                                <div></div>
                             </TableCell>
                             <TableCell>
                                 <div>
-                                    <div>Name</div>
                                     <div>
                                         <TextField
                                             className="w-64"
                                             id="outlined-basic"
-                                            label="Tên sản phẩm"
+                                            placeholder="Nhập tên"
                                             variant="standard"
                                             onChange={handleNameChange}
                                         />
@@ -176,13 +215,12 @@ export default function Products() {
                             </TableCell>
                             <TableCell>
                                 <div>
-                                    <div>Giá</div>
                                     <div className="flex">
                                         <div className="w-16">
                                             <TextField
                                                 className="w-12"
                                                 id="outlined-basic"
-                                                label="From"
+                                                placeholder="From"
                                                 variant="standard"
                                                 onChange={handleLowerPriceChange}
                                             />
@@ -191,7 +229,7 @@ export default function Products() {
                                             <TextField
                                                 className="w-12"
                                                 id="outlined-basic"
-                                                label="To"
+                                                placeholder="To"
                                                 variant="standard"
                                                 onChange={handleUpperPriceChange}
                                             />
@@ -201,13 +239,12 @@ export default function Products() {
                             </TableCell>
                             <TableCell>
                                 <div>
-                                    <div>Số lượng</div>
                                     <div className="flex">
                                         <div className="w-16">
                                             <TextField
                                                 className="w-12"
                                                 id="outlined-basic"
-                                                label="From"
+                                                placeholder="From"
                                                 variant="standard"
                                                 onChange={handleLowerStockChange}
                                             />
@@ -216,7 +253,7 @@ export default function Products() {
                                             <TextField
                                                 className="w-12"
                                                 id="outlined-basic"
-                                                label="To"
+                                                placeholder="To"
                                                 variant="standard"
                                                 onChange={handleUpperStockChange}
                                             />
@@ -226,9 +263,8 @@ export default function Products() {
                             </TableCell>
                             <TableCell>
                                 <div>
-                                    <div>Phân loại</div>
                                     <div>
-                                        <TextField className="w-64" select label="Loại" variant="filled" onChange={handleCategoryChange}>
+                                        <TextField className="w-64" select label="Loại" variant="standard" onChange={handleCategoryChange}>
                                             <MenuItem value={'All'}>All</MenuItem>
                                             {cate.map((option) => (
                                                 <MenuItem key={option.id} value={option.id}>
@@ -241,9 +277,8 @@ export default function Products() {
                             </TableCell>
                             <TableCell>
                                 <div>
-                                    <div> Trạng thái</div>
                                     <div>
-                                        <TextField className="w-32 text-left" select label="Status" variant="filled" onChange={handleStatusChange}>
+                                        <TextField className="w-32 text-left" select label="Status" variant="standard" onChange={handleStatusChange}>
                                             {status.map((option) => (
                                                 <MenuItem key={option.value} value={option.value}>
                                                     {option.label}
@@ -255,7 +290,11 @@ export default function Products() {
                             </TableCell>
                             <TableCell>
                                 <div>
-                                    <div><Button variant="contained" onClick={handleFilter }>FILTER</Button></div>
+                                    <div>
+                                        <Button variant="contained" onClick={handleFilter}>
+                                            FILTER
+                                        </Button>
+                                    </div>
                                 </div>
                             </TableCell>
                         </TableRow>
@@ -263,15 +302,29 @@ export default function Products() {
                     <TableBody>
                         {products.map((product) => (
                             <TableRow>
-                                <TableCell>{product.Id}</TableCell>
+                                <TableCell>
+                                    <div className="text-base"> {product.Id}</div>
+                                </TableCell>
                                 <TableCell>
                                     <img className="w-16 h-16   " src={product.Url} />
                                 </TableCell>
-                                <TableCell>{product.Name}</TableCell>
-                                <TableCell>{product.Price.toLocaleString('vi', { style: 'currency', currency: 'VND' })}</TableCell>
-                                <TableCell>{product.Stock}</TableCell>
-                                <TableCell>{product.Shape}</TableCell>
-                                <TableCell>{product.Status}</TableCell>
+                                <TableCell>
+                                    <div className="text-base">{product.Name}</div>
+                                </TableCell>
+                                <TableCell>
+                                    <div className="text-base text-right">
+                                        {product.Price.toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <div className="text-base text-center">{product.Stock}</div>
+                                </TableCell>
+                                <TableCell>
+                                    <div className="text-base">{product.Shape}</div>
+                                </TableCell>
+                                <TableCell>
+                                    <div className="text-base text-center">{product.Status}</div>
+                                </TableCell>
                                 <TableCell>
                                     {' '}
                                     <div className="flex justify-end">
@@ -300,9 +353,26 @@ export default function Products() {
                                                 </div>
                                             )}
                                         </Popup>
-                                        <button onClick={() => handleDelete(product.Id)}>
-                                            <DeleteIcon fontSize="medium" />
-                                        </button>
+                                        <Popup
+                                            trigger={
+                                                <button onClick={() => handleDelete(product.Id)}>
+                                                    <DeleteIcon fontSize="medium" />
+                                                </button>
+                                            }
+                                            position="right center"
+                                            modal
+                                        >
+                                            {(close) => (
+                                                <>
+                                                    <div className="flex justify-center">Bạn có chắc chắn muốn xóa lồng này không?</div>
+                                                    <div className="flex justify-center">
+                                                        <Button variant="contained" onClick={() => { handleDelete(product.Id); close() }}>Có</Button>
+                                                        <Button variant="outlined" onClick={close}>Không</Button>
+                                                    </div>
+                                                </>
+                                            )}
+                                        </Popup>
+                                        
                                     </div>
                                 </TableCell>
                             </TableRow>

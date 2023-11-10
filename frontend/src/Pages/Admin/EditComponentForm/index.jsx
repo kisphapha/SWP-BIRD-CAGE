@@ -1,26 +1,27 @@
-﻿import { ButtonBase, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material'
+﻿import { ButtonBase, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField, Checkbox } from '@mui/material'
 import { React, useState, useEffect } from 'react'
 import { Button } from '@mui/material'
 import MenuItem from '@mui/material/MenuItem'
 import axios from 'axios'
+import ImageUploader from '../../../components/features/ImageUploader/index'
 
 export default function EditComponentForm({ ComponentId, close, handleFilter }) {
-    const [materials, setMaterials] = useState([])
-    const [categories, setCategories] = useState([])
-    const [Component, setComponent] = useState('')
+    const [typeList, setTypeList] = useState([])
+    const [Component, setComponent] = useState({})
+    const [images, setImages] = useState([]);
     //temp varible
     const [tmpName, setTempName] = useState('')
+    const [categories, setCategories] = useState([])
     const [tmpDescription, setTempDescription] = useState('')
     const [tmpPrice, setTempPrice] = useState(0)
-    const [tmpBird, setTempBird] = useState('')
     const [tmpMaterial, setMaterial] = useState('')
-    const [tmpDiscount, setDiscount] = useState('')
+    const [tmpColor, setColor] = useState('')
+    const [tmpType, setTmpType] = useState('')
     const [tmpStock, setStock] = useState('')
-    const [tmpHeight, setHeight] = useState('')
-    const [tmpWidth, setWidth] = useState('')
     const [tmpUrl, setUrl] = useState('')
-    const [tmpCate, setCate] = useState('')
     const [tmpStatus, setStatus] = useState('')
+    const [cateLoaded, setCateLoaded] = useState(false)
+    const [appliedFor, setAppliedFor] = useState([])
 
     async function fetchCategories() {
         const response = await axios.get('http://localhost:3000/category/')
@@ -28,46 +29,92 @@ export default function EditComponentForm({ ComponentId, close, handleFilter }) 
             setCategories(response.data)
         }
     }
+    async function fetchTypes() {
+        setTypeList([
+            "Móc", "Nắp", "Đáy", "Nan", "Bình nước", "Khung", "Cửa"
+        ])
+    }
+    function getImageList(image) {
+        const imagesFromUrls = { data_url: image }
+        return [imagesFromUrls];
+    }
+
+
+    async function uploadToHost() {
+        const API_key = "d924a9e7cb663c6ceaf42becb5b52542"
+        const host = "https://api.imgbb.com/1/upload"
+        const expiration = 1800000
+        const urls = []
+        await Promise.all(images.map(async (image) => {
+            const response = await axios.postForm(`${host}?expiration=${expiration}&key=${API_key}`, {
+                image: image.data_url.substring(image.data_url.indexOf(',') + 1)
+            })
+            if (response.data) {
+                urls.push(response.data.data.url)
+            }
+        }))
+        console.log(urls)
+        handleUpdate(urls)
+    }
 
     async function fetchComponentDetails(id) {
-        const response = await axios.get('http://localhost:3000/Components/' + id)
+        const response = await axios.get('http://localhost:3000/component/' + id)
         if (response.data) {
             setComponent(response.data)
+            setImages(getImageList(response.data.Picture))
+            fetchCatesOfComponent(response.data.ID)
         }
     }
 
-    async function handleUpdate(event) {
-        const _cate = (tmpCate ? tmpCate : Component.Category).trim()
-        const _size =
-            _cate != 'PK' ? (tmpWidth ? tmpWidth : Component.Size.split(',')[0]) + ',' + (tmpHeight ? tmpHeight : Component.Size.split(',')[1]) : ''
-        if (!tmpDiscount) setDiscount(0)
+    async function fetchCatesOfComponent(id) {
+        const response = await axios.get('http://localhost:3000/component/cate/' + id)
+        const list = []
+        if (response.data) {
+            response.data.map((cates) => {
+                list.push(cates.Id)
+            })
+            setAppliedFor(list)
+            setCateLoaded(true)
+        }
+    }
+
+    async function handleUpdate(url) {
         const json = {
-            Id: Component.Id,
+            Id: Component.ID,
             Name: tmpName ? tmpName : Component.Name,
-            Category: _cate,
-            material: tmpMaterial ? tmpMaterial : Component.material,
+            Category: tmpType ? tmpType : Component.Type,
+            Color: tmpColor ? tmpColor : Component.Color,
+            Material: tmpMaterial ? tmpMaterial : Component.Material,
             Description: tmpDescription ? tmpDescription : Component.Description,
             Price: tmpPrice ? tmpPrice : Component.Price,
             Stock: tmpStock ? tmpStock : Component.Stock,
-            Size: _size,
-            SuitableBird: _cate != 'PK' ? (tmpBird ? tmpBird : Component.SuitableBird) : '',
-            discount: tmpDiscount ? tmpDiscount : Component.discount,
             Status: tmpStatus ? tmpStatus : Component.Status,
-            Url: tmpUrl ? tmpUrl : Component.Url
+            Application : appliedFor,
+            Picture: url[0]
         }
         console.log(json)
-        await axios.post(`http://localhost:3000/Components/update`, json)
+        await axios.post(`http://localhost:3000/component/update`, json)
         alert('Component updated')
         close()
         handleFilter()
     }
 
+    const handleApplyForChange = (event) => {
+        const newCate = event.target.value;
+        const isCategoryExists = appliedFor.includes(newCate);
+
+        if (isCategoryExists) {
+            setAppliedFor(appliedFor.filter((cate) => cate !== newCate));
+        } else {
+            setAppliedFor([...appliedFor, newCate]);
+        }
+        console.log(appliedFor)
+    };
+
     const handleNameChange = (event) => {
         setTempName(event.target.value)
     }
-    const handleBirdChange = (event) => {
-        setTempBird(event.target.value)
-    }
+
     const handlePriceChange = (event) => {
         setTempPrice(event.target.value)
     }
@@ -80,34 +127,26 @@ export default function EditComponentForm({ ComponentId, close, handleFilter }) 
     const handleStockChange = (event) => {
         setStock(event.target.value)
     }
-    const handleDiscountChange = (event) => {
-        setDiscount(event.target.value)
-    }
-    const handleHeightChange = (event) => {
-        setHeight(event.target.value)
-    }
-    const handleWidthChange = (event) => {
-        setWidth(event.target.value)
-    }
-    const handleUrlChange = (event) => {
-        setUrl(event.target.value)
-    }
-    const handleCategoryChange = (event) => {
-        setCate(event.target.value)
+    const handleTypeChange = (event) => {
+        setTmpType(event.target.value)
     }
     const handleStatusChange = (event) => {
         setStatus(event.target.value)
     }
+    const handleColorChange = (event) => {
+        setColor(event.target.value)
+    }
 
     useEffect(() => {
         fetchCategories()
+        fetchTypes()
         fetchComponentDetails(ComponentId)
     }, [ComponentId])
 
     return (
         <form action="" className="w-full ">
             {/* <div className="m-4 font-bold text-lg">Chỉnh sửa sản phẩm </div> */}
-            {Component != '' && (
+            {Component && (
                 <div className=" px-4 ">
                     <div className="">
                         {/* <div>name</div> */}
@@ -123,22 +162,23 @@ export default function EditComponentForm({ ComponentId, close, handleFilter }) 
                     <div className="flex place-content-around">
                         <div className="w-1/2 my-2  ">
                             <div className="">
-                                {/* <div>material</div> */}
+                                {Component.Type && ( 
                                 <TextField
                                     fullWidth
                                     select
                                     label="Category"
                                     helperText="Please select category"
                                     variant="filled"
-                                    onChange={handleCategoryChange}
-                                    value={tmpCate ? tmpCate : Component.Category}
+                                    onChange={handleTypeChange}
+                                    value={tmpType ? tmpType : Component.Type}
                                 >
-                                    {categories.map((option) => (
-                                        <MenuItem key={option.id} value={option.id}>
-                                            {option.name}
+                                    {typeList.map((option) => (
+                                        <MenuItem key={option} value={option}>
+                                            {option}
                                         </MenuItem>
                                     ))}
                                 </TextField>
+                                )}
                             </div>
                             <div className="">
                                 {/* <div>material</div> */}
@@ -148,25 +188,20 @@ export default function EditComponentForm({ ComponentId, close, handleFilter }) 
                                     label={'Material'}
                                     variant="standard"
                                     onChange={handleMaterialChange}
-                                    value={tmpMaterial ? tmpMaterial : Component.material}
+                                    value={tmpMaterial ? tmpMaterial : Component.Material}
                                 />
                             </div>
-                            {(tmpCate ? tmpCate.trim() : Component.Category.trim()) != 'PK' && (
-                                <>
-                                    <div className="">
-                                        {/* <div>bird suitable</div> */}
-
-                                        <TextField
-                                            InputLabelProps={{ shrink: true }}
-                                            fullWidth
-                                            label={'Bird Suitable'}
-                                            variant="standard"
-                                            onChange={handleBirdChange}
-                                            value={tmpBird ? tmpBird : Component.SuitableBird}
-                                        />
-                                    </div>
-                                </>
-                            )}
+                            <div className="w-3/4">
+                                {/* <div>material</div> */}
+                                <TextField
+                                    InputLabelProps={{ shrink: true }}
+                                    fullWidth
+                                    label={'Màu sắc'}
+                                    variant="standard"
+                                    onChange={handleColorChange}
+                                    value={tmpColor ? tmpColor : Component.Color}
+                                />
+                            </div>
                             <div className="">
                                 {/* <div>price</div> */}
                                 <TextField
@@ -178,87 +213,24 @@ export default function EditComponentForm({ ComponentId, close, handleFilter }) 
                                     value={tmpPrice ? tmpPrice : Component.Price}
                                 />
                             </div>
-                            <div className="">
-                                {/* <div>discount</div> */}
-                                <TextField
-                                    InputLabelProps={{ shrink: true }}
-                                    fullWidth
-                                    label={'Discount'}
-                                    variant="standard"
-                                    onChange={handleDiscountChange}
-                                    value={tmpDiscount ? tmpDiscount : Component.discount}
-                                />
+                            <div>
+                                <div>Áp dụng cho</div>
+                                {categories.map((cate) => (
+                                    cate.Allow_customize && cateLoaded == true && (
+                                        <div key={cate.id}>
+                                            {appliedFor.includes(cate.id) ? (
+                                                <>
+                                                <Checkbox value={cate.id} onChange={handleApplyForChange} defaultChecked />{cate.name}
+                                                </>
+                                            ) : (
+                                                <>
+                                                <Checkbox value={cate.id} onChange={handleApplyForChange} />{cate.name}
+                                                </>
+                                            )}
+                                        </div>
+                                    )
+                                ))}
                             </div>
-                        </div>
-                        <div className=" flex gap-8 ">
-                            {(tmpCate ? tmpCate.trim() : Component.Category.trim()) != 'PK' && (
-                                <div className="">
-                                    <div className="my-2">Kích thước</div>
-                                    <div className="flex gap-4">
-                                        <div className="w-12 ">
-                                            {/* <div>height</div> */}
-                                            <div>
-                                                <TextField
-                                                    InputLabelProps={{ shrink: true }}
-                                                    fullWidth
-                                                    label={'Height'}
-                                                    variant="standard"
-                                                    onChange={handleHeightChange}
-                                                    value={tmpHeight ? tmpHeight : Component.Size ? Component.Size.split(',')[1] : ''}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="w-12 ">
-                                            {/* <div>width</div> */}
-                                            <div>
-                                                <TextField
-                                                    InputLabelProps={{ shrink: true }}
-                                                    fullWidth
-                                                    label={'Width'}
-                                                    variant="standard"
-                                                    onChange={handleWidthChange}
-                                                    value={tmpWidth ? tmpHeight : Component.Size ? Component.Size.split(',')[0] : ''}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                            <div className="w-20 my-2">
-                                <div>Số Lượng</div>
-                                <TextField
-                                    InputLabelProps={{ shrink: true }}
-                                    fullWidth
-                                    label={''}
-                                    variant="standard"
-                                    onChange={handleStockChange}
-                                    value={tmpStock ? tmpStock : Component.Stock}
-                                />
-                            </div>
-                            <div className="my-2">
-                                <FormControl>
-                                    <FormLabel id="status">
-                                        <div className="font-bold">Status</div>
-                                    </FormLabel>
-                                    <RadioGroup
-                                        className=""
-                                        aria-labelledby="status"
-                                        onChange={handleStatusChange}
-                                        defaultValue={Component.Status == 'Enable' ? 'Enable' : 'Disable'}
-                                    >
-                                        <div>
-                                            <FormControlLabel value="Enable" control={<Radio />} label="Enable" />
-                                        </div>
-                                        <div>
-                                            <FormControlLabel value="Disable" control={<Radio />} label="Disable" />
-                                        </div>
-                                    </RadioGroup>
-                                </FormControl>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="">
-                        <div>
                             <div className="">
                                 {/* <div>description</div> */}
                                 <TextField
@@ -273,26 +245,49 @@ export default function EditComponentForm({ ComponentId, close, handleFilter }) 
                                 />
                             </div>
                         </div>
-                    </div>
-                    <div className="">
-                        <div>
-                            <div className="">
-                                {/* <div>description</div> */}
-                                <TextField
-                                    InputLabelProps={{ shrink: true }}
-                                    fullWidth
-                                    label={'Image-url'}
-                                    variant="standard"
-                                    multiline
-                                    rows={6}
-                                    onChange={handleUrlChange}
-                                    value={tmpUrl ? tmpUrl : Component.Url}
-                                />
+                        <div className="w-1/2 my-2  ">
+
+                            <div className=" flex gap-8 ">
+                                <div className="w-20 my-2">
+                                    <div>Số Lượng</div>
+                                    <TextField
+                                        InputLabelProps={{ shrink: true }}
+                                        fullWidth
+                                        label={''}
+                                        variant="standard"
+                                        onChange={handleStockChange}
+                                        value={tmpStock ? tmpStock : Component.Stock}
+                                    />
+                                </div>
+                                <div className="my-2">
+                                    <FormControl>
+                                        <FormLabel id="status">
+                                            <div className="font-bold">Status</div>
+                                        </FormLabel>
+                                        <RadioGroup
+                                            className=""
+                                            aria-labelledby="status"
+                                            onChange={handleStatusChange}
+                                            defaultValue={Component.Status == 'Enable' ? 'Enable' : 'Disable'}
+                                        >
+                                            <div>
+                                                <FormControlLabel value="Enable" control={<Radio />} label="Enable" />
+                                            </div>
+                                            <div>
+                                                <FormControlLabel value="Disable" control={<Radio />} label="Disable" />
+                                            </div>
+                                        </RadioGroup>
+                                    </FormControl>
+                                </div>
+                            </div>
+                            <div>
+                                <ImageUploader images={images} setImages={setImages} maxNumber={1} />
+
                             </div>
                         </div>
                     </div>
                     <div className="my-2 text-right">
-                        <Button onClick={handleUpdate} className="py-full" variant="contained">
+                        <Button onClick={uploadToHost} className="py-full" variant="contained">
                             update
                         </Button>
                     </div>

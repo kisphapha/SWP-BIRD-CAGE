@@ -62,8 +62,8 @@ export default function Custom() {
     }
 
     async function fetchComponents(categoryId) {
-        const response = await axios.get('http://localhost:3000/component/getAllComponentByCate/'+categoryId)
-           
+        const response = await axios.get('http://localhost:3000/component/getAllComponentByCate/' + categoryId)
+
         if (response.data) {
             setComponents(response.data)
         }
@@ -260,6 +260,17 @@ export default function Custom() {
                                         value={tmpDescription}
                                         multiline
                                         rows={6}
+                                    />
+                                </div>
+                                <div className="w-1/6 mt-6 ">
+                                    <TextField
+                                        fullWidth
+                                        label={'Số lượng'}
+                                        variant="standard"
+                                        onChange={handleDescriptionChange}
+                                        value={tmpDescription}
+                                        multiline
+                                        rows={1}
                                     />
                                 </div>
                                 <div className="mt-8 w-3/8">
