@@ -161,7 +161,8 @@ export default function Components() {
                 <div className="my-5 text-2xl">Component</div>
                 {/* <Button onClick={() => '/admin/NewComponent'}>New Component</Button> */}
             </div>
-            <div>
+            <div className="flex align-bottom ">
+                {/* <div className="mx-2 ">Lồng</div> */}
                 <div className="flex">
                     {cageCate.map(
                         (cate, index) =>

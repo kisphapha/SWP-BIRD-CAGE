@@ -117,62 +117,72 @@ export default function NewComponent() {
     return (
         <form action="" className="w-full mb-96">
             <div className="text-xl font-bold">Thêm mới thành phần lồng </div>
-            <div className="flex mx-60 my-2 ">
-                <div className="px-4 flex flex-col basis-1/2 items-center gap-4 py-10 justify-start bg-white">
-                    <div>Chung</div>
-                    <div className="w-3/4">
-                        {/* <div>name</div> */}
-                        <TextField fullWidth label={'Tên sản phẩm'} variant="standard" onChange={handleNameChange} value={tmpName} />
-                    </div>
-                    <div className="w-3/4">
-                        {/* <div>material</div> */}
-                        <TextField fullWidth select label="Phân loại" helperText="Chọn phân Loại" variant="filled" onChange={handleCategoryChange}>
-                            <MenuItem value={'All'}>All</MenuItem>
-                            {tmpType.map((option) => (
-                                <MenuItem key={option} value={option}>
-                                    {option}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </div>
-                    <div className="w-3/4">
-                        {/* <div>material</div> */}
-                        <TextField fullWidth label={'Chất Liệu'} variant="standard" onChange={handleMaterialChange} value={tmpMaterial} />
-                    </div>
+            <div className="flex mx-60 my-2  gap-4">
+                <div className="px-4 flex flex-col basis-1/2 items-center gap-4 py-10 justify-start  bg-white rounded-3xl">
+                    <div className=" flex flex-col basis-1/2 items-center gap-4  h-full justify-start w-full ">
+                        <div>Chung</div>
 
-                    <div className="w-3/4">
-                        {/* <div>material</div> */}
-                        <TextField fullWidth label={'Màu sắc'} variant="standard" onChange={handleColorChange} value={tmpColor} />
-                    </div>
-                    <div className="w-3/4">
-                        {/* <div>price</div> */}
-                        <TextField fullWidth label={'Giá'} variant="standard" onChange={handlePriceChange} value={tmpPrice} />
-                    </div>
+                        <div className="w-3/4">
+                            {/* <div>name</div> */}
+                            <TextField fullWidth label={'Tên sản phẩm'} variant="standard" onChange={handleNameChange} value={tmpName} />
+                        </div>
+                        <div className="w-3/4">
+                            {/* <div>material</div> */}
+                            <TextField
+                                fullWidth
+                                select
+                                label="Phân loại"
+                                helperText="Chọn phân Loại"
+                                variant="filled"
+                                onChange={handleCategoryChange}
+                            >
+                                <MenuItem value={'All'}>All</MenuItem>
+                                {tmpType.map((option) => (
+                                    <MenuItem key={option} value={option}>
+                                        {option}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        </div>
+                        <div className="w-3/4">
+                            {/* <div>material</div> */}
+                            <TextField fullWidth label={'Chất Liệu'} variant="standard" onChange={handleMaterialChange} value={tmpMaterial} />
+                        </div>
 
-                    <div className="w-3/4">
-                        {/* <div>description</div> */}
-                        <TextField
-                            fullWidth
-                            label={'Mô tả'}
-                            variant="standard"
-                            onChange={handleDescriptionChange}
-                            value={tmpDescription}
-                            multiline
-                            rows={6}
-                        />
-                    </div>
-                    <div className="w-3/4">
-                        {/* <div>description</div> */}
-                        {/*<TextField*/}
-                        {/*    fullWidth*/}
-                        {/*    label={'Link ảnh'}*/}
-                        {/*    variant="standard"*/}
-                        {/*    onChange={handleUrlChange}*/}
-                        {/*    value={tmpUrl }*/}
-                        {/*/>*/}
+                        <div className="w-3/4">
+                            {/* <div>material</div> */}
+                            <TextField fullWidth label={'Màu sắc'} variant="standard" onChange={handleColorChange} value={tmpColor} />
+                        </div>
+                        <div className="w-3/4">
+                            {/* <div>price</div> */}
+                            <TextField fullWidth label={'Giá'} variant="standard" onChange={handlePriceChange} value={tmpPrice} />
+                        </div>
+
+                        <div className="w-3/4">
+                            {/* <div>description</div> */}
+                            <TextField
+                                fullWidth
+                                label={'Mô tả'}
+                                variant="standard"
+                                onChange={handleDescriptionChange}
+                                value={tmpDescription}
+                                multiline
+                                rows={6}
+                            />
+                        </div>
+                        <div className="w-3/4">
+                            {/* <div>description</div> */}
+                            {/*<TextField*/}
+                            {/*    fullWidth*/}
+                            {/*    label={'Link ảnh'}*/}
+                            {/*    variant="standard"*/}
+                            {/*    onChange={handleUrlChange}*/}
+                            {/*    value={tmpUrl }*/}
+                            {/*/>*/}
+                        </div>
                     </div>
                 </div>
-                <div className="px-4 pl-40 flex flex-col basis-1/2 items-start gap-4 py-10 bg-white">
+                <div className="px-4 pl-40 flex flex-col basis-1/2 items-start gap-4 py-10  bg-white rounded-3xl">
                     <div>
                         <div>Hình ảnh </div>
                         <ImageUploader images={images} setImages={setImages} maxNumber={maxNumber} setUrls={setUrls} />
