@@ -86,7 +86,7 @@ const changetoSeen = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 }
-const pieChartData = async(req, res) => {
+const pieChartData = async (req, res) => {
     try {
         const order = await Order.pieChartData();
         res.json(order);
@@ -96,9 +96,9 @@ const pieChartData = async(req, res) => {
     }
 }
 
-const addCustomProduct = async(req, res) => {
+const addCustomProduct = async (req, res) => {
     try {
-        
+
         const productName = req.body.productName;
         const Description = req.body.Description;
         const Price = req.body.Price;
@@ -113,11 +113,11 @@ const addCustomProduct = async(req, res) => {
         const PaymentMethod = req.body.PaymentMethod;
         const Quantity = req.body.Quantity;
 
-        const ComponentItems  = req.body.ComponentItems;
-        const order = await Order.addCustomProduct(productName, Description, Price,Category, Size, material,Quantity , userId, AddressID, PhoneNumber, TotalAmount, PaymentMethod, ComponentItems);
+        const ComponentItems = req.body.ComponentItems;
+        const order = await Order.addCustomProduct(productName, Description, Price, Category, Size, material, Quantity, userId, AddressID, PhoneNumber, TotalAmount, PaymentMethod, ComponentItems);
         res.json({ status: "Success", result: respone });
     } catch (error) {
-        res.status(500).json({message: error.message});
+        res.status(500).json({ message: error.message });
     }
 }
 

@@ -23,8 +23,8 @@ const newUser = async (req, res) => {
         const name = req.query.name;
         const email = req.query.email;
         const picture = req.query.picture;
-        await User.newUser(name, email, picture);
         res.json({ message: "done" });
+        await User.newUser(name, email, picture);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
