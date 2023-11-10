@@ -83,8 +83,8 @@ export default function Components() {
         setPage(page)
     }
     async function handleDelete(id) {
-        await axios.delete(`http://localhost:3000/Components/` + id)
-        alert('Component deleted')
+        await axios.delete(`http://localhost:3000/component/` + id)
+        alert('Component is deleted')
         handleFilter()
     }
 
@@ -101,6 +101,7 @@ export default function Components() {
             application: selectedCageCate,
             page: page
         }
+        console.log(json)
         Axios.post('http://localhost:3000/component/filterComponent', json)
             .then((response) => {
                 setComponents(response.data.data)
@@ -117,6 +118,9 @@ export default function Components() {
         const response = await axios.get('http://localhost:3000/category/')
         setCageCate(response.data)
     }
+    useEffect(() => {
+        handleFilter()
+    }, [selectedCageCate])
 
     useEffect(() => {
         setPageList(Array.from({ length: maxPage }))
@@ -146,8 +150,9 @@ export default function Components() {
     ///active button
     const [activeButton, setActiveButton] = useState(null)
 
-    const handleButtonClick = (buttonName) => {
+    const handleButtonClick = (buttonName, cateId) => {
         setActiveButton(buttonName)
+        setSelectedCageCate(cateId)
     }
 
     return (
@@ -158,41 +163,22 @@ export default function Components() {
             </div>
             <div>
                 <div className="flex">
-                    <div className="mt-4 mr-2">Áp dung cho:</div>
-                    <div>
-                        <button
-                            className={`p-2 rounded-t-md ${activeButton === 'lucgiac' ? 'bg-white' : 'bg-slate-300'}`}
-                            onClick={() => handleButtonClick('lucgiac')}
-                        >
-                            Lồng lục giác
-                        </button>
-                    </div>
-                    <div>
-                        <button
-                            className={`p-2 rounded-t-md ${activeButton === 'singapore' ? 'bg-white' : 'bg-slate-300'}`}
-                            onClick={() => handleButtonClick('singapore')}
-                        >
-                            Lồng kiểu Singapore
-                        </button>
-                    </div>
-                    <div>
-                        <button
-                            className={`p-2 rounded-t-md ${activeButton === 'tron' ? 'bg-white' : 'bg-slate-300'}`}
-                            onClick={() => handleButtonClick('tron')}
-                        >
-                            Lồng trụ tròn
-                        </button>
-                    </div>
-                    <div>
-                        <button
-                            className={`p-2 rounded-t-md ${activeButton === 'vuong' ? 'bg-white' : 'bg-slate-300'}`}
-                            onClick={() => handleButtonClick('vuong')}
-                        >
-                            Lồng vuông
-                        </button>
-                    </div>
+                    {cageCate.map(
+                        (cate, index) =>
+                            cate.Allow_customize == true && (
+                                <div key={index}>
+                                    <button
+                                        className={`p-2 rounded-t-lg ${activeButton === cate.name ? 'bg-white' : 'bg-slate-300'}`}
+                                        onClick={() => handleButtonClick(cate.name, cate.id)}
+                                    >
+                                        {cate.name}
+                                    </button>
+                                </div>
+                            )
+                    )}
                 </div>
             </div>
+
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
@@ -369,13 +355,41 @@ export default function Components() {
                                                                 </Button>
                                                             </div>
                                                         </div>
-                                                        <EditComponentForm ComponentId={Component.Id} close={close} handleFilter={handleFilter} />
+                                                        <EditComponentForm ComponentId={Component.ID} close={close} handleFilter={handleFilter} />
                                                     </div>
                                                 )}
                                             </Popup>
-                                            <button onClick={() => handleDelete(Component.Id)}>
-                                                <DeleteIcon fontSize="medium" />
-                                            </button>
+                                            <Popup
+                                                trigger={
+                                                    <button onClick={() => handleDelete(Component.ID)}>
+                                                        <DeleteIcon fontSize="medium" />
+                                                    </button>
+                                                }
+                                                position="right center"
+                                                modal
+                                            >
+                                                {(close) => (
+                                                    <>
+                                                        <div className="flex justify-center">
+                                                            Bạn có chắc chắn muốn xóa thành phần lồng này không?
+                                                        </div>
+                                                        <div className="flex justify-center">
+                                                            <Button
+                                                                variant="contained"
+                                                                onClick={() => {
+                                                                    handleDelete(Component.ID)
+                                                                    close()
+                                                                }}
+                                                            >
+                                                                Có
+                                                            </Button>
+                                                            <Button variant="outlined" onClick={close}>
+                                                                Không
+                                                            </Button>
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </Popup>
                                         </div>
                                     </TableCell>
                                 </TableRow>

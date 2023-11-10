@@ -31,8 +31,26 @@ export default function NewComponent() {
     async function fetchType() {
         setType(['Móc', 'Nắp', 'Đáy', 'Nan', 'Bình nước', 'Khung', 'Cửa'])
     }
+    async function uploadToHost() {
+        const API_key = 'd924a9e7cb663c6ceaf42becb5b52542'
+        const host = 'https://api.imgbb.com/1/upload'
+        const expiration = 1800000
+        const urls = []
+        await Promise.all(
+            images.map(async (image) => {
+                const response = await axios.postForm(`${host}?expiration=${expiration}&key=${API_key}`, {
+                    image: image.data_url.substring(image.data_url.indexOf(',') + 1)
+                })
+                if (response.data) {
+                    urls.push(response.data.data.url)
+                }
+            })
+        )
+        console.log(urls)
+        handleAdd(urls)
+    }
 
-    async function handleAdd(event) {
+    async function handleAdd(urls) {
         const json = {
             Name: tmpName,
             Category: tmpCate,
@@ -42,12 +60,13 @@ export default function NewComponent() {
             Price: tmpPrice,
             Stock: tmpStock,
             Status: tmpStatus,
-            Urls: tmpUrls[0],
+            Urls: urls[0],
             Application: appliedFor
         }
         if (json.Stock && json.Name && json.Category && json.Price && json.Status) {
             await axios.post(`http://localhost:3000/component/new`, json)
             alert('Đã thêm sản phẩm')
+            window.location.reload()
         } else {
             alert('Vui lòng điền đủ thông tin')
         }
@@ -97,10 +116,10 @@ export default function NewComponent() {
 
     return (
         <form action="" className="w-full mb-96">
-            <div className="text-2xl ml-28">Thêm mới thành phần </div>
-            <div className="flex mx-60 my-2  bg-red-100 rounded-lg">
-                <div className="px-4 flex flex-col basis-1/2 items-center gap-4 py-10 justify-start">
-                    {/* <div>Chung</div> */}
+            <div className="text-xl font-bold">Thêm mới thành phần lồng </div>
+            <div className="flex mx-60 my-2 ">
+                <div className="px-4 flex flex-col basis-1/2 items-center gap-4 py-10 justify-start bg-white">
+                    <div>Chung</div>
                     <div className="w-3/4">
                         {/* <div>name</div> */}
                         <TextField fullWidth label={'Tên sản phẩm'} variant="standard" onChange={handleNameChange} value={tmpName} />
@@ -120,6 +139,7 @@ export default function NewComponent() {
                         {/* <div>material</div> */}
                         <TextField fullWidth label={'Chất Liệu'} variant="standard" onChange={handleMaterialChange} value={tmpMaterial} />
                     </div>
+
                     <div className="w-3/4">
                         {/* <div>material</div> */}
                         <TextField fullWidth label={'Màu sắc'} variant="standard" onChange={handleColorChange} value={tmpColor} />
@@ -152,7 +172,7 @@ export default function NewComponent() {
                         {/*/>*/}
                     </div>
                 </div>
-                <div className="px-4 pl-40 flex flex-col basis-1/2 items-start gap-4 py-10">
+                <div className="px-4 pl-40 flex flex-col basis-1/2 items-start gap-4 py-10 bg-white">
                     <div>
                         <div>Hình ảnh </div>
                         <ImageUploader images={images} setImages={setImages} maxNumber={maxNumber} setUrls={setUrls} />
@@ -184,7 +204,13 @@ export default function NewComponent() {
                                 )
                         )}
                     </div>
-                    <Button variant="contained" onClick={handleAdd}>
+                    <Button
+                        variant="contained"
+                        onClick={() => {
+                            uploadToHost()
+                            handleAdd()
+                        }}
+                    >
                         {' '}
                         update
                     </Button>

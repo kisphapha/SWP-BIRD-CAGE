@@ -19,9 +19,30 @@ export default function NewProduct() {
     const [tmpStock, setStock] = useState('')
     const [tmpHeight, setHeight] = useState('')
     const [tmpWidth, setWidth] = useState('')
-    const [tmpUrls, setUrls] = useState([])
     const [tmpCate, setCate] = useState('')
     const [tmpStatus, setStatus] = useState('')
+
+    async function uploadToHost() {
+        const API_key = 'd924a9e7cb663c6ceaf42becb5b52542'
+        const host = 'https://api.imgbb.com/1/upload'
+        const expiration = 1800000
+        const urls = []
+
+        // Use Promise.all to wait for all the asynchronous requests to complete
+        await Promise.all(
+            images.map(async (image) => {
+                const response = await axios.postForm(`${host}?expiration=${expiration}&key=${API_key}`, {
+                    image: image.data_url.substring(image.data_url.indexOf(',') + 1)
+                })
+                if (response.data) {
+                    urls.push(response.data.data.url)
+                }
+            })
+        )
+
+        console.log(urls)
+        handleAdd(urls)
+    }
 
     async function fetchCategories() {
         const response = await axios.get('http://localhost:3000/category/')
@@ -30,7 +51,7 @@ export default function NewProduct() {
         }
     }
 
-    async function handleAdd(event) {
+    async function handleAdd(urls) {
         const _size = tmpWidth + ',' + tmpHeight
         if (!tmpDiscount) setDiscount(0)
         const json = {
@@ -44,11 +65,13 @@ export default function NewProduct() {
             SuitableBird: tmpBird,
             discount: tmpDiscount,
             Status: tmpStatus,
-            Urls: tmpUrls
+            Urls: urls
         }
+
         if (json.Stock && json.Name && json.Category && json.Price && json.Status) {
             await axios.post(`http://localhost:3000/products/add`, json)
             alert('Đã thêm sản phẩm')
+            window.location.reload()
         } else {
             alert('Vui lòng điền đủ thông tin')
         }
@@ -94,9 +117,9 @@ export default function NewProduct() {
 
     return (
         <form action="" className="w-full mb-96">
-            <div className="text-xl font-bold ml-16">Thêm mới thành phần </div>
+            <div className="text-xl font-bold">Thêm mới sản phẩm </div>
             <div className="flex mx-60 my-2 gap-4">
-                <div className="px-4 flex flex-col basis-1/2 items-center gap-4 py-10 justify-start bg-red-100    rounded-lg  mx-2">
+                <div className="px-4 flex flex-col basis-1/2 items-center gap-4 py-10 justify-start bg-white    rounded-lg  mx-2">
                     <div className="w-3/4">
                         {/* <div>name</div> */}
                         <TextField fullWidth label={'Tên sản phẩm'} variant="standard" onChange={handleNameChange} value={tmpName} />
@@ -155,9 +178,9 @@ export default function NewProduct() {
                         {/*/>*/}
                     </div>
                 </div>
-                <div className="px-4 pl-40 flex flex-col basis-1/2 items-start gap-4 py-10 bg-red-50 rounded-lg mx-2">
+                <div className="px-4 pl-40 flex flex-col basis-1/2 items-start gap-4 py-10 bg-white rounded-lg mx-2">
                     <div>Hình ảnh </div>
-                    <ImageUploader images={images} setImages={setImages} maxNumber={maxNumber} setUrls={setUrls} />
+                    <ImageUploader images={images} setImages={setImages} maxNumber={maxNumber} />
                     <div>
                         {tmpCate != 'PK' && (
                             <>
@@ -194,7 +217,12 @@ export default function NewProduct() {
                             <TextField fullWidth label={'Tồn kho'} variant="standard" onChange={handleStockChange} value={tmpStock} />
                         </div>
                     </div>
-                    <Button variant="contained" onClick={handleAdd}>
+                    <Button
+                        variant="contained"
+                        onClick={() => {
+                            uploadToHost()
+                        }}
+                    >
                         {' '}
                         update
                     </Button>

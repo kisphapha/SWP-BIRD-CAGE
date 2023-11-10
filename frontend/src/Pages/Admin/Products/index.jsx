@@ -353,9 +353,26 @@ export default function Products() {
                                                 </div>
                                             )}
                                         </Popup>
-                                        <button onClick={() => handleDelete(product.Id)}>
-                                            <DeleteIcon fontSize="medium" />
-                                        </button>
+                                        <Popup
+                                            trigger={
+                                                <button onClick={() => handleDelete(product.Id)}>
+                                                    <DeleteIcon fontSize="medium" />
+                                                </button>
+                                            }
+                                            position="right center"
+                                            modal
+                                        >
+                                            {(close) => (
+                                                <>
+                                                    <div className="flex justify-center">Bạn có chắc chắn muốn xóa lồng này không?</div>
+                                                    <div className="flex justify-center">
+                                                        <Button variant="contained" onClick={() => { handleDelete(product.Id); close() }}>Có</Button>
+                                                        <Button variant="outlined" onClick={close}>Không</Button>
+                                                    </div>
+                                                </>
+                                            )}
+                                        </Popup>
+                                        
                                     </div>
                                 </TableCell>
                             </TableRow>

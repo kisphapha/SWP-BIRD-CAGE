@@ -1,4 +1,4 @@
-const config = require("../config/db.config");
+﻿const config = require("../config/db.config");
 const sql = require("mssql");
 
 const getByComponentCate = async (CateID) => {
@@ -30,8 +30,36 @@ const getAllComponent = async () => {
         console.log("error: ", error)
     }
 }
+const getAComponent = async (id) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+            .input('Id',sql.Int,id)
+            .query(`
+            select * from ComponentDetail
+            WHERE Id = @Id
+        `)
+        return result.recordset[0];
+    } catch (error) {
+        console.log("error: ", error)
+    }
+}
 
-
+const getCateByComponent = async (id) => {
+    try {
+    let poolConnection = await sql.connect(config)
+    const response = await poolConnection.request()
+        .input('Id',sql.Int, id)
+        .query(`
+            select distinct c.* 
+            from ComponentDetail cd, ComponentDetail_Category cc , Category c 
+            WHERE cd.Id = @Id and cd.ID = cc.ComponentID and cc.CateID = c.Id
+        `)
+        return response.recordset
+    } catch (error) {
+        console.log("error: ", error)
+    }
+}
 
 const filterComponents = async (id, name, category, upper_price, lower_price, upper_stock, lower_stock, status,application, page) => {
     try {
@@ -84,7 +112,7 @@ const addNewComponent = async (Name, Type, Material, Color, Description, Price, 
     try {
         let poolConnection = await sql.connect(config);
         const request = poolConnection.request();
-
+        const unit = Material == "Nan" ? "Cái" : "Bộ"
         request.input('Name', sql.NVarChar, Name);
         request.input('Description', sql.NVarChar, Description);
         request.input('Price', sql.Int, Price);
@@ -94,7 +122,7 @@ const addNewComponent = async (Name, Type, Material, Color, Description, Price, 
         request.input('Material', sql.NVarChar, Material);
         request.input('Color', sql.NVarChar, Color);
         request.input('Picture', sql.NVarChar, Urls);
-
+        request.input('Unit', sql.NVarChar, unit)
         const result = await request.query(`
             INSERT INTO dbo.ComponentDetail
             (
@@ -107,6 +135,7 @@ const addNewComponent = async (Name, Type, Material, Color, Description, Price, 
             ,[Material]
             ,[Color]
             ,[Picture]
+            ,[Unit]
             )
             VALUES
             (
@@ -118,7 +147,8 @@ const addNewComponent = async (Name, Type, Material, Color, Description, Price, 
                 @Type, 
                 @Material,
                 @Color, 
-                @Picture
+                @Picture,
+                @Unit
             );
         `);
 
@@ -142,9 +172,83 @@ const addNewComponent = async (Name, Type, Material, Color, Description, Price, 
     }
 }
 
+const updateComponent = async (Id, Name, Type, Material, Color, Description, Price, Stock, Status, Url, Application) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const request = poolConnection.request();
+        const unit = Material == "Nan" ? "Cái" : "Bộ"
+        request.input('Id', sql.Int, Id);
+        request.input('Name', sql.NVarChar, Name);
+        request.input('Description', sql.NVarChar, Description);
+        request.input('Price', sql.Int, Price);
+        request.input('Stock', sql.Int, Stock);
+        request.input('Status', sql.NVarChar, Status);
+        request.input('Type', sql.NVarChar, Type);
+        request.input('Material', sql.NVarChar, Material);
+        request.input('Color', sql.NVarChar, Color);
+        request.input('Picture', sql.NVarChar, Url);
+        request.input('Unit', sql.NVarChar, unit)
+        const result = await request.query(`
+            UPDATE ComponentDetail SET           
+                [Name] = @Name, 
+                [Description] = @Description, 
+                [Price] = @Price,
+                [Stock] = @Stock, 
+                [Status] = @Status, 
+                [Type] = @Type, 
+                [Material] = @Material,
+                [Color] = @Color, 
+                [Picture] = @Picture,
+                [Unit] = @Unit
+            WHERE ID = @Id;
+        `);
+
+        let refreshQuery = await sql.connect(config);
+        await refreshQuery.request()
+            .input("Id", sql.Int, Id)
+            .query(`
+                DELETE FROM ComponentDetail_Category WHERE ComponentID = @Id
+            `);
+
+        for (const cate of Application) {
+            const cateRequest = poolConnection.request(); // Create a new Request object for each iteration
+            const query = `
+                   INSERT INTO ComponentDetail_Category (ComponentID, cateID)
+                    VALUES (@ComponentID, @CateID)
+                `;
+            await cateRequest
+                .input("ComponentID", sql.Int, Id)
+                .input("CateID", sql.NVarChar, cate)
+                .query(query);
+        }
+        return result.recordset;
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
+const deleteComponent = async (Id) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const request = poolConnection.request();
+        request.input('Id', sql.Int, Id);
+        const result = await request.query(`
+             DELETE FROM ComponentDetail_Category WHERE ComponentID = @Id
+                DELETE FROM Component
+                WHERE ID = @Id;
+        `);
+        return result.recordset;
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
+
 module.exports  = {
     getAllComponent,
     getByComponentCate,
     filterComponents,
-    addNewComponent
+    addNewComponent,
+    getAComponent,
+    getCateByComponent,
+    updateComponent,
+    deleteComponent
 }
