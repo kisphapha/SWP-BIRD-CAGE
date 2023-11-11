@@ -1,4 +1,4 @@
-import { Category, Dashboard, Inventory, Person, Reorder } from '@mui/icons-material'
+﻿import { Category, Dashboard, Inventory, Person, Reorder } from '@mui/icons-material'
 import React, { useState } from 'react'
 import { Button, Tabs } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
@@ -40,7 +40,7 @@ export default function TabAdmin() {
                         classes={{ root: activeButton === '/admin/NewProduct' ? 'active-dashboard' : '' }}
                         style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
                     >
-                        New Product
+                        Thêm sản phẩm
                     </Button>
                     <Button
                         startIcon={<AddIcon />}
@@ -49,7 +49,7 @@ export default function TabAdmin() {
                         classes={{ root: activeButton === '/admin/NewComponent' ? 'active-dashboard' : '' }}
                         style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
                     >
-                        New Component
+                        Thêm thành phần lồng
                     </Button>
                     <Button
                         onClick={() => handleButtonClick('/admin/NewCoupon')}
@@ -58,7 +58,7 @@ export default function TabAdmin() {
                         style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
                         disabled
                     >
-                        New Coupon
+                        Thêm khuyến mãi
                     </Button>
 
                     <Button
@@ -68,7 +68,7 @@ export default function TabAdmin() {
                         classes={{ root: activeButton === '/admin/Products' ? 'active-dashboard' : '' }}
                         style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
                     >
-                        Product
+                        Danh sách sản phẩm
                     </Button>
 
                     <Button
@@ -78,7 +78,7 @@ export default function TabAdmin() {
                         classes={{ root: activeButton === '/admin/Components' ? 'active-dashboard' : '' }}
                         style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
                     >
-                        Component
+                        Danh sách thành phần
                     </Button>
                     <Button
                         startIcon={<Category />}
@@ -87,7 +87,7 @@ export default function TabAdmin() {
                         classes={{ root: activeButton === '/admin/Categories' ? 'active-dashboard' : '' }}
                         style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
                     >
-                        Categories
+                        Thể loại
                     </Button>
                     <Button
                         onClick={() => handleButtonClick('/admin/Collection')}
@@ -115,7 +115,7 @@ export default function TabAdmin() {
                         style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
                         // disabled
                     >
-                        Users
+                        Người dùng
                     </Button>
 
                     <Button
@@ -125,7 +125,7 @@ export default function TabAdmin() {
                         classes={{ root: activeButton === '/admin/Orders' ? 'active-dashboard' : '' }}
                         style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
                     >
-                        Orders
+                        Đơn hàng
                     </Button>
 
                     <Button
@@ -135,7 +135,7 @@ export default function TabAdmin() {
                         style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
                         disabled
                     >
-                        Coupons
+                        Khuyến mãi
                     </Button>
                 </div>
             </div>

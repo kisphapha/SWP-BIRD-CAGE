@@ -269,7 +269,7 @@ export default function ProductDetails() {
                 <div className="product">
                     <div className="img-container">
                         <div className="img-main">
-                            <img src={focusUrl} />
+                            <img className="big-img" src={focusUrl} />
                         </div>
                         <div className="img-more ">
                             {imgList.map((image) => (

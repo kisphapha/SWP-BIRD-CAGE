@@ -25,7 +25,7 @@ function LineChart() {
   useEffect(() => {
       async function fetchData(){
         const res = await axios.post('http://localhost:3000/admin/statistic',{
-          month:10,
+          month:11,
           year:2023
         })
         if (res) {
