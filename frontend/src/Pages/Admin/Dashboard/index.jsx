@@ -58,6 +58,9 @@ function Dashboard() {
                     <div className="px-64 my-8"></div>
                 </div>
                 <table className="">
+                    <tr>
+                    </tr>
+
                     {bestSellers.map((sell, index) => (
                         index < 5 && (
                         <tr key={sell.id}  className="items-center flex  px-4 ">

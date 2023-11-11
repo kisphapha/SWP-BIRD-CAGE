@@ -73,28 +73,20 @@ const newUser = async (name, email, picture) => {
     }
 };
 
-const updateUser = async (name, email, phone, dateOfBirth) => {
+
+const updateUser = async (userId, status, role, ReasonBlock) => {
     try {
         let poolConnection = await sql.connect(config);
-        await poolConnection.request().query(
-            `UPDATE [User] 
-            SET Name=N'${name}',PhoneNumber='${phone}',DateOfBirth='${dateOfBirth}'
-            WHERE Email='${email}'`
-        );
-    } catch (error) {
-        console.log("error: ", error);
-    }
-};
-
-
-const deleteUser = async (userId, status, ReasonBlock) => {
-    try {
-        let poolConnection = await sql.connect(config);
-        await poolConnection.request().query(
+        await poolConnection.request()
+            .input("Id", sql.Int, userId)
+            .input("Status", sql.VarChar, status)
+            .input("Reason", sql.NVarChar, ReasonBlock)
+            .input("Role",sql.VarChar, role)
+            .query(
             `
                 UPDATE dbo.[User]
-                SET BlockDate = GETDATE(), ReasonBlocked= N'${ReasonBlock}', Status = '${status}' 
-                WHERE Id = ${userId}
+                SET BlockDate = GETDATE(), ReasonBlocked= @Reason, Status = @Status, Role = @Role
+                WHERE Id = @Id
             `
         );
     }catch (error){
@@ -204,7 +196,6 @@ module.exports = {
     getAllUser,
     updateUser,
     newUser,
-    deleteUser,
     loadUnSeen,
     deleteJunkData,
     orderStatisticByMonth,

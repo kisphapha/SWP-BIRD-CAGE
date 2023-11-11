@@ -1,16 +1,16 @@
 {
   "ExpandedNodes": [
     "",
+    "\\backend",
+    "\\backend\\controllers",
+    "\\backend\\models",
     "\\frontend",
     "\\frontend\\src",
-    "\\frontend\\src\\components",
-    "\\frontend\\src\\components\\features",
-    "\\frontend\\src\\components\\features\\AddressCard",
-    "\\frontend\\src\\components\\features\\CardList",
-    "\\frontend\\src\\components\\features\\TabAdmin",
     "\\frontend\\src\\Pages",
-    "\\frontend\\src\\Pages\\ShipperPage"
+    "\\frontend\\src\\Pages\\Admin",
+    "\\frontend\\src\\Pages\\Admin\\Dashboard",
+    "\\frontend\\src\\Pages\\Admin\\Products"
   ],
-  "SelectedNode": "\\frontend\\src\\Pages\\ShipperPage\\index.jsx",
+  "SelectedNode": "\\backend\\controllers\\UserController.js",
   "PreviewInSolutionExplorer": false
 }

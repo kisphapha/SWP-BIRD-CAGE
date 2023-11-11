@@ -51,7 +51,7 @@ export default function TabAdmin() {
                     >
                         Thêm thành phần lồng
                     </Button>
-                    <Button
+                    {/* <Button
                         onClick={() => handleButtonClick('/admin/NewCoupon')}
                         fullWidth
                         classes={{ root: activeButton === '/admin/NewCoupon' ? 'active-dashboard' : '' }}
@@ -59,7 +59,7 @@ export default function TabAdmin() {
                         disabled
                     >
                         Thêm khuyến mãi
-                    </Button>
+                    </Button> */}
 
                     <Button
                         startIcon={<Inventory />}
@@ -89,7 +89,7 @@ export default function TabAdmin() {
                     >
                         Thể loại
                     </Button>
-                    <Button
+                    {/* <Button
                         onClick={() => handleButtonClick('/admin/Collection')}
                         fullWidth
                         classes={{ root: activeButton === '/admin/Collection' ? 'active-dashboard' : '' }}
@@ -97,8 +97,8 @@ export default function TabAdmin() {
                         disabled
                     >
                         Collection
-                    </Button>
-                    <Button
+                    </Button> */}
+                    {/* <Button
                         onClick={() => handleButtonClick('/admin/Attribute')}
                         fullWidth
                         classes={{ root: activeButton === '/admin/Attribute' ? 'active-dashboard' : '' }}
@@ -106,7 +106,7 @@ export default function TabAdmin() {
                         disabled
                     >
                         Attribute
-                    </Button>
+                    </Button> */}
                     <Button
                         startIcon={<Person />}
                         onClick={() => handleButtonClick('/admin/Users')}
@@ -126,16 +126,6 @@ export default function TabAdmin() {
                         style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
                     >
                         Đơn hàng
-                    </Button>
-
-                    <Button
-                        onClick={() => handleButtonClick('/admin/Coupons')}
-                        fullWidth
-                        classes={{ root: activeButton === '/admin/Coupons' ? 'active-dashboard' : '' }}
-                        style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
-                        disabled
-                    >
-                        Khuyến mãi
                     </Button>
                 </div>
             </div>

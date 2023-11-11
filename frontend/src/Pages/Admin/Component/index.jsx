@@ -15,7 +15,7 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    TextField,
+    TextField
 } from '@mui/material'
 import React, { Component, useEffect, useState } from 'react'
 import MenuItem from '@mui/material/MenuItem'
@@ -101,7 +101,6 @@ export default function Components() {
             application: selectedCageCate,
             page: page
         }
-        console.log(json)
         Axios.post('http://localhost:3000/component/filterComponent', json)
             .then((response) => {
                 setComponents(response.data.data)
@@ -119,7 +118,7 @@ export default function Components() {
         setCageCate(response.data)
     }
     useEffect(() => {
-        handleFilter();
+        handleFilter()
     }, [selectedCageCate])
 
     useEffect(() => {
@@ -130,7 +129,7 @@ export default function Components() {
         handleFilter()
         fetchCates()
         fetchCageCates()
-    }, [page])
+    })
     const status = [
         {
             value: 'All',
@@ -151,33 +150,32 @@ export default function Components() {
     const [activeButton, setActiveButton] = useState(null)
 
     const handleButtonClick = (buttonName, cateId) => {
-        setActiveButton(buttonName);
+        setActiveButton(buttonName)
         setSelectedCageCate(cateId)
     }
-
-
 
     return (
         <div className="px-2 py-2 w-full  mb-96">
             <div className="flex-col">
-                <div className="my-5">Component</div>
+                <div className="my-5 text-2xl">Component</div>
                 {/* <Button onClick={() => '/admin/NewComponent'}>New Component</Button> */}
             </div>
-            <div>Áp dung cho</div>
-            <div>
+            <div className="flex align-bottom ">
+                {/* <div className="mx-2 ">Lồng</div> */}
                 <div className="flex">
-                    {cageCate.map((cate, index) => (
-                        cate.Allow_customize == true && (
-                        <div key={index}>
-                            <button
-                                    className={`p-2 rounded-t-lg ${activeButton === cate.name ? 'bg-white' : 'bg-slate-300'}`}
-                                    onClick={() => handleButtonClick(cate.name, cate.id)}
-                            >
-                                    {cate.name}
-                            </button>
-                         </div>
-                        )
-                    ))}
+                    {cageCate.map(
+                        (cate, index) =>
+                            cate.Allow_customize == true && (
+                                <div key={index}>
+                                    <button
+                                        className={`p-2 rounded-t-lg ${activeButton === cate.name ? 'bg-white' : 'bg-slate-300'}`}
+                                        onClick={() => handleButtonClick(cate.name, cate.id)}
+                                    >
+                                        {cate.name}
+                                    </button>
+                                </div>
+                            )
+                    )}
                 </div>
             </div>
 
@@ -267,7 +265,7 @@ export default function Components() {
                                 <div>
                                     <div>Phân loại</div>
                                     <div>
-                                        <TextField className="w-64" select label="Loại" variant="filled" onChange={handleCategoryChange}>
+                                        <TextField className="w-64" select label="Loại" variant="filled" onChange={handleCategoryChange} defaultValue="All">
                                             <MenuItem value={'All'}>All</MenuItem>
                                             {cate.map((option) => (
                                                 <MenuItem key={option} value={option}>
@@ -282,22 +280,13 @@ export default function Components() {
                                 <div>
                                     <div> Trạng thái</div>
                                     <div>
-                                        <TextField className="w-32 text-left" select label="Status" variant="filled" onChange={handleStatusChange}>
+                                        <TextField className="w-32 text-left" select label="Status" variant="filled" onChange={handleStatusChange} defaultValue="All">
                                             {status.map((option) => (
                                                 <MenuItem key={option.value} value={option.value}>
                                                     {option.label}
                                                 </MenuItem>
                                             ))}
                                         </TextField>
-                                    </div>
-                                </div>
-                            </TableCell>
-                            <TableCell>
-                                <div>
-                                    <div>
-                                        <Button variant="contained" onClick={handleFilter}>
-                                            FILTER
-                                        </Button>
                                     </div>
                                 </div>
                             </TableCell>
@@ -372,15 +361,26 @@ export default function Components() {
                                             >
                                                 {(close) => (
                                                     <>
-                                                        <div className="flex justify-center">Bạn có chắc chắn muốn xóa thành phần lồng này không?</div>
                                                         <div className="flex justify-center">
-                                                            <Button variant="contained" onClick={() => { handleDelete(Component.ID); close() }}>Có</Button>
-                                                            <Button variant="outlined" onClick={close}>Không</Button>
+                                                            Bạn có chắc chắn muốn xóa thành phần lồng này không?
+                                                        </div>
+                                                        <div className="flex justify-center">
+                                                            <Button
+                                                                variant="contained"
+                                                                onClick={() => {
+                                                                    handleDelete(Component.ID)
+                                                                    close()
+                                                                }}
+                                                            >
+                                                                Có
+                                                            </Button>
+                                                            <Button variant="outlined" onClick={close}>
+                                                                Không
+                                                            </Button>
                                                         </div>
                                                     </>
                                                 )}
                                             </Popup>
-                                            
                                         </div>
                                     </TableCell>
                                 </TableRow>
@@ -400,7 +400,7 @@ export default function Components() {
                         </div>
                     </td>
                 ))}
-            </div>       
+            </div>
         </div>
     )
 }
