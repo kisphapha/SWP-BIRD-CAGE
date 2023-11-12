@@ -167,18 +167,6 @@ export default function ProductDetails() {
 
         // Store the updated cart in sessionStorage
         sessionStorage.setItem('cart', JSON.stringify(cart))
-
-        toast.dismiss()
-        toast.success('Sản phẩm đã được thêm vào', {
-            position: 'bottom-left',
-            autoClose: 1000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: true,
-            progress: undefined,
-            theme: 'colored'
-        })
     }
 
     const handlePayment = async () => {
@@ -269,7 +257,7 @@ export default function ProductDetails() {
                 <div className="product">
                     <div className="img-container">
                         <div className="img-main">
-                            <img src={focusUrl} />
+                            <img className="big-img" src={focusUrl} />
                         </div>
                         <div className="img-more ">
                             {imgList.map((image) => (

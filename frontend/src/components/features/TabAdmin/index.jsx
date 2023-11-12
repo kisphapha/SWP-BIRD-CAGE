@@ -1,4 +1,4 @@
-import { Category, Dashboard, Inventory, Person, Reorder } from '@mui/icons-material'
+﻿import { Category, Dashboard, Inventory, Person, Reorder } from '@mui/icons-material'
 import React, { useState } from 'react'
 import { Button, Tabs } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
@@ -40,7 +40,7 @@ export default function TabAdmin() {
                         classes={{ root: activeButton === '/admin/NewProduct' ? 'active-dashboard' : '' }}
                         style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
                     >
-                        New Product
+                        Thêm sản phẩm
                     </Button>
                     <Button
                         startIcon={<AddIcon />}
@@ -49,17 +49,17 @@ export default function TabAdmin() {
                         classes={{ root: activeButton === '/admin/NewComponent' ? 'active-dashboard' : '' }}
                         style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
                     >
-                        New Component
+                        Thêm thành phần lồng
                     </Button>
-                    <Button
+                    {/* <Button
                         onClick={() => handleButtonClick('/admin/NewCoupon')}
                         fullWidth
                         classes={{ root: activeButton === '/admin/NewCoupon' ? 'active-dashboard' : '' }}
                         style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
                         disabled
                     >
-                        New Coupon
-                    </Button>
+                        Thêm khuyến mãi
+                    </Button> */}
 
                     <Button
                         startIcon={<Inventory />}
@@ -68,7 +68,7 @@ export default function TabAdmin() {
                         classes={{ root: activeButton === '/admin/Products' ? 'active-dashboard' : '' }}
                         style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
                     >
-                        Product
+                        Danh sách sản phẩm
                     </Button>
 
                     <Button
@@ -78,7 +78,7 @@ export default function TabAdmin() {
                         classes={{ root: activeButton === '/admin/Components' ? 'active-dashboard' : '' }}
                         style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
                     >
-                        Component
+                        Danh sách thành phần
                     </Button>
                     <Button
                         startIcon={<Category />}
@@ -87,9 +87,9 @@ export default function TabAdmin() {
                         classes={{ root: activeButton === '/admin/Categories' ? 'active-dashboard' : '' }}
                         style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
                     >
-                        Categories
+                        Thể loại
                     </Button>
-                    <Button
+                    {/* <Button
                         onClick={() => handleButtonClick('/admin/Collection')}
                         fullWidth
                         classes={{ root: activeButton === '/admin/Collection' ? 'active-dashboard' : '' }}
@@ -97,8 +97,8 @@ export default function TabAdmin() {
                         disabled
                     >
                         Collection
-                    </Button>
-                    <Button
+                    </Button> */}
+                    {/* <Button
                         onClick={() => handleButtonClick('/admin/Attribute')}
                         fullWidth
                         classes={{ root: activeButton === '/admin/Attribute' ? 'active-dashboard' : '' }}
@@ -106,7 +106,7 @@ export default function TabAdmin() {
                         disabled
                     >
                         Attribute
-                    </Button>
+                    </Button> */}
                     <Button
                         startIcon={<Person />}
                         onClick={() => handleButtonClick('/admin/Users')}
@@ -115,7 +115,7 @@ export default function TabAdmin() {
                         style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
                         // disabled
                     >
-                        Users
+                        Người dùng
                     </Button>
 
                     <Button
@@ -125,17 +125,7 @@ export default function TabAdmin() {
                         classes={{ root: activeButton === '/admin/Orders' ? 'active-dashboard' : '' }}
                         style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
                     >
-                        Orders
-                    </Button>
-
-                    <Button
-                        onClick={() => handleButtonClick('/admin/Coupons')}
-                        fullWidth
-                        classes={{ root: activeButton === '/admin/Coupons' ? 'active-dashboard' : '' }}
-                        style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
-                        disabled
-                    >
-                        Coupons
+                        Đơn hàng
                     </Button>
                 </div>
             </div>

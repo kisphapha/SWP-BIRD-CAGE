@@ -25,6 +25,10 @@
 #page-product > .product-container > .product > .img-container > .img-main > .image {
     border: 1px solid;
 }
+#page-product > .product-container > .product > .img-container > .img-main > .big-img {
+    border: 5px solid;
+    width:100%;
+}
 #page-product > .product-container > .product > .img-container > .img-more {
     display: flex;
     flex-direction: row;

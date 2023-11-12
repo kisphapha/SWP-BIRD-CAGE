@@ -25,6 +25,7 @@ import EditProductForm from '../EditProductForm/index'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import axios from 'axios'
+import CategoryNav from '../../../components/features/CategoryNav'
 
 export default function Products() {
     const [products, setProducts] = useState([])
@@ -72,7 +73,6 @@ export default function Products() {
         setProStatus(event.target.value)
     }
     const handleSwitchPage = (page) => {
-        console.log(page)
         setPage(page)
     }
     async function handleDelete(id) {
@@ -119,7 +119,7 @@ export default function Products() {
     useEffect(() => {
         handleFilter()
         fetchCates()
-    }, [page])
+    })
     const status = [
         {
             value: 'All',
@@ -137,6 +137,7 @@ export default function Products() {
 
     return (
         <div className="px-2 py-2 w-full  mb-96">
+            <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }]} current="Danh sách sản phẩm" />
             <div className="flex-col">
                 <div className="my-5">Product</div>
                 {/* <Button onClick={() => '/admin/NewProduct'}>New Product</Button> */}
@@ -181,7 +182,9 @@ export default function Products() {
                                     <div className="font-bold text-lg "> Trạng thái</div>
                                 </div>
                             </TableCell>
-                            <TableCell></TableCell>
+                            <TableCell>
+                                <div className="font-bold text-lg "> Chỉnh sửa</div>
+                            </TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell>
@@ -264,7 +267,7 @@ export default function Products() {
                             <TableCell>
                                 <div>
                                     <div>
-                                        <TextField className="w-64" select label="Loại" variant="standard" onChange={handleCategoryChange}>
+                                        <TextField className="w-64" select label="Loại" variant="filled" onChange={handleCategoryChange} defaultValue="All">
                                             <MenuItem value={'All'}>All</MenuItem>
                                             {cate.map((option) => (
                                                 <MenuItem key={option.id} value={option.id}>
@@ -278,22 +281,13 @@ export default function Products() {
                             <TableCell>
                                 <div>
                                     <div>
-                                        <TextField className="w-32 text-left" select label="Status" variant="standard" onChange={handleStatusChange}>
+                                        <TextField className="w-32 text-left" select label="Status" variant="filled" onChange={handleStatusChange} defaultValue="All">
                                             {status.map((option) => (
                                                 <MenuItem key={option.value} value={option.value}>
                                                     {option.label}
                                                 </MenuItem>
                                             ))}
                                         </TextField>
-                                    </div>
-                                </div>
-                            </TableCell>
-                            <TableCell>
-                                <div>
-                                    <div>
-                                        <Button variant="contained" onClick={handleFilter}>
-                                            FILTER
-                                        </Button>
                                     </div>
                                 </div>
                             </TableCell>
