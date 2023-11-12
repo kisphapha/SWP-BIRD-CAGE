@@ -31,8 +31,9 @@
 }
 
 #item-container > .item-list {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    /* display: grid;
+    grid-template-columns: repeat(5, 1fr); */
+    display: flex;
     gap: 1rem;
     margin-top: 1rem;
 }

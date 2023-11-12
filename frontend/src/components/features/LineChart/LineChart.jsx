@@ -5,112 +5,72 @@ import axios from "axios";
 function LineChart() {
 
   const [data, setData] = useState([]);
+  const [isMonthly, setIsMonthly] = useState(true);
 
-  function getIncome(){
-    const income = []
-    data.map((element) => {
-      income.push(element.TotalAmount)  
-    })
-    console.log(income)
-    return income;
-  }
-  function getDate(){
-    const date = []
-    data.map(element => {
-      date.push(element.MonthDay)  
-    })
-    return date;
-  }
+  const fetchData = async (month, year) => {
+    var res = null
+    if (isMonthly) {
+      res = await axios.post('http://localhost:3000/admin/statistic', {
+        month,
+        year
+      });
+    }else{
+      res = await axios.post('http://localhost:3000/admin/getMonthLyIncome')
+    }
+    if (res.data) {
+      setData(res.data);
+    }
+  };
 
   useEffect(() => {
-      async function fetchData(){
-        const res = await axios.post('http://localhost:3000/admin/statistic',{
-          month:10,
-          year:2023
-        })
-        if (res) {
-          setData(res.data);
-        }
-      }
+    fetchData(10, 2023);
+  }, [isMonthly]); // Fetch data whenever isMonthly changes
 
-      fetchData();
-  },[])
+  if (data.length === 0) {
+    return <div>Loading...</div>;
+  }
+
+  var getIncome = data.map((element) => element.TotalAmount);
+  var getDate = null;
+  if(isMonthly){
+    getDate = data.map((element) => element.MonthDay);
+  }else{
+    getDate = data.map((element) => element.Month);
+  }
 
   return (
-    <React.Fragment>
-      {data && (
-      <div className="container-fluid">
-        <Chart
-          type ="line"
-          height={400}
-          
-          series={[
-            {
-              name: "Series 1",
-              data: getIncome()
-            }
-          ]}
-
-          options={{
-            // title: {text: ""},
-            
-            // responsive: true,
-
-            stroke:{
-                curve: "smooth"
-            },
-
-            chart:{
-                toolbar: {
-                    show: true,
-                },
-            },
-            xaxis: {
-            title: { text: "Monthly Income" },
-              categories: getDate()
-            },
-          }}
-          
-        // {/* <Chart
-        // type="line"
-        // width={500}
-        // height={550}
-
-        // series={
-        //     {
-        //         name: "oders",
-        //         data: [31, 40, 28, 51, 42, 109, 100, 102, 103, 104, 105, 106]
-        //     }
-        // }
- 
-        // options={{
-        //   title: { text: "Oders received in 2023" },
-        //   xaxis: {
-        //     title: { text: "Oders received in Month" },
-        //     categories: [
-        //         "January",
-        //         "February",
-        //         "March",
-        //         "April",
-        //         "May",
-        //         "June",
-        //         "July",
-        //         "August",
-        //         "September",
-        //         "October",
-        //         "November",
-        //         "December",
-        //     ]
-        //   }
-
-        // }}*/}
-        >
-
-        </Chart> 
+    <div className="container-fluid">
+      <div>
+        <button onClick={() => {setIsMonthly(!isMonthly); fetchData(10,2023)}}>
+          {isMonthly ? "Switch to Daily" : "Switch to Monthly"}
+        </button>
       </div>
-      )}
-    </React.Fragment>
-  )
+      <Chart
+        type="line"
+        height={400}
+        series={[
+          {
+            name: "Series 1",
+            data: getIncome,
+          },
+        ]}
+        options={{
+          stroke: {
+            curve: "smooth",
+          },
+          chart: {
+            toolbar: {
+              show: true,
+            },
+          },
+          xaxis: {
+            title: { text: isMonthly ? "Monthly Income" : "Daily Income" },
+            categories: getDate,
+          },
+        }}
+      />
+    </div>
+  );
 }
 
 export default LineChart
