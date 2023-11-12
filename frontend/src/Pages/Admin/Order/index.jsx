@@ -21,7 +21,7 @@ import Popup from 'reactjs-popup'
 import Stepper from '@mui/material/Stepper'
 import Step from '@mui/material/Step'
 import StepLabel from '@mui/material/StepLabel'
-
+import CategoryNav from '../../../components/features/CategoryNav'
 const columns = [
     { field: 'id', headerName: 'ID', width: 70 },
     { field: 'user', headerName: 'Người mua', width: 130 },
@@ -142,6 +142,7 @@ export default function Order() {
 
     return (
         <div className="w-full flex flex-col">
+        <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }]} current="Đơn hàng" />
             <div className="m-10 font-bold pl-10 text-2xl">Thông tin đơn hàng</div>
             <div className="mx-10 pb-10 h-screen">
                 <div className="flex">

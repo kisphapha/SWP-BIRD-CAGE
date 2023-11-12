@@ -25,6 +25,7 @@ import EditProductForm from '../EditProductForm/index'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import axios from 'axios'
+import CategoryNav from '../../../components/features/CategoryNav'
 
 export default function Products() {
     const [products, setProducts] = useState([])
@@ -136,6 +137,7 @@ export default function Products() {
 
     return (
         <div className="px-2 py-2 w-full  mb-96">
+            <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }]} current="Danh sách sản phẩm" />
             <div className="flex-col">
                 <div className="my-5">Product</div>
                 {/* <Button onClick={() => '/admin/NewProduct'}>New Product</Button> */}

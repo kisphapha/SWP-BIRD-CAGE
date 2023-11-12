@@ -26,6 +26,7 @@ import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import axios from 'axios'
 import EditComponentForm from '../EditComponentForm'
+import CategoryNav from '../../../components/features/CategoryNav'
 
 export default function Components() {
     const [Components, setComponents] = useState([])
@@ -157,6 +158,7 @@ export default function Components() {
     return (
         <div className="px-2 py-2 w-full  mb-96">
             <div className="flex-col">
+            <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }]} current="Danh sách thành phần" />
                 <div className="my-5 text-2xl">Component</div>
                 {/* <Button onClick={() => '/admin/NewComponent'}>New Component</Button> */}
             </div>

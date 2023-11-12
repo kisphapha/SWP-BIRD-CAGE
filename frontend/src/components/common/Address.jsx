@@ -6,6 +6,7 @@ import Popup from 'reactjs-popup'
 import 'reactjs-popup/dist/index.css'
 import AddressCard from '../features/AddressCard'
 import AddressPopup from '../features/AddressPopup/AddressPopup'
+import { ToastContainer } from 'react-toastify'
 
 const Address = (props) => {
     const [addressList, setAddressList] = useState([])
@@ -66,11 +67,11 @@ const Address = (props) => {
     return (
         <div>
             <div className="address-header">
-                <h1>My Address</h1>
+                <h1>Địa chỉ của tôi</h1>
                 <Popup
                     trigger={
                         <button type="button" className="add-btn">
-                            + Add new address
+                            + Thêm địa chỉ mới
                         </button>
                     }
                     position="right center"
@@ -87,7 +88,7 @@ const Address = (props) => {
             </div>
             <hr />
             <div className="address-list">
-                <h1>Address</h1>
+                <h1>Địa chỉ</h1>
                 <table className="address-table">
                     {addressList.map((address) => (
                         <tr key={address}>

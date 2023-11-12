@@ -13,7 +13,7 @@ import MenuItem from '@mui/material/MenuItem'
 import axios from 'axios'
 import Popup from 'reactjs-popup'
 import { UserContext } from '../../../UserContext'
-
+import CategoryNav from '../../../components/features/CategoryNav';
 export default function Users() {
     const [page, setPage] = useState(1)
     const [maxPage, setMaxPage] = useState(1)
@@ -190,6 +190,7 @@ export default function Users() {
     return (
         <div className="px-2 py-2    w-full ml-8 mb-96">
             <div className="flex-col">
+            <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }]} current="Người dùng" />
                 <div className="my-5">Product</div>
                 {/* <Button onClick={() => '/admin/NewProduct'}>New Product</Button> */}
             </div>

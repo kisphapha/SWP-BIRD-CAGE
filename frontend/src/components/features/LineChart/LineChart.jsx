@@ -66,7 +66,7 @@ function LineChart() {
                 },
             },
             xaxis: {
-            title: { text: "Monthly Income" },
+            title: { text: "Thu nhập hàng tháng" },
               categories: getDate()
             },
           }}

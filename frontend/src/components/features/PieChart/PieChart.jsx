@@ -90,9 +90,10 @@ function PieChart() {
               maxWidth: "812",
             },
           },
-          // title: {
-          //   text: "This is pie chart",
-          // },
+          title: {
+            text: "Sản phẩm được mua",
+            align: "center"
+          },
 
           noData:{text: "Hello? Data?"},
 

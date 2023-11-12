@@ -167,18 +167,6 @@ export default function ProductDetails() {
 
         // Store the updated cart in sessionStorage
         sessionStorage.setItem('cart', JSON.stringify(cart))
-
-        toast.dismiss()
-        toast.success('Sản phẩm đã được thêm vào', {
-            position: 'bottom-left',
-            autoClose: 1000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: true,
-            progress: undefined,
-            theme: 'colored'
-        })
     }
 
     const handlePayment = async () => {
