@@ -47,30 +47,43 @@ export default function Products() {
     }
     const handleNameChange = (event) => {
         setName(event.target.value)
+        setPage(1)
     }
 
     const handleCategoryChange = (event) => {
         setCategory(event.target.value)
+        setPage(1)
+
     }
 
     const handleUpperPriceChange = (event) => {
         setUpperPrice(event.target.value)
+        setPage(1)
+
     }
 
     const handleLowerPriceChange = (event) => {
         setLowerPrice(event.target.value)
+        setPage(1)
+
     }
 
     const handleUpperStockChange = (event) => {
         setUpperStock(event.target.value)
+        setPage(1)
+
     }
 
     const handleLowerStockChange = (event) => {
         setLowerStock(event.target.value)
+        setPage(1)
+
     }
 
     const handleStatusChange = (event) => {
         setProStatus(event.target.value)
+        setPage(1)
+
     }
     const handleSwitchPage = (page) => {
         setPage(page)
@@ -137,9 +150,12 @@ export default function Products() {
 
     return (
         <div className="px-2 py-2 w-full  mb-96">
-            <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }]} current="Danh sách sản phẩm" />
+            <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }, { name: 'Bảng điều khiển', link: '/admin' }]}
+                current="Danh sách sản phẩm"
+                margin={0}
+            />
             <div className="flex-col">
-                <div className="my-5">Product</div>
+                <div className="my-5 text-2xl font-bold">Danh sách sản phẩm</div>
                 {/* <Button onClick={() => '/admin/NewProduct'}>New Product</Button> */}
             </div>
 

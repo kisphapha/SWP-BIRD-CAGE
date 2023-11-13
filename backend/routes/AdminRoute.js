@@ -18,7 +18,7 @@ AdminRouter.patch("/changeToSeen", AdminController.changetoSeen);
 
 AdminRouter.get("/getMonthLyIncome", AdminController.getMonthLyIncome);
 
-AdminRouter.route("/statistic").post(AdminController.orderStatisticByMonth)
+AdminRouter.route("/statistic").post(AdminController.orderStatisticByMonth);
 
 AdminRouter.get("/deleteJunkData", AdminController.deleteJunkData);
 

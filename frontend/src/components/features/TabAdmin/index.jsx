@@ -87,7 +87,7 @@ export default function TabAdmin() {
                         classes={{ root: activeButton === '/admin/Categories' ? 'active-dashboard' : '' }}
                         style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
                     >
-                        Thể loại
+                        Danh mục sản phẩm
                     </Button>
                     {/* <Button
                         onClick={() => handleButtonClick('/admin/Collection')}

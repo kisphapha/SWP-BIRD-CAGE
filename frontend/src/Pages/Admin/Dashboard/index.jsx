@@ -6,6 +6,7 @@ import LineChart from '../../../components/features/LineChart/LineChart'
 import PieChart from '../../../components/features/PieChart/PieChart'
 import './styles.css'
 import Axios from 'axios'
+import CategoryNav from '../../../components/features/CategoryNav'
 
 function Dashboard() {
     const [bestSellers, setBellSeller] = useState([])
@@ -41,9 +42,13 @@ function Dashboard() {
 
     return (
         <div className="dashboard ">
-            Chào mừng {JSON.parse(sessionStorage.loginedUser).Name}
+            <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }]}
+                current='Bảng điều khiển'
+                margin={0}
+            />
+            <div className="mt-8 text-4xl font-bold">Chào mừng {JSON.parse(sessionStorage.loginedUser).Name}</div>
             <div></div>
-            <div className="px-4 font-bold">DashBoard</div>
+            <div className="text-xl font-bold">Dashboard</div>
             <div className="dashboard-detail my-8">
                 <div className="chart-container">
                     <LineChart />

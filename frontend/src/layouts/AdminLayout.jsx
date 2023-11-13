@@ -1,14 +1,17 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Link, Outlet } from 'react-router-dom'
 import TabAdmin from '../components/features/TabAdmin'
+import { UserContext } from '../UserContext'
 
 export default function AdminLayout() {
-    try {//JSON.parse(sessionStorage.loginedUser).Role == 'Admin'
-        if (true) {
+    const { user } = useContext(UserContext)
+    console.log(user)
+    if (user) {
+        if (user.Role == "Admin") {
             return (
                 <div className="flex bg-gray-50" style={{ paddingLeft: '256px' }}>
                     <div>
-                        <TabAdmin />
+                        <TabAdmin role={user.Role} />
                     </div>
                     <div style={{ width: '100%', padding: '1% ', display: 'flex', justifyContent: 'center' }}>
                         <Outlet />
@@ -16,14 +19,13 @@ export default function AdminLayout() {
                 </div>
             )
         }
-    } catch (error) {
-        console.log(error)
     }
+
     return (
         <div>
             <img
                 className="w-screen h-screen"
-                src="https://freefrontend.com/assets/img/403-forbidden-html-templates/2021-error-403.png"
+                src="https://army.wiser.my/wp-content/uploads/2018/07/403-forbidden.jpg"
                 alt="403 Error"
             />
         </div>

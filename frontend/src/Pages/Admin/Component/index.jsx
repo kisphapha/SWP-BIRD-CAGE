@@ -48,36 +48,45 @@ export default function Components() {
     const [prostatus, setProStatus] = useState('')
     const handleIdChange = (event) => {
         setId(event.target.value)
+        setPage(1)
     }
     const handleNameChange = (event) => {
         setName(event.target.value)
+        setPage(1)
     }
 
     const handleCategoryChange = (event) => {
         setCategory(event.target.value)
+        setPage(1)
     }
-    const handleCageCate = (event) => {
-        setSelectedCageCate(event.target.value)
+    const handleCageCate = (cageCate) => {
+        setSelectedCageCate(cageCate)
+        setPage(1)
     }
 
     const handleUpperPriceChange = (event) => {
         setUpperPrice(event.target.value)
+        setPage(1)
     }
 
     const handleLowerPriceChange = (event) => {
         setLowerPrice(event.target.value)
+        setPage(1)
     }
 
     const handleUpperStockChange = (event) => {
         setUpperStock(event.target.value)
+        setPage(1)
     }
 
     const handleLowerStockChange = (event) => {
         setLowerStock(event.target.value)
+        setPage(1)
     }
 
     const handleStatusChange = (event) => {
         setProStatus(event.target.value)
+        setPage(1)
     }
     const handleSwitchPage = (page) => {
         console.log(page)
@@ -152,14 +161,16 @@ export default function Components() {
 
     const handleButtonClick = (buttonName, cateId) => {
         setActiveButton(buttonName)
-        setSelectedCageCate(cateId)
+        handleCageCate(cateId)
     }
 
     return (
         <div className="px-2 py-2 w-full  mb-96">
             <div className="flex-col">
-            <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }]} current="Danh sách thành phần" />
-                <div className="my-5 text-2xl">Component</div>
+                <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }, { name: 'Bảng điều khiển', link: '/admin' }]}
+                    margin={0}
+                    current="Danh sách thành phần" />
+                <div className="my-5 text-2xl font-bold">Danh sách thành phần lồng</div>
                 {/* <Button onClick={() => '/admin/NewComponent'}>New Component</Button> */}
             </div>
             <div className="flex align-bottom ">

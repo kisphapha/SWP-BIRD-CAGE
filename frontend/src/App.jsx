@@ -86,7 +86,7 @@ function App() {
                     <Route element={<Custom />} path="/custom" />
                 </Route>
 
-                <Route element={<AdminLayout />} path="/admin">
+                <Route element={<UserProvider><AdminLayout /></UserProvider>} path="/admin">
                     <Route element={<Dashboard />} path="" />
                     <Route element={<NewCoupon />} path="NewCoupon" />
                     <Route element={<NewProduct />} path="NewProduct" />

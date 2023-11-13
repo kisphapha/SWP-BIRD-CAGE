@@ -27,12 +27,18 @@ export default function Categories() {
         }
     ]
     return (
-        <div className="px-8 py-12 w-full ml-8 mb-60 pb-80  ">
+        <div className="px-2 py-2 w-full  mb-96">
             <div className="flex-col">
-            <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }]} current="Thành phần" />
-                <div className="my-5 text-2xl font-bold">Categories</div>
+                <CategoryNav
+                    parents={[{ name: 'Trang chủ', link: '/' }, { name: 'Bảng điều khiển', link: '/admin' }]}
+                    current="Danh mục sản phẩm"
+                    margin={0}
+                    />
                 {/* <Button onClick={() => '/admin/NewProduct'}>New Product</Button> */}
             </div>
+
+            <div className="my-5 text-2xl font-bold">Danh mục sản phẩm</div>
+
             <table className="bg-white px-4   gap-14 w-full">
                 <tr className="items-center flex  h-10 w-full">
                     <th className="w-32">

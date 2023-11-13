@@ -4,11 +4,10 @@ import './styles.css'
 import { Link } from 'react-router-dom'
 
 
-export default function CategoryNav({ parents, current }) {
-
+export default function CategoryNav({ parents, current , margin}) {
     return (
-        <table id="link-container">
-            <tr className="link-list">
+        <table id="link-container" style={{ marginLeft: margin }}>
+            <tr className="link-list" >
                 {parents.map((parent) => (
                     <td key={parent} className="parents">
                         <Link to={parent.link }>{parent.name} ►</Link>

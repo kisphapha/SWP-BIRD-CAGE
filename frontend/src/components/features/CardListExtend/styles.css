@@ -29,9 +29,9 @@
     background-color: #f7e9f333;
 }
 
-#item-container > .item-list {
+/* #item-container > .item-list {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 1rem;
     margin-top: 1rem;
-}
+} */

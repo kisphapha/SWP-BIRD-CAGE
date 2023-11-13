@@ -70,47 +70,60 @@ export default function Users() {
 
     const handleRole = (event) => {
         setRole(event.target.value)
+        setPage(1)
+
     }
     const handleStatus = (event) => {
         setBan(event.target.value)
+        setPage(1)
     }
     const handleReasoon = (event) => {
         setReason(event.target.value)
+        setPage(1)
     }
     const handleNameChange = (event) => {
         setName(event.target.value);
+        setPage(1)
     };
 
     const handleEmailChange = (event) => {
         setEmail(event.target.value);
+        setPage(1)
     };
 
     const handlePhoneChange = (event) => {
         setPhone(event.target.value);
+        setPage(1)
     };
 
     const handleDobChange = (event) => {
         setDob(event.target.value);
+        setPage(1)
     };
 
     const handleUpperPointChange = (event) => {
         setUpperPoint(event.target.value);
+        setPage(1)
     };
 
     const handleUpperCreateChange = (event) => {
         setUpperCreate(event.target.value);
+        setPage(1)
     };
 
     const handleLowerPointChange = (event) => {
         setLowerPoint(event.target.value);
+        setPage(1)
     };
 
-    const handleRoleChange = (event) => {
-        setTxtRole(event.target.value);
+    const handleRoleChange = (role) => {
+        setTxtRole(role);
+        setPage(1)
     };
 
     const handleStatusChange = (event) => {
         setTxtStatus(event.target.value);
+        setPage(1)
     };
 
 
@@ -184,14 +197,17 @@ export default function Users() {
 
     const handleButtonClick = (buttonName, role) => {
         setActiveButton(buttonName)
-        setTxtRole(role)
+        handleRoleChange(role)
     }
 
     return (
-        <div className="px-2 py-2    w-full ml-8 mb-96">
+        <div className="px-2 py-2 w-full  mb-96">
             <div className="flex-col">
-            <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }]} current="Người dùng" />
-                <div className="my-5">Product</div>
+                <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }, { name: 'Bảng điều khiển', link: '/admin' }]}
+                    current="Người dùng"
+                    margin={0}
+                />
+                <div className="my-5 text-2xl font-bold">Danh sách người dùng</div>
                 {/* <Button onClick={() => '/admin/NewProduct'}>New Product</Button> */}
             </div>
             <div className="flex align-bottom ">
