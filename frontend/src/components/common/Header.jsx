@@ -133,7 +133,7 @@ function Header() {
                         </Link>
 
                         <ul className="user-info-list">
-                            {JSON.parse(sessionStorage.loginedUser).Role == 'Admin' ? (
+                            {user.Role == 'Admin' || user.Role == 'Staff' ? (
                                 <Link to="/admin" className="user-info-suboptions">
                                     <li>Thống kê</li>
                                 </Link>

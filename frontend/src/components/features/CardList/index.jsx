@@ -3,10 +3,19 @@ import './styles.css'
 import Card from '../Card'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import Carousel from 'react-elastic-carousel'
 
 export default function CardList({ categoryId, category }) {
     const navigate = useNavigate()
     const [cards, setCards] = useState([])
+
+    const breakPoints = [
+        {width:200, itemsToShow: 1},
+        {width:400, itemsToShow: 2},
+        {width:600, itemsToShow: 3},
+        {width:800, itemsToShow: 4},
+        {width:1000, itemsToShow: 5},
+    ]
 
     useEffect(() => {
         async function fetchCards() {
@@ -29,25 +38,27 @@ export default function CardList({ categoryId, category }) {
                 </button>
             </div>
             <div className="item-list">
-                {cards.map(
-                    (card, index) =>
-                        index < 5 && (
-                            <Card
-                                key={card}
-                                percent={card.discount}
-                                discount={parseInt((card.Price * (100 - card.discount)) / 100).toLocaleString('vi', {
-                                    style: 'currency',
-                                    currency: 'VND'
-                                })}
-                                image={card.Url}
-                                itemId={card.Id}
-                                material={card.material}
-                                price={parseInt(card.Price).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
-                                shape={card.Shape}
-                                title={card.Name}
-                            />
-                        )
-                )}
+                <Carousel breakPoints={breakPoints} pagination={false} >
+                    {cards.map(
+                        (card) =>
+                            (
+                                <Card
+                                    key={card}
+                                    percent={card.discount}
+                                    discount={parseInt((card.Price * (100 - card.discount)) / 100).toLocaleString('vi', {
+                                        style: 'currency',
+                                        currency: 'VND'
+                                    })}
+                                    image={card.Url}
+                                    itemId={card.Id}
+                                    material={card.material}
+                                    price={parseInt(card.Price).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+                                    shape={card.Shape}
+                                    title={card.Name}
+                                />
+                            )
+                    )}
+                </Carousel>
             </div>
         </div>
     )

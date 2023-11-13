@@ -86,17 +86,15 @@ function App() {
                     <Route element={<Custom />} path="/custom" />
                 </Route>
 
-                <Route element={<AdminLayout />} path="/admin">
-                    <Route element={<Dashboard />} path="" />
+                <Route element={<UserProvider><AdminLayout /></UserProvider>} path="/admin">
+                    <Route element={<UserProvider><Dashboard /></UserProvider>} path="" />
                     <Route element={<NewCoupon />} path="NewCoupon" />
                     <Route element={<NewProduct />} path="NewProduct" />
                     <Route element={<NewComponent />} path="NewComponent" />
-                    <Route element={<Products />} path="Products" />
-                    <Route element={<Components />} path="Components" />
-                    <Route element={<Categories />} path="Categories" />
-                    <Route element={<Collection />} path="Collection" />
-                    <Route element={<Attribute />} path="Attribute" />
-                    <Route element={<Order />} path="Orders" />
+                    <Route element={<UserProvider><Products /></UserProvider>} path="Products" />
+                    <Route element={<UserProvider><Components /></UserProvider>} path="Components" />
+                    <Route element={<UserProvider><Categories /></UserProvider>} path="Categories" />
+                    <Route element={<UserProvider><Order /></UserProvider>} path="Orders" />
                     <Route element={<UserProvider><Users /></UserProvider>} path="Users" />
                     <Route element={<Coupons />} path="Coupons" />
                 </Route>

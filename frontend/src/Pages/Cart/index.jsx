@@ -9,7 +9,6 @@ import { useNavigate } from 'react-router-dom'
 import Popup from 'reactjs-popup'
 import axios from 'axios'
 import './style.css'
-
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
@@ -229,6 +228,7 @@ export default function Cart() {
                                 <></>
                             )
                         )}
+                        <ToastContainer />
                     </table>
                     <div className=" flex w-full justify-end">
                         <div className=" w-2/6 mr-4 my-4   ">
