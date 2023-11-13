@@ -9,7 +9,7 @@ export default function CategoryNav({ parents, current , margin}) {
         <table id="link-container" style={{ marginLeft: margin }}>
             <tr className="link-list" >
                 {parents.map((parent) => (
-                    <td key={parent} className="parents">
+                    <td key={parent.namme} className="parents">
                         <Link to={parent.link }>{parent.name} ►</Link>
                     </td>
                 ))}

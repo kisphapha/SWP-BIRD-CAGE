@@ -15,11 +15,12 @@ import Popup from 'reactjs-popup'
 import { UserContext } from '../../../UserContext'
 import CategoryNav from '../../../components/features/CategoryNav';
 export default function Users() {
+    const { user } = useContext(UserContext)
+
     const [page, setPage] = useState(1)
     const [maxPage, setMaxPage] = useState(1)
     const [pageList, setPageList] = useState([])
 
-    const { user } = useContext(UserContext)
     const [users, setUsers] = useState([])
     const [ban, setBan] = useState()
     const [role, setRole] = useState('')
@@ -319,57 +320,60 @@ export default function Users() {
                             <TableCell>
                                 <div className="text-lg">{user.Status}</div>
                             </TableCell>            
-                            <TableCell>
-                                <Popup
-                                    trigger={
-                                        <button><SettingsIcon fontSize="large"/></button>
-                                    }
-                                    position="right center"
-                                    closeOnDocumentClick={false}
-                                    closeOnEscape={false}
-                                    modal
-                                    onOpen={() => handleChange(user.Status, user.ReasonBlocked, user.Role)}
-                                >
-                                    {(close) => (
-                                        <div className="p-4">
-                                            <div className="text-xl font-bold mb-8 mt-8">CẬP NHẬT VAI TRÒ</div>
-                                            <div>
-                                                <TextField className="text-left w-1/2" select label="Vai trò" variant="filled" defaultValue={user.Role} onChange={handleRole}>
-                                                    {roles.map((role) => (
-                                                        <MenuItem key={role} value={role.value}>{role.label }</MenuItem>
-                                                    )) }
-                                                </TextField>
-                                            </div>
-                                            <hr />
+                            {user && user.Role == "Admin" && (
 
-                                            <div className="text-xl font-bold mb-8 mt-8">CẬP NHẬT TRẠNG THÁI</div>
-                                            <div>
-                                                <TextField className="text-left w-1/2" select label="Trạng thái" variant="filled" defaultValue={user.Status} onChange={handleStatus}>
-                                                    <MenuItem value="Active">Active</MenuItem>
-                                                    <MenuItem value="Inactive">Inactive</MenuItem>
-                                                </TextField>
-                                            </div>
-                                            {ban == "Inactive" && (
+                                <TableCell>
+                                    <Popup
+                                        trigger={
+                                            <button><SettingsIcon fontSize="large" /></button>
+                                        }
+                                        position="right center"
+                                        closeOnDocumentClick={false}
+                                        closeOnEscape={false}
+                                        modal
+                                        onOpen={() => handleChange(user.Status, user.ReasonBlocked, user.Role)}
+                                    >
+                                        {(close) => (
+                                            <div className="p-4">
+                                                <div className="text-xl font-bold mb-8 mt-8">CẬP NHẬT VAI TRÒ</div>
                                                 <div>
-                                                    <TextField className="text-left" fullWidth variant="standard"
-                                                        label="Lí do vô hiệu hóa tài khoản này"
-                                                        multiline rows={6}
-                                                        onChange={handleReasoon}
-                                                        defaultValue={reason}
-                                                    >
+                                                    <TextField className="text-left w-1/2" select label="Vai trò" variant="filled" defaultValue={user.Role} onChange={handleRole}>
+                                                        {roles.map((role) => (
+                                                            <MenuItem key={role} value={role.value}>{role.label}</MenuItem>
+                                                        ))}
                                                     </TextField>
                                                 </div>
-                                            )}
+                                                <hr />
 
-                                            <div className="flex justify-end">
-                                                <Button variant="outlined" onClick={close}>Cancel</Button>
-                                                <Button variant="outlined" onClick={() => handleOk(user.Id, close)}>OK</Button>
+                                                <div className="text-xl font-bold mb-8 mt-8">CẬP NHẬT TRẠNG THÁI</div>
+                                                <div>
+                                                    <TextField className="text-left w-1/2" select label="Trạng thái" variant="filled" defaultValue={user.Status} onChange={handleStatus}>
+                                                        <MenuItem value="Active">Active</MenuItem>
+                                                        <MenuItem value="Inactive">Inactive</MenuItem>
+                                                    </TextField>
+                                                </div>
+                                                {ban == "Inactive" && (
+                                                    <div>
+                                                        <TextField className="text-left" fullWidth variant="standard"
+                                                            label="Lí do vô hiệu hóa tài khoản này"
+                                                            multiline rows={6}
+                                                            onChange={handleReasoon}
+                                                            defaultValue={reason}
+                                                        >
+                                                        </TextField>
+                                                    </div>
+                                                )}
+
+                                                <div className="flex justify-end">
+                                                    <Button variant="outlined" onClick={close}>Cancel</Button>
+                                                    <Button variant="outlined" onClick={() => handleOk(user.Id, close)}>OK</Button>
+                                                </div>
                                             </div>
-                                        </div>
-                                    )}
+                                        )}
 
-                                </Popup>             
-                            </TableCell>
+                                    </Popup>
+                                </TableCell>
+                                )}
                         </TableRow >
                 </>
                 ))}

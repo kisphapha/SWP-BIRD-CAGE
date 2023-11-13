@@ -7,11 +7,11 @@ export default function AdminLayout() {
     const { user } = useContext(UserContext)
     console.log(user)
     if (user) {
-        if (user.Role == "Admin") {
+        if (user.Role == "Admin" || user.Role == "Staff") {
             return (
                 <div className="flex bg-gray-50" style={{ paddingLeft: '256px' }}>
                     <div>
-                        <TabAdmin role={user.Role} />
+                        <TabAdmin user={user} />
                     </div>
                     <div style={{ width: '100%', padding: '1% ', display: 'flex', justifyContent: 'center' }}>
                         <Outlet />

@@ -1,9 +1,11 @@
 import { Radio, TextField } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
+import { UserContext } from '../../../UserContext'
 import MenuItem from '@mui/material/MenuItem'
 import axios from 'axios'
 import CategoryNav from '../../../components/features/CategoryNav'
 export default function Categories() {
+    const {user } = useContext(UserContext)
     const [categories, setCategories] = useState([])
     useEffect(() => {
         axios
@@ -48,24 +50,6 @@ export default function Categories() {
                     <th className="w-1/6 text-left ml-3">Category ID </th>
                     <th className="w-1/6 text-left ml-36">Status </th>
                 </tr>
-                {/*<tr className="items-start flex  px-4 gap-6 w">*/}
-                {/*    <th className="w-2/4  pl-20  flex items-start">*/}
-                {/*        <TextField className=" w-3/5 " id="outlined-basic" label="Name" variant="standard" />*/}
-                {/*    </th>*/}
-                {/*    <th className="w-1/4 pl-12  flex items-start">*/}
-                {/*        <TextField className="w-16" id="outlined-basic" label="ID" variant="standard" />*/}
-                {/*    </th>*/}
-
-                {/*    <th className="w-1/6">*/}
-                {/*        <TextField className="text-left" fullWidth select label="Status" variant="filled">*/}
-                {/*            {status.map((option) => (*/}
-                {/*                <MenuItem key={option.value} value={option.value}>*/}
-                {/*                    {option.label}*/}
-                {/*                </MenuItem>*/}
-                {/*            ))}*/}
-                {/*        </TextField>*/}
-                {/*    </th>*/}
-                {/*</tr>*/}
                 {categories.map((category) => (
                     <div key={category.id}>
                         <hr className="my-2" />

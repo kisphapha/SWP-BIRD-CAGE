@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 // import { LineChart } from '@mui/x-charts/LineChart'
 // import { PieChart } from '@mui/x-charts/PieChart'
 // import Chart from 'react-apexcharts'
@@ -6,9 +6,12 @@ import LineChart from '../../../components/features/LineChart/LineChart'
 import PieChart from '../../../components/features/PieChart/PieChart'
 import './styles.css'
 import Axios from 'axios'
+import { UserContext } from '../../../UserContext'
 import CategoryNav from '../../../components/features/CategoryNav'
 
 function Dashboard() {
+    const { user } = useContext(UserContext)
+
     const [bestSellers, setBellSeller] = useState([])
 
     async function fetchBestSellers() {
@@ -42,48 +45,61 @@ function Dashboard() {
 
     return (
         <div className="dashboard ">
-            <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }]}
-                current='Bảng điều khiển'
-                margin={0}
-            />
-            <div className="mt-8 text-4xl font-bold">Chào mừng {JSON.parse(sessionStorage.loginedUser).Name}</div>
-            <div></div>
-            <div className="text-xl font-bold">Dashboard</div>
-            <div className="dashboard-detail my-8">
-                <div className="chart-container">
-                    <LineChart />
-                </div>
-                <div className="chart-container">
-                    <PieChart />
-                </div>
-            </div>
-            <div className="ml-80 bg-white w-1/2">
-                <div className="flex-col items-center  justify-center    ">
-                    <h1 className="pl-8 my-8 ">Best Sellers</h1>
-                    <div className="px-64 my-8"></div>
-                </div>
-                <table className="">
-                    <tr>
-                    </tr>
+            {user && (
+                <>
+                    <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }]}
+                        current='Bảng điều khiển'
+                        margin={0}
+                    />
+                    <div className="mt-8 text-4xl font-bold">
+                        Chào mừng {user.Name}
+                        <div className="absolute right-8 top-8 ">
+                            <img className="w-32 h-32 rounded-full" src={user.Picture}></img>
+                        </div>
+                    </div>
+                    
+                    <div className="text-xl font-bold">Dashboard</div>
+                    {user.Role == "Admin" && (
+                        <>
+                            <div className="dashboard-detail my-8">
+                                <div className="chart-container">
+                                    <LineChart />
+                                </div>
+                                <div className="chart-container">
+                                    <PieChart />
+                                </div>
+                            </div>
+                            <div className="ml-80 bg-white w-1/2">
+                                <div className="flex-col items-center  justify-center    ">
+                                    <h1 className="pl-8 my-8 ">Best Sellers</h1>
+                                    <div className="px-64 my-8"></div>
+                                </div>
+                                <table className="">
+                                    <tr>
+                                    </tr>
 
-                    {bestSellers.map((sell, index) => (
-                        index < 5 && (
-                        <tr key={sell.id}  className="items-center flex  px-4 ">
-                            <td className="mr-4 w-40 ">
-                                <img
-                                    className="w-20 h-20"
-                                    src={sell.productDetail.Url}
-                                />
-                            </td>
-                            <td className="w-4/5 mr-36">{sell.productDetail.Name}</td>
-                            <td className="w-2/6 mr-36">{sell.productDetail.Price}</td>
-                            <td className="w-1/6 flex gap-3 ">{sell.total_quantity_sold}</td>
-                        </tr>
-                        )
-                       //await 
-                    ))}                              
-                </table>
-            </div>
+                                    {bestSellers.map((sell, index) => (
+                                        index < 5 && (
+                                            <tr key={sell.id} className="items-center flex  px-4 ">
+                                                <td className="mr-4 w-40 ">
+                                                    <img
+                                                        className="w-20 h-20"
+                                                        src={sell.productDetail.Url}
+                                                    />
+                                                </td>
+                                                <td className="w-4/5 mr-36">{sell.productDetail.Name}</td>
+                                                <td className="w-2/6 mr-36">{sell.productDetail.Price}</td>
+                                                <td className="w-1/6 flex gap-3 ">{sell.total_quantity_sold}</td>
+                                            </tr>
+                                        )
+                                        //await 
+                                    ))}
+                                </table>
+                            </div>
+                        </>
+                    )}
+                </>
+            )}
         </div>
     )
 }

@@ -17,7 +17,7 @@ import {
     TableRow,
     TextField
 } from '@mui/material'
-import React, { Component, useEffect, useState } from 'react'
+import React, { Component, useEffect, useState, useContext } from 'react'
 import MenuItem from '@mui/material/MenuItem'
 import Axios from 'axios'
 import Popup from 'reactjs-popup'
@@ -27,8 +27,12 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import axios from 'axios'
 import EditComponentForm from '../EditComponentForm'
 import CategoryNav from '../../../components/features/CategoryNav'
+import { UserContext } from '../../../UserContext'
+
 
 export default function Components() {
+    const { user } = useContext(UserContext)
+
     const [Components, setComponents] = useState([])
     const [page, setPage] = useState(1)
     const [maxPage, setMaxPage] = useState(1)
@@ -335,67 +339,70 @@ export default function Components() {
                                     <TableCell>{Component.Stock}</TableCell>
                                     <TableCell>{Component.Type}</TableCell>
                                     <TableCell>{Component.Status}</TableCell>
-                                    <TableCell>
-                                        {' '}
-                                        <div className="flex justify-end">
-                                            <Popup
-                                                trigger={
-                                                    <button className="">
-                                                        <ModeEditIcon fontSize="medium" />
-                                                    </button>
-                                                }
-                                                position="right center"
-                                                modal
-                                                closeOnDocumentClick={false}
-                                                closeOnEscape={false}
-                                            >
-                                                {(close) => (
-                                                    <div>
-                                                        <div className="flex place-content-between ">
-                                                            <div className="m-4 font-bold text-lg">Chỉnh sửa sản phẩm </div>
-                                                            <div>
-                                                                <Button variant="outlined" className="" onClick={close}>
-                                                                    X
+                                    {user && user.Role == "Admin" && (
+
+                                        <TableCell>
+                                            {' '}
+                                            <div className="flex justify-end">
+                                                <Popup
+                                                    trigger={
+                                                        <button className="">
+                                                            <ModeEditIcon fontSize="medium" />
+                                                        </button>
+                                                    }
+                                                    position="right center"
+                                                    modal
+                                                    closeOnDocumentClick={false}
+                                                    closeOnEscape={false}
+                                                >
+                                                    {(close) => (
+                                                        <div>
+                                                            <div className="flex place-content-between ">
+                                                                <div className="m-4 font-bold text-lg">Chỉnh sửa sản phẩm </div>
+                                                                <div>
+                                                                    <Button variant="outlined" className="" onClick={close}>
+                                                                        X
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
+                                                            <EditComponentForm ComponentId={Component.ID} close={close} handleFilter={handleFilter} />
+                                                        </div>
+                                                    )}
+                                                </Popup>
+                                                <Popup
+                                                    trigger={
+                                                        <button onClick={() => handleDelete(Component.ID)}>
+                                                            <DeleteIcon fontSize="medium" />
+                                                        </button>
+                                                    }
+                                                    position="right center"
+                                                    modal
+                                                >
+                                                    {(close) => (
+                                                        <>
+                                                            <div className="flex justify-center">
+                                                                Bạn có chắc chắn muốn xóa thành phần lồng này không?
+                                                            </div>
+                                                            <div className="flex justify-center">
+                                                                <Button
+                                                                    variant="contained"
+                                                                    onClick={() => {
+                                                                        handleDelete(Component.ID)
+                                                                        close()
+                                                                    }}
+                                                                >
+                                                                    Có
+                                                                </Button>
+                                                                <Button variant="outlined" onClick={close}>
+                                                                    Không
                                                                 </Button>
                                                             </div>
-                                                        </div>
-                                                        <EditComponentForm ComponentId={Component.ID} close={close} handleFilter={handleFilter} />
-                                                    </div>
-                                                )}
-                                            </Popup>
-                                            <Popup
-                                                trigger={
-                                                    <button onClick={() => handleDelete(Component.ID)}>
-                                                        <DeleteIcon fontSize="medium" />
-                                                    </button>
-                                                }
-                                                position="right center"
-                                                modal
-                                            >
-                                                {(close) => (
-                                                    <>
-                                                        <div className="flex justify-center">
-                                                            Bạn có chắc chắn muốn xóa thành phần lồng này không?
-                                                        </div>
-                                                        <div className="flex justify-center">
-                                                            <Button
-                                                                variant="contained"
-                                                                onClick={() => {
-                                                                    handleDelete(Component.ID)
-                                                                    close()
-                                                                }}
-                                                            >
-                                                                Có
-                                                            </Button>
-                                                            <Button variant="outlined" onClick={close}>
-                                                                Không
-                                                            </Button>
-                                                        </div>
-                                                    </>
-                                                )}
-                                            </Popup>
-                                        </div>
-                                    </TableCell>
+                                                        </>
+                                                    )}
+                                                </Popup>
+                                            </div>
+                                        </TableCell>
+                                    )}
                                 </TableRow>
                             ))
                         }
