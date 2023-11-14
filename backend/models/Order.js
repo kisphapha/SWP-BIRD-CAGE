@@ -256,7 +256,7 @@ const addCustomProduct = async (productName, Description, Price, Category, Size,
                 )
                 OUTPUT Inserted.Id
                 VALUES
-                (   
+                (
                     @Name,
                     @Description,
                     @Price,
@@ -295,19 +295,19 @@ const addCustomProduct = async (productName, Description, Price, Category, Size,
                 )
                 OUTPUT Inserted.Id
                 VALUES
-                (   
+                (
                     @UserID,
                     GETDATE(),
                     GETDATE(),
-                    @AddressID, 
+                    @AddressID,
                     @PhoneNumber,
-                    @TotalAmount, 
-                    @PaymentMethod, 
-                    NULL, 
-                    GETDATE(), 
-                    0, 
-                    N'Chờ Duyệt',  
-                    N'Chưa Thanh Toán' 
+                    @TotalAmount,
+                    @PaymentMethod,
+                    NULL,
+                    GETDATE(),
+                    0,
+                    N'Chờ Duyệt',
+                    N'Chưa Thanh Toán'
                 )
             `);
         const orderId = orderQuery.recordset[0].Id;
