@@ -308,7 +308,6 @@ const paging = async (page, cate) => {
         let poolConnection = await sql.connect(config);
         const result = await poolConnection.request()
         .input('cate', cate)
-        .input('page', page)
         .query(
             `
             SELECT p.*, i.Url, c.name AS Shape
@@ -320,9 +319,7 @@ const paging = async (page, cate) => {
             JOIN Category c ON p.Category = c.id
             WHERE Category = @cate AND material != 'Custom' AND p.isDeleted = 0
             ORDER BY p.CreatedAt DESC
-            OFFSET (@page - 1) * ${perPage} ROWS
-                FETCH NEXT ${perPage} ROWS ONLY
-        `
+          `
         );
         const json = { data: result.recordset };
 
@@ -409,7 +406,6 @@ const pagingSearchBar = async (name, page) => {
         let poolConnection = await sql.connect(config);
         const result = await poolConnection.request()
             .input('Name', sql.NVarChar, name)
-            .input('Page', sql.Int, page)
             .query(`
                 SELECT p.*, i.Url, c.name AS Shape
                 FROM Products p
@@ -421,9 +417,7 @@ const pagingSearchBar = async (name, page) => {
                 WHERE material != 'Custom'
                 AND p.Name LIKE '%' + @Name + '%' AND p.isDeleted = 0
                 ORDER BY p.createdAt DESC
-                OFFSET (@Page - 1) * ${perPage} ROWS
-                FETCH NEXT ${perPage} ROWS ONLY
-            `);
+                `);
 
         const json = { data: result.recordset };
 

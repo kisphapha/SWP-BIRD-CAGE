@@ -46,7 +46,7 @@ function Dashboard() {
             <div className="px-4 font-bold">DashBoard</div>
             <div className="dashboard-detail my-8">
                 <div className="chart-container">
-                    <LineChart />
+                    {/* <LineChart /> */}
                 </div>
                 <div className="chart-container">
                     <PieChart />
