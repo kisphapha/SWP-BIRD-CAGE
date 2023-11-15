@@ -447,7 +447,7 @@ export default function Custom() {
                                 </div>
                                 <div className="mt-8 w-1/8">
                                     <div className="flex place-content-between">
-                                        <div className=" font-bold">{totalTime}</div>
+                                        <div className=" font-bold">{totalTime} giờ</div>
                                     </div>
                                     <div className="flex place-content-between">
                                         <div className=" font-bold">{total.toLocaleString('vi', { style: 'currency', currency: 'VND' })}</div>
@@ -575,7 +575,7 @@ export default function Custom() {
                                                                         <div>{selectedComponent.data?.Description || ''}</div>
                                                                     </TableCell>
                                                                     <TableCell>
-                                                                        <div>{selectedComponent.data?.ProductionTime || 'N/A'}
+                                                                        <div>{selectedComponent.data?.CraftTime || 'N/A'}
                                                                         </div>
                                                                     </TableCell>
                                                                     <TableCell>
