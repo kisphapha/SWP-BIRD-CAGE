@@ -157,12 +157,27 @@ const  addVoucher = async (UserID, discount) => {
     }
 }
 
-const getVoucherByUserID = async(userID) =>{
+const updateVoucher = async (Id) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        await poolConnection.request()
+            .input('Id', Id)
+            .query(`
+        update Voucher
+            set [UsedAt] = GETDATE()
+        WHERE Id = @Id
+        `)
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
+
+const getVoucherByUserID = async (Id) => {
     try {
         let poolConnection = await sql.connect(config);
         const result = await poolConnection.request()
-        .input('UserID', userID)
-        .query(`
+            .input('UserID', Id)
+            .query(`
         select * from Voucher
         where UserID = @UserID
         `)
@@ -171,6 +186,7 @@ const getVoucherByUserID = async(userID) =>{
         console.log("error: ", error);
     }
 }
+
 
 const exchangePoint = async(UserID, Point) => {
     try {
@@ -259,5 +275,6 @@ module.exports = {
     exchangePoint,
     replyFeedBack,
     addNotifications,
-    loadNotifications
+    loadNotifications,
+    updateVoucher
 };

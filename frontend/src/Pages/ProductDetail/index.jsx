@@ -264,6 +264,9 @@ export default function ProductDetails() {
                             id: user.Id,
                             point: ((product.Price * (100 - product.discount)) / 100) * quantity / 1000
                         })
+                        await axios.post('http://localhost:3000/users/updateVoucher', {
+                            Id: orderVoucher
+                        })
                         if (paymentMethod == 'vnpay') {
                             const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
                                 amount: calculateGrandTotal(),

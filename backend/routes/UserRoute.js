@@ -14,6 +14,7 @@ userRouter.get("/getVoucher/:UserID", UserController.getVoucherByUserID);
 userRouter.post("/exchangePoint", UserController.exchangePoint);
 userRouter.post("/replyFeedback", UserController.replyFeedBack);
 userRouter.post("/addNotifications", UserController.addNotifications);
+userRouter.post("/updateVoucher", UserController.updateVoucher);
 userRouter.get("/loadNotifications/:id", UserController.loadNotifications);
 
 
