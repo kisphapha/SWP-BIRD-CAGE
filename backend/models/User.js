@@ -188,6 +188,23 @@ const exchangePoint = async(UserID, Point) => {
     }
 }
 
+const replyFeedBack = async(id, ReplyContent, Replier) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('id', id)
+        .input('ReplyContent', ReplyContent)
+        .input('Replier', Replier)
+        .query(`
+            UPDATE dbo.Feedback
+            SET ReplyContent = @ReplyContent , ReplyDate = GETDATE(), Replier = @Replier
+            WHERE id =@id
+        `)
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
+
 module.exports = {
     getAllUser,
     getUserByEmail,
@@ -197,5 +214,6 @@ module.exports = {
     filterUser,
     addVoucher,
     getVoucherByUserID,
-    exchangePoint
+    exchangePoint,
+    replyFeedBack
 };

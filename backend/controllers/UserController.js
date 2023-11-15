@@ -109,6 +109,21 @@ const exchangePoint = async (req, res) => {
         res.status(500).json({message: error.message});
     }
 }
+
+const replyFeedBack = async (req, res) => {
+    try {
+        const id = req.body.id;
+        const ReplyContent = req.body.ReplyContent;
+        const Replier = req.body.Replier;
+
+        const response = await User.replyFeedBack(id, ReplyContent, Replier);
+        res.status(200).json({message: "success"});
+    } catch (error) {
+        res.status(500).json({message:error.message});
+    }
+
+}
+
 module.exports = {
     getAllUser,
     getUserByEmail,
@@ -118,5 +133,6 @@ module.exports = {
     filterUser,
     addVoucher,
     getVoucherByUserID,
-    exchangePoint
+    exchangePoint,
+    replyFeedBack
 };

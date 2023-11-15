@@ -214,7 +214,13 @@ export default function Components() {
                                 <div className="flex-row">
                                     {/* <div>Mã SP</div> */}
                                     <div>
-                                        <TextField className="w-16" id="outlined-basic" label="Mã SP" variant="standard" onChange={handleIdChange} />
+                                        <TextField
+                                            className="w-16"
+                                            id="outlined-basic"
+                                            placeholder="Mã SP"
+                                            variant="standard"
+                                            onChange={handleIdChange}
+                                        />
                                     </div>
                                 </div>
                             </TableCell>
@@ -231,7 +237,7 @@ export default function Components() {
                                         <TextField
                                             className="w-64"
                                             id="outlined-basic"
-                                            label="Tên sản phẩm"
+                                            placeholder="Tên sản phẩm"
                                             variant="standard"
                                             onChange={handleNameChange}
                                         />
@@ -246,7 +252,7 @@ export default function Components() {
                                             <TextField
                                                 className="w-12"
                                                 id="outlined-basic"
-                                                label="From"
+                                                placeholder="From"
                                                 variant="standard"
                                                 onChange={handleLowerPriceChange}
                                             />
@@ -255,7 +261,7 @@ export default function Components() {
                                             <TextField
                                                 className="w-12"
                                                 id="outlined-basic"
-                                                label="To"
+                                                placeholder="To"
                                                 variant="standard"
                                                 onChange={handleUpperPriceChange}
                                             />
@@ -271,7 +277,7 @@ export default function Components() {
                                             <TextField
                                                 className="w-12"
                                                 id="outlined-basic"
-                                                label="From"
+                                                placeholder="From"
                                                 variant="standard"
                                                 onChange={handleLowerStockChange}
                                             />
@@ -280,7 +286,7 @@ export default function Components() {
                                             <TextField
                                                 className="w-12"
                                                 id="outlined-basic"
-                                                label="To"
+                                                placeholder="To"
                                                 variant="standard"
                                                 onChange={handleUpperStockChange}
                                             />
@@ -295,7 +301,7 @@ export default function Components() {
                                         <TextField
                                             className="w-64"
                                             select
-                                            label="Loại"
+                                            placeholder="Loại"
                                             variant="filled"
                                             onChange={handleCategoryChange}
                                             defaultValue="All"
@@ -317,7 +323,7 @@ export default function Components() {
                                         <TextField
                                             className="w-32 text-left"
                                             select
-                                            label="Status"
+                                            placeholder="Status"
                                             variant="filled"
                                             onChange={handleStatusChange}
                                             defaultValue="All"
