@@ -109,13 +109,16 @@ function App() {
                     />
                     <Route
                         element={
-                        <UserProvider>
-                            <Cart />
-                        </UserProvider>
+                            <UserProvider>
+                                <Cart />
+                            </UserProvider>
                         }
                         path="cart" />
                     <Route element={<FilteredPage />} path="/filter/:filter/:keyword" />
-                    <Route element={<Custom />} path="/Custom" />
+                    <Route element={<UserProvider>
+                        <Custom />
+                    </UserProvider>}
+                        path="/Custom" />
                     <Route element={<VNPaySuccess />} path="/test" />
                     <Route element={<Custom />} path="/custom" />
                     <Route element={<Compare />} path="/Compare" />

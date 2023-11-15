@@ -114,8 +114,8 @@ const addCustomProduct = async (req, res) => {
         const Quantity = req.body.Quantity;
 
         const ComponentItems = req.body.ComponentItems;
-        const order = await Order.addCustomProduct(productName, Description, Price, Category, Size, material, Quantity, userId, AddressID, PhoneNumber, TotalAmount, PaymentMethod, ComponentItems);
-        res.json({ status: "Success", result: respone });
+        const id = await Order.addCustomProduct(productName, Description, Price, Category, Size, material, Quantity, userId, AddressID, PhoneNumber, TotalAmount, PaymentMethod, ComponentItems);
+        res.json({ status: "Success", orderid: id});
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

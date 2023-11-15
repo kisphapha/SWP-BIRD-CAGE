@@ -119,6 +119,7 @@ export default function Cart() {
                         sessionStorage.setItem('cart', '{"products":[]}')
                         window.location.reload(false)
                     }
+                    sessionStorage.setItem('cart', '{"products":[]}')
                 } else {
                     alert('Đăng nhập để tiến hành thanh toán')
                 }
