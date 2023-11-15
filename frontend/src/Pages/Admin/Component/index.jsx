@@ -17,7 +17,7 @@ import {
     TableRow,
     TextField
 } from '@mui/material'
-import React, { Component, useEffect, useState } from 'react'
+import React, { Component, useEffect, useState, useContext } from 'react'
 import MenuItem from '@mui/material/MenuItem'
 import Axios from 'axios'
 import Popup from 'reactjs-popup'
@@ -26,10 +26,15 @@ import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import axios from 'axios'
 import EditComponentForm from '../EditComponentForm'
+import CategoryNav from '../../../components/features/CategoryNav'
+import { UserContext } from '../../../UserContext'
+
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import FilterAlt from '@mui/icons-material/FilterAlt'
 
 export default function Components() {
+    const { user } = useContext(UserContext)
+
     const [Components, setComponents] = useState([])
     const [page, setPage] = useState(1)
     const [maxPage, setMaxPage] = useState(1)
@@ -49,36 +54,45 @@ export default function Components() {
     const [prostatus, setProStatus] = useState('')
     const handleIdChange = (event) => {
         setId(event.target.value)
+        setPage(1)
     }
     const handleNameChange = (event) => {
         setName(event.target.value)
+        setPage(1)
     }
 
     const handleCategoryChange = (event) => {
         setCategory(event.target.value)
+        setPage(1)
     }
-    const handleCageCate = (event) => {
-        setSelectedCageCate(event.target.value)
+    const handleCageCate = (cageCate) => {
+        setSelectedCageCate(cageCate)
+        setPage(1)
     }
 
     const handleUpperPriceChange = (event) => {
         setUpperPrice(event.target.value)
+        setPage(1)
     }
 
     const handleLowerPriceChange = (event) => {
         setLowerPrice(event.target.value)
+        setPage(1)
     }
 
     const handleUpperStockChange = (event) => {
         setUpperStock(event.target.value)
+        setPage(1)
     }
 
     const handleLowerStockChange = (event) => {
         setLowerStock(event.target.value)
+        setPage(1)
     }
 
     const handleStatusChange = (event) => {
         setProStatus(event.target.value)
+        setPage(1)
     }
     const handleSwitchPage = (page) => {
         console.log(page)
@@ -103,7 +117,6 @@ export default function Components() {
             application: selectedCageCate,
             page: page
         }
-        console.log(json)
         Axios.post('http://localhost:3000/component/filterComponent', json)
             .then((response) => {
                 setComponents(response.data.data)
@@ -132,7 +145,7 @@ export default function Components() {
         handleFilter()
         fetchCates()
         fetchCageCates()
-    }, [page])
+    })
     const status = [
         {
             value: 'All',
@@ -154,13 +167,21 @@ export default function Components() {
 
     const handleButtonClick = (buttonName, cateId) => {
         setActiveButton(buttonName)
-        setSelectedCageCate(cateId)
+        handleCageCate(cateId)
     }
 
     return (
         <div className="px-2 py-2 w-full  mb-96">
             <div className="flex-col">
-                <div className="my-5 text-2xl">Component</div>
+                <CategoryNav
+                    parents={[
+                        { name: 'Trang chủ', link: '/' },
+                        { name: 'Bảng điều khiển', link: '/admin' }
+                    ]}
+                    margin={0}
+                    current="Danh sách thành phần"
+                />
+                <div className="my-5 text-2xl font-bold">Danh sách thành phần lồng</div>
                 {/* <Button onClick={() => '/admin/NewComponent'}>New Component</Button> */}
             </div>
             <div className="flex align-bottom ">
@@ -271,7 +292,14 @@ export default function Components() {
                                 <div>
                                     <div>Phân loại</div>
                                     <div>
-                                        <TextField className="w-64" select label="Loại" variant="filled" onChange={handleCategoryChange}>
+                                        <TextField
+                                            className="w-64"
+                                            select
+                                            label="Loại"
+                                            variant="filled"
+                                            onChange={handleCategoryChange}
+                                            defaultValue="All"
+                                        >
                                             <MenuItem value={'All'}>All</MenuItem>
                                             {cate.map((option) => (
                                                 <MenuItem key={option} value={option}>
@@ -286,22 +314,20 @@ export default function Components() {
                                 <div>
                                     <div> Trạng thái</div>
                                     <div>
-                                        <TextField className="w-32 text-left" select label="Status" variant="filled" onChange={handleStatusChange}>
+                                        <TextField
+                                            className="w-32 text-left"
+                                            select
+                                            label="Status"
+                                            variant="filled"
+                                            onChange={handleStatusChange}
+                                            defaultValue="All"
+                                        >
                                             {status.map((option) => (
                                                 <MenuItem key={option.value} value={option.value}>
                                                     {option.label}
                                                 </MenuItem>
                                             ))}
                                         </TextField>
-                                    </div>
-                                </div>
-                            </TableCell>
-                            <TableCell>
-                                <div>
-                                    <div>
-                                        <Button variant="contained" onClick={handleFilter}>
-                                            FILTER
-                                        </Button>
                                     </div>
                                 </div>
                             </TableCell>
@@ -337,67 +363,69 @@ export default function Components() {
                                     <TableCell>{Component.Stock}</TableCell>
                                     <TableCell>{Component.Type}</TableCell>
                                     <TableCell>{Component.Status}</TableCell>
-                                    <TableCell>
-                                        {' '}
-                                        <div className="flex justify-end">
-                                            <Popup
-                                                trigger={
-                                                    <button className="">
-                                                        <ModeEditIcon fontSize="medium" />
-                                                    </button>
-                                                }
-                                                position="right center"
-                                                modal
-                                                closeOnDocumentClick={false}
-                                                closeOnEscape={false}
-                                            >
-                                                {(close) => (
-                                                    <div>
-                                                        <div className="flex place-content-between ">
-                                                            <div className="m-4 font-bold text-lg">Chỉnh sửa sản phẩm </div>
-                                                            <div>
-                                                                <Button variant="outlined" className="" onClick={close}>
-                                                                    X
+                                    {user && user.Role == 'Admin' && (
+                                        <TableCell>
+                                            {' '}
+                                            <div className="flex justify-end">
+                                                <Popup
+                                                    trigger={
+                                                        <button className="">
+                                                            <ModeEditIcon fontSize="medium" />
+                                                        </button>
+                                                    }
+                                                    position="right center"
+                                                    modal
+                                                    closeOnDocumentClick={false}
+                                                    closeOnEscape={false}
+                                                >
+                                                    {(close) => (
+                                                        <div>
+                                                            <div className="flex place-content-between ">
+                                                                <div className="m-4 font-bold text-lg">Chỉnh sửa sản phẩm </div>
+                                                                <div>
+                                                                    <Button variant="outlined" className="" onClick={close}>
+                                                                        X
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
+                                                            <EditComponentForm ComponentId={Component.ID} close={close} handleFilter={handleFilter} />
+                                                        </div>
+                                                    )}
+                                                </Popup>
+                                                <Popup
+                                                    trigger={
+                                                        <button onClick={() => handleDelete(Component.ID)}>
+                                                            <DeleteIcon fontSize="medium" />
+                                                        </button>
+                                                    }
+                                                    position="right center"
+                                                    modal
+                                                >
+                                                    {(close) => (
+                                                        <>
+                                                            <div className="flex justify-center">
+                                                                Bạn có chắc chắn muốn xóa thành phần lồng này không?
+                                                            </div>
+                                                            <div className="flex justify-center">
+                                                                <Button
+                                                                    variant="contained"
+                                                                    onClick={() => {
+                                                                        handleDelete(Component.ID)
+                                                                        close()
+                                                                    }}
+                                                                >
+                                                                    Có
+                                                                </Button>
+                                                                <Button variant="outlined" onClick={close}>
+                                                                    Không
                                                                 </Button>
                                                             </div>
-                                                        </div>
-                                                        <EditComponentForm ComponentId={Component.ID} close={close} handleFilter={handleFilter} />
-                                                    </div>
-                                                )}
-                                            </Popup>
-                                            <Popup
-                                                trigger={
-                                                    <button onClick={() => handleDelete(Component.ID)}>
-                                                        <DeleteIcon fontSize="medium" />
-                                                    </button>
-                                                }
-                                                position="right center"
-                                                modal
-                                            >
-                                                {(close) => (
-                                                    <>
-                                                        <div className="flex justify-center">
-                                                            Bạn có chắc chắn muốn xóa thành phần lồng này không?
-                                                        </div>
-                                                        <div className="flex justify-center">
-                                                            <Button
-                                                                variant="contained"
-                                                                onClick={() => {
-                                                                    handleDelete(Component.ID)
-                                                                    close()
-                                                                }}
-                                                            >
-                                                                Có
-                                                            </Button>
-                                                            <Button variant="outlined" onClick={close}>
-                                                                Không
-                                                            </Button>
-                                                        </div>
-                                                    </>
-                                                )}
-                                            </Popup>
-                                        </div>
-                                    </TableCell>
+                                                        </>
+                                                    )}
+                                                </Popup>
+                                            </div>
+                                        </TableCell>
+                                    )}
                                 </TableRow>
                             ))
                         }

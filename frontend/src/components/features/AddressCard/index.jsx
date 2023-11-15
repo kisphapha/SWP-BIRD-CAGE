@@ -71,7 +71,7 @@ export default function AddressCard({ id, city, district, ward, street, fetchAdd
                 city: tinhTP
             }
             await axios.post(`http://localhost:3000/address/edit`, json)
-            alert('ADdress updated')
+            alert('Địa chỉ được cập nhật')
             fetchAddress()
         } else {
             alert('Xin vui lòng điền đầy đủ thông tin')
@@ -90,7 +90,7 @@ export default function AddressCard({ id, city, district, ward, street, fetchAdd
     async function handleDelete() {
         await axios.delete(`http://localhost:3000/address/delete/${id}`)
         console.log(id)
-        alert('ADdress deleted')
+        alert('Địa chỉ đã được xoá')
         fetchAddress()
     }
     //Popup ở đây dùng để update
@@ -160,7 +160,7 @@ export default function AddressCard({ id, city, district, ward, street, fetchAdd
                                         ))}
                                     </TextField>
 
-                                    <TextField
+                                    <select
                                         className="location"
                                         id="ward"
                                         onChange={(event) => {
@@ -175,7 +175,7 @@ export default function AddressCard({ id, city, district, ward, street, fetchAdd
                                                 {ward.name}
                                             </option>
                                         ))}
-                                    </TextField>
+                                    </select>
                                     <input
                                         className="location"
                                         type="text"
@@ -187,7 +187,7 @@ export default function AddressCard({ id, city, district, ward, street, fetchAdd
                                     ></input>
                                     <div className="buttons">
                                         <button className="decision" onClick={close}>
-                                            Cancel
+                                            Đóng
                                         </button>
                                         <button
                                             className="decision"
@@ -195,7 +195,7 @@ export default function AddressCard({ id, city, district, ward, street, fetchAdd
                                                 handleUpdate(event)
                                             }}
                                         >
-                                            Ok
+                                            Lưu
                                         </button>
                                     </div>
                                 </div>

@@ -140,7 +140,7 @@ export default function Custom() {
 
                     <div className="flex ">
                         <div className="content-center w-1/4">
-                            <div className="m-4 font-bold">Các thành phần của lồng </div>
+                            <div className="m-4 font-bold">Các thành phần của {selectedImage ? categories[selectedImage - 1].name : 'Lồng'}</div>
                             <div className="w-full mx-4  flex-row space-y-4 pb-8 mb-16 bg-white">
                                 <div className="w-full pt-2 pl-4 h-20">
                                     <TextField

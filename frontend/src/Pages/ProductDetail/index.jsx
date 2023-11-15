@@ -24,8 +24,8 @@ export default function ProductDetails() {
     const [product, setProduct] = useState([])
     const [ratingsData, setRatingsData] = useState([])
     const [focusUrl, setFocusUrl] = useState('')
-    const [addressList, setAddressList] = useState([])
     const [paymentMethod, setPaymentMethod] = useState('COD')
+    const [addressList, setAddressList] = useState([])
     const [orderAddress, setOrderAddress] = useState('')
     const [phoneNumber, setPhoneNumber] = useState('')
     const [checkValidation, setCheckValidation] = useState(true)
@@ -153,32 +153,8 @@ export default function ProductDetails() {
                 price: (product.Price * (100 - product.discount)) / 100
             })
         }
-        toast.dismiss()
-        toast.success('Đã thêm vào giỏ hàng', {
-            position: 'bottom-left',
-            autoClose: 1000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: true,
-            progress: undefined,
-            theme: 'colored'
-        })
-
         // Store the updated cart in sessionStorage
         sessionStorage.setItem('cart', JSON.stringify(cart))
-
-        toast.dismiss()
-        toast.success('Sản phẩm đã được thêm vào', {
-            position: 'bottom-left',
-            autoClose: 1000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: true,
-            progress: undefined,
-            theme: 'colored'
-        })
     }
 
     const handlePayment = async () => {
@@ -269,7 +245,7 @@ export default function ProductDetails() {
                 <div className="product">
                     <div className="img-container">
                         <div className="img-main">
-                            <img src={focusUrl} />
+                            <img className="big-img" src={focusUrl} />
                         </div>
                         <div className="img-more ">
                             {imgList.map((image) => (
@@ -321,12 +297,31 @@ export default function ProductDetails() {
                                     +
                                 </button>
                             </div>
+                            {user == null ? (
+                            <Popup
+                                contentStyle={{ width: '500px', height: '250px', borderRadius: '10px' }}
+                                trigger={
+                                    <Button variant="contained">
+                                        Thêm vào giỏ hàng
+                                    </Button>
+                                }
+                                position="center"
+                                modal
+                            >
+                                {(close) => (
+                                    <div className="login-popup">
+                                        <LoginCard />
+                                    </div>
+                                )}
+                            </Popup>
+                        ) : (
                             <div>
                                 <Button variant="contained" className="add-cart" onClick={addToCart}>
                                     Thêm vào giỏ hàng
                                 </Button>
                                 <ToastContainer />
                             </div>
+                        )}
                         </div>
 
                         {user == null ? (

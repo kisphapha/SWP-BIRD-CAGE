@@ -4,6 +4,7 @@ import { Button } from '@mui/material'
 import MenuItem from '@mui/material/MenuItem'
 import axios from 'axios'
 import ImageUploader from '../../../components/features/ImageUploader/index'
+import CategoryNav from '../../../components/features/CategoryNav'
 export default function NewProduct() {
     const [categories, setCategories] = useState([])
     const [images, setImages] = useState([])
@@ -117,7 +118,11 @@ export default function NewProduct() {
 
     return (
         <form action="" className="w-full mb-96">
-            <div className="text-xl font-bold">Thêm mới sản phẩm </div>
+            <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }, { name: 'Bảng điều khiển', link: '/admin' }]}
+                current="Thêm sản phẩm"
+                margin={0}
+            />
+            <div className="text-xl font-bold mt-8 flex justify-center">Thêm mới sản phẩm </div>
             <div className="flex mx-60 my-2 gap-4">
                 <div className="px-4 flex flex-col basis-1/2 items-center gap-4 py-10 justify-start bg-white    rounded-lg  mx-2">
                     <div className="w-3/4">

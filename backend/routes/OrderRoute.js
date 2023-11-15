@@ -22,6 +22,8 @@ OrderRouter.route("/loadUnseen/:id").get(OrderController.loadUnSeen);
 
 OrderRouter.route("/changeToSeen").patch(OrderController.changetoSeen);
 
+OrderRouter.route("/addCustomProduct").post(OrderController.addCustomProduct);
+
 OrderRouter.route("/:id").get(OrderController.getOrderById);
 
 module.exports = OrderRouter;

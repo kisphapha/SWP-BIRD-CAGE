@@ -35,7 +35,12 @@ function LoginCard() {
             const response = await axios.get('http://localhost:3000/users/' + email)
 
             if (response.data) {
-                sessionStorage.setItem('loginedUser', JSON.stringify(response.data))
+                if (response.data.Status == "Inactive") {
+                    alert("Tài khoản của bạn đã bị vô hiệu hóa. Vui lòng liên lạc ban quản lý để được hỗ trợ"
+                        + "\nLý do : " + response.data.ReasonBlocked)
+                } else {
+                    sessionStorage.setItem('loginedUser', JSON.stringify(response.data))
+                }
             } else {
                 await axios.post(
                     'http://localhost:3000/users/new/?name=' + googleUser.name + '&email=' + googleUser.email + '&picture=' + googleUser.picture

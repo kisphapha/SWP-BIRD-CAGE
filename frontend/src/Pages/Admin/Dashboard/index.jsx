@@ -1,89 +1,105 @@
-import React from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 // import { LineChart } from '@mui/x-charts/LineChart'
 // import { PieChart } from '@mui/x-charts/PieChart'
 // import Chart from 'react-apexcharts'
 import LineChart from '../../../components/features/LineChart/LineChart'
 import PieChart from '../../../components/features/PieChart/PieChart'
 import './styles.css'
+import Axios from 'axios'
+import { UserContext } from '../../../UserContext'
+import CategoryNav from '../../../components/features/CategoryNav'
 
 function Dashboard() {
+    const { user } = useContext(UserContext)
+
+    const [bestSellers, setBellSeller] = useState([])
+
+    async function fetchBestSellers() {
+        const response = await Axios.get(`http://localhost:3000/admin/getBestSelling`)
+        if (response.data) {
+            const jsonData = response.data
+            const results = []
+
+            for (const sell of jsonData) {
+                const productDetail = await fetchProductDetail(sell.Id)
+                const result = { ...sell, productDetail }
+                results.push(result)
+            }
+            console.log(results)
+            setBellSeller(results)
+        }
+    }
+
+    const fetchProductDetail = async (id) => {
+        const response = await Axios.get('http://localhost:3000/products/'+id)
+        if (response.data) {
+            return (response.data)
+        }
+    }
+
+
+
+    useEffect(() => {
+        fetchBestSellers()
+    }, [])
+
     return (
         <div className="dashboard ">
-            Chào mừng {JSON.parse(sessionStorage.loginedUser).Name}
-            <div></div>
-            <div className="px-4 font-bold">DashBoard</div>
-            <div className="dashboard-detail my-8">
-                <div className="chart-container">
-                    <LineChart />
-                </div>
-                <div className="chart-container">
-                    <PieChart />
-                </div>
-            </div>
-            <div className="px-72">
-                <div className="flex-col items-center  justify-center    ">
-                    <h1 className="pl-8 my-8 ">Best Sellers</h1>
-                    <div className="px-64 my-8"></div>
-                </div>
-                <table className="">
-                    <tr className="items-center flex  px-4 ">
-                        <th className="mr-4 w-40 ">
-                            <img
-                                className="w-20 h-20"
-                                src="https://images.unsplash.com/photo-1554629947-334ff61d85dc?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1024&h=1280&q=80"
-                            />
-                        </th>
-                        <th className="w-4/5 mr-36">Lồng Chim Chào Mào Đáy Tròn Cầu Rễ</th>
-                        <th className="w-2/6 mr-36">2.700.000 ₫</th>
-                        <th className="w-1/6 flex gap-3 ">45 sold</th>
-                    </tr>
-                    <hr className=" my-2" />
-                    <tr className="items-center flex  px-4 ">
-                        <th className="mr-4 w-40 ">
-                            <img
-                                className="w-20 h-20"
-                                src="https://longchim.vn/wp-content/uploads/2023/05/long-chao-mao-go-mun-soc-chan-cham-1.jpg    "
-                            />
-                        </th>
-                        <th className="w-4/5 mr-36">Lồng Chim Chào Mào Cáp Quang Khung Gỗ</th>
-                        <th className="w-2/6 mr-36">2.700.000 ₫</th>
-                        <th className="w-1/6 flex gap-3 ">34 sold</th>
-                    </tr>
-                    <hr className=" my-2" />
-                    <tr className="items-center flex  px-4 ">
-                        <th className="mr-4 w-40 ">
-                            <img
-                                className="w-20 h-20"
-                                src="https://longchim.vn/wp-content/uploads/2023/05/long-khuyen-tre-gia-cham-tung-nai-thung-1.jpg"
-                            />
-                        </th>
-                        <th className="w-4/5 mr-36">Lồng Chào Mào Gỗ Mun Sọc Chân Chạm</th>
-                        <th className="w-2/6 mr-36">2.700.000 ₫</th>
-                        <th className="w-1/6 flex gap-3 ">31 sold</th>
-                    </tr>
-                    <hr className=" my-2" />
-                    <tr className="items-center flex  px-4 ">
-                        <th className="mr-4 w-40 ">
-                            <img
-                                className="w-20 h-20"
-                                src="https://longchim.vn/wp-content/uploads/2023/05/long-qua-dao-cua-rong-de-go-cam-lai-1.jpg"
-                            />
-                        </th>
-                        <th className="w-4/5 mr-36">Lồng Cu Gáy Quả Đào 02 Đặc Biệt</th>
-                        <th className="w-2/6 mr-36">2.700.000 ₫</th>
-                        <th className="w-1/6 flex gap-3 ">20 sold</th>
-                    </tr>
-                    <hr className=" my-2" />
-                    <tr className="items-center flex  px-4 ">
-                        <th className="mr-4 w-40 ">
-                            <img className="w-20 h-20" src="https://longchim.vn/wp-content/uploads/2023/05/long-mun-cham-hoa-mai-1.jpg" />
-                        </th>
-                        <th className="w-4/5 mr-36">Lồng Quả Đào Cửa Rồng Đế Gỗ Cẩm Lai</th>
-                        <th className="w-2/6 mr-36">2.700.000 ₫</th>
-                        <th className="w-1/6 flex gap-3 ">10 sold</th>
-                    </tr>
-                </table>
-            </div>
+            {user && (
+                <>
+                    <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }]}
+                        current='Bảng điều khiển'
+                        margin={0}
+                    />
+                    <div className="mt-8 text-4xl font-bold">
+                        Chào mừng {user.Name}
+                        <div className="absolute right-8 top-8 ">
+                            <img className="w-32 h-32 rounded-full" src={user.Picture}></img>
+                        </div>
+                    </div>
+                    
+                    <div className="text-xl font-bold">Dashboard</div>
+                    {user.Role == "Admin" && (
+                        <>
+                            <div className="dashboard-detail my-8">
+                                <div className="chart-container">
+                                    <LineChart />
+                                </div>
+                                <div className="chart-container">
+                                    <PieChart />
+                                </div>
+                            </div>
+                            <div className="ml-80 bg-white w-1/2">
+                                <div className="flex-col items-center  justify-center    ">
+                                    <h1 className="pl-8 my-8 ">Best Sellers</h1>
+                                    <div className="px-64 my-8"></div>
+                                </div>
+                                <table className="">
+                                    <tr>
+                                    </tr>
+
+                                    {bestSellers.map((sell, index) => (
+                                        index < 5 && (
+                                            <tr key={sell.id} className="items-center flex  px-4 ">
+                                                <td className="mr-4 w-40 ">
+                                                    <img
+                                                        className="w-20 h-20"
+                                                        src={sell.productDetail.Url}
+                                                    />
+                                                </td>
+                                                <td className="w-4/5 mr-36">{sell.productDetail.Name}</td>
+                                                <td className="w-2/6 mr-36">{sell.productDetail.Price}</td>
+                                                <td className="w-1/6 flex gap-3 ">{sell.total_quantity_sold}</td>
+                                            </tr>
+                                        )
+                                        //await 
+                                    ))}
+                                </table>
+                            </div>
+                        </>
+                    )}
+                </>
+            )}
         </div>
     )
 }
