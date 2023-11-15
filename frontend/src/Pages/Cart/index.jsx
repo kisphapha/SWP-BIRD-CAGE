@@ -52,6 +52,7 @@ export default function Cart() {
 
     useEffect(() => {
         loadCartData()
+        fetchAddresses()
     }, [])
 
     const handleDecrement = (productId) => {
@@ -85,39 +86,47 @@ export default function Cart() {
 
             if (cartItems && cartItems.length > 0) {
                 if (sessionStorage.loginedUser != null) {
-                    const res = await axios.post('http://localhost:3000/order/addordertodb', {
-                        UserID: user.Id,
-                        OrderDate: new Date().toISOString().slice(0, 10),
-                        PaymentDate: null,
-                        ShippingAddress: null,
-                        PhoneNumber: user.PhoneNumber,
-                        Note: '',
-                        TotalAmount: calculateTotalPrice(),
-                        PaymentMethod: paymentMethod,
-                        Items: cartItems
-                    })
+                    if (orderAddress) {
+                        if (phoneNumber) {
+                            const res = await axios.post('http://localhost:3000/order/addordertodb', {
+                                UserID: user.Id,
+                                OrderDate: new Date().toISOString().slice(0, 10),
+                                PaymentDate: null,
+                                ShippingAddress: orderAddress,
+                                PhoneNumber: phoneNumber,
+                                Note: 'Cart',
+                                TotalAmount: calculateTotalPrice(),
+                                PaymentMethod: paymentMethod,
+                                Items: cartItems
+                            })
 
-                    await axios.post('http://localhost:3000/users/updatePoint', {
-                        id: 17,
-                        point: 1000
-                    })
+                            await axios.post('http://localhost:3000/users/updatePoint', {
+                                id: user.id,
+                                point: calculateBonus
+                            })
 
-                    if (paymentMethod == 'vnpay') {
-                        const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
-                            amount: calculateTotalPrice(),
-                            bankCode: '',
-                            language: 'vn',
-                            email: user.Email,
-                            phoneNumber: user.PhoneNumber,
-                            orderid: res.data.orderid
-                        })
+                            if (paymentMethod == 'vnpay') {
+                                const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
+                                    amount: calculateTotalPrice(),
+                                    bankCode: '',
+                                    language: 'vn',
+                                    email: user.Email,
+                                    phoneNumber: user.PhoneNumber,
+                                    orderid: res.data.orderid
+                                })
 
-                        console.log(response.data.url)
-                        window.location.href = response.data.url
+                                console.log(response.data.url)
+                                window.location.href = response.data.url
+                            } else {
+                                alert('Đặt hàng thành công')
+                                sessionStorage.setItem('cart', '{"products":[]}')
+                                window.location.reload(false)
+                            }
+                        } else {
+                            alert('Please enter your phone number')
+                        }
                     } else {
-                        alert('Đặt hàng thành công')
-                        sessionStorage.setItem('cart', '{"products":[]}')
-                        window.location.reload(false)
+                        alert('Please enter your address')
                     }
                 } else {
                     alert('Đăng nhập để tiến hành thanh toán')

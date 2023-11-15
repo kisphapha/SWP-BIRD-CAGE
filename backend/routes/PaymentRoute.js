@@ -4,8 +4,9 @@ const request = require('request');
 const moment = require('moment');
 
 const paymentRouter = express.Router();
-
+const axios = require     ("axios")
 paymentRouter.post('/create_payment_url', function (req, res, next) {
+
     let date = new Date();
     let createDate = moment(date).format('YYYYMMDDHHmmss');
 
@@ -80,6 +81,7 @@ paymentRouter.get('/vnpay_return', function (req, res, next) {
 
     if(secureHash === signed){
         // res.json({status: 'success'});
+        axios.get(`http://localhost:3000/order/paidstatus/${vnp_Params['vnp_TxnRef']}`)
         res.redirect("http://localhost:5000/user/purchase")
       } else {
         res.json({status: 'failed'}); 

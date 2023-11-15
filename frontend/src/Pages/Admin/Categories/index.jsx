@@ -5,7 +5,7 @@ import MenuItem from '@mui/material/MenuItem'
 import axios from 'axios'
 import CategoryNav from '../../../components/features/CategoryNav'
 export default function Categories() {
-    const {user } = useContext(UserContext)
+    const { user } = useContext(UserContext)
     const [categories, setCategories] = useState([])
     useEffect(() => {
         axios
@@ -32,10 +32,13 @@ export default function Categories() {
         <div className="px-2 py-2 w-full  mb-96">
             <div className="flex-col">
                 <CategoryNav
-                    parents={[{ name: 'Trang chủ', link: '/' }, { name: 'Bảng điều khiển', link: '/admin' }]}
+                    parents={[
+                        { name: 'Trang chủ', link: '/' },
+                        { name: 'Bảng điều khiển', link: '/admin' }
+                    ]}
                     current="Danh mục sản phẩm"
                     margin={0}
-                    />
+                />
                 {/* <Button onClick={() => '/admin/NewProduct'}>New Product</Button> */}
             </div>
 
