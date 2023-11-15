@@ -45,6 +45,7 @@ const getProductsByCategory = async (req, res) => {
     }
 }
 
+
 const getNewProductToDB = async (req, res) => {
     try {
         const Name = req.body.Name;
@@ -148,10 +149,7 @@ const filterProduct = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-
-    
 }
-
 
 const pagingSearchBar = async(req, res) => {
     try {
@@ -164,6 +162,7 @@ const pagingSearchBar = async(req, res) => {
         res.status(500).json({message: error.message});
     }
 }
+
 
 
 
@@ -180,5 +179,5 @@ module.exports = {
     paging,
     filterProduct,
     pagingSearchBar,
-    getImgsOfProduct
+    getImgsOfProduct,
 };

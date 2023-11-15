@@ -76,7 +76,7 @@ const loadUnSeen = async (req, res) => {
 }
 
 // cach dung cho tui frontend (luc user bam vao cai chuong thi no gui 2 tham so la id vs status = 1 xuong)
-const changetoSeen = async (req, res) => {
+const changeToSeen = async (req, res) => {
     try {
         const id = req.body.id;
         const userid = req.body.userid;
@@ -129,7 +129,7 @@ module.exports = {
     getOrderByUserId,
     changeStatus_Paid,
     loadUnSeen,
-    changetoSeen,
+    changeToSeen,
     pieChartData,
     addCustomProduct
 }

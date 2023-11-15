@@ -78,7 +78,7 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
             )
             OUTPUT INSERTED.Id
             VALUES
-            (   
+            (
                 @UserID,
                 @OrderDate,
                 @PaymentDate,
@@ -190,7 +190,7 @@ const loadUnSeen = async (id) => {
     }
 }
 
-const changetoSeen = async(id, userid) => {
+const changeToSeen = async(id, userid) => {
     try {
         let poolConnection = await sql.connect(config);
         const result = await poolConnection.request()
@@ -327,7 +327,7 @@ const addCustomProduct = async (productName, Description, Price, Category, Size,
                     CreatedAt
                 )
                 VALUES
-                (   
+                (
                     @ProductId,
                     @OrdersId,
                     @Quantity,
@@ -344,7 +344,7 @@ const addCustomProduct = async (productName, Description, Price, Category, Size,
                     ComponentID
                 )
                 VALUES
-                (  
+                (
                     @ProductID,
                     @ComponentID
                 )
@@ -354,7 +354,7 @@ const addCustomProduct = async (productName, Description, Price, Category, Size,
                 .input('ComponentID',sql.Int, parseInt(item));
             await itemRequest.query(itemQuery);
         }
-        
+
     } catch (error) {
         console.log("error: ", error);
     }
@@ -369,7 +369,7 @@ module.exports = {
     getAllOrderItemByOrderID,
     getOrderByUserId,
     loadUnSeen,
-    changetoSeen,
+    changeToSeen,
     pieChartData,
     addCustomProduct
 }
