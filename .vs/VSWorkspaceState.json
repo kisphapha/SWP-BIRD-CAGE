@@ -3,14 +3,14 @@
     "",
     "\\backend",
     "\\backend\\controllers",
+    "\\backend\\models",
     "\\frontend",
     "\\frontend\\src",
     "\\frontend\\src\\Pages",
     "\\frontend\\src\\Pages\\Admin",
-    "\\frontend\\src\\Pages\\Admin\\Component",
-    "\\frontend\\src\\Pages\\Admin\\NewComponent",
-    "\\frontend\\src\\Pages\\Admin\\User"
+    "\\frontend\\src\\Pages\\Admin\\Dashboard",
+    "\\frontend\\src\\Pages\\Admin\\Products"
   ],
-  "SelectedNode": "\\backend\\controllers\\ComponentController.js",
+  "SelectedNode": "\\backend\\controllers\\UserController.js",
   "PreviewInSolutionExplorer": false
 }

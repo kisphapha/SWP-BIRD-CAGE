@@ -1,14 +1,14 @@
 ﻿import { ButtonBase, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField, Checkbox } from '@mui/material'
-import { React, useState, useEffect , useRef} from 'react'
+import { React, useState, useEffect, useRef } from 'react'
 import { Button } from '@mui/material'
 import MenuItem from '@mui/material/MenuItem'
 import axios from 'axios'
 import ImageUploader from '../../../components/features/ImageUploader/index'
+import CategoryNav from '../../../components/features/CategoryNav'
 export default function NewComponent() {
     const [categories, setCategories] = useState([])
-    const [images, setImages] = useState([]);
-    const maxNumber = 6;
-
+    const [images, setImages] = useState([])
+    const maxNumber = 6
 
     //temp varible
     const [tmpName, setTempName] = useState('')
@@ -30,12 +30,28 @@ export default function NewComponent() {
         }
     }
     async function fetchType() {
-        setType([
-            "Móc", "Nắp", "Đáy", "Nan", "Bình nước", "Khung", "Cửa"
-        ])
+        setType(['Móc', 'Nắp', 'Đáy', 'Nan', 'Bình nước', 'Khung', 'Cửa'])
+    }
+    async function uploadToHost() {
+        const API_key = 'd924a9e7cb663c6ceaf42becb5b52542'
+        const host = 'https://api.imgbb.com/1/upload'
+        const expiration = 1800000
+        const urls = []
+        await Promise.all(
+            images.map(async (image) => {
+                const response = await axios.postForm(`${host}?expiration=${expiration}&key=${API_key}`, {
+                    image: image.data_url.substring(image.data_url.indexOf(',') + 1)
+                })
+                if (response.data) {
+                    urls.push(response.data.data.url)
+                }
+            })
+        )
+        console.log(urls)
+        handleAdd(urls)
     }
 
-    async function handleAdd(event) {
+    async function handleAdd(urls) {
         const json = {
             Name: tmpName,
             Category: tmpCate,
@@ -45,27 +61,28 @@ export default function NewComponent() {
             Price: tmpPrice,
             Stock: tmpStock,
             Status: tmpStatus,
-            Urls: tmpUrls[0],
-            Application : appliedFor
+            Urls: urls[0],
+            Application: appliedFor
         }
         if (json.Stock && json.Name && json.Category && json.Price && json.Status) {
             await axios.post(`http://localhost:3000/component/new`, json)
             alert('Đã thêm sản phẩm')
+            window.location.reload()
         } else {
             alert('Vui lòng điền đủ thông tin')
         }
     }
 
     const handleApplyForChange = (event) => {
-        const newCate = event.target.value;
-        const isCategoryExists = appliedFor.includes(newCate);
+        const newCate = event.target.value
+        const isCategoryExists = appliedFor.includes(newCate)
 
         if (isCategoryExists) {
-            setAppliedFor(appliedFor.filter((cate) => cate !== newCate));
+            setAppliedFor(appliedFor.filter((cate) => cate !== newCate))
         } else {
-            setAppliedFor([...appliedFor, newCate]);
+            setAppliedFor([...appliedFor, newCate])
         }
-    };
+    }
 
     const handleNameChange = (event) => {
         setTempName(event.target.value)
@@ -98,87 +115,76 @@ export default function NewComponent() {
         fetchType()
     }, [])
 
-
     return (
         <form action="" className="w-full mb-96">
-            <div className="flex mx-60 my-2 ">
-                <div className="px-4 flex flex-col basis-1/2 items-center gap-4 py-10 justify-start">
-                    <div>Chung</div>
-                    <div className="w-3/4">
-                        {/* <div>name</div> */}
-                        <TextField
-                            fullWidth
-                            label={'Tên sản phẩm'}
-                            variant="standard"
-                            onChange={handleNameChange}
-                            value={tmpName}
-                        />
-                    </div>
-                    <div className="w-3/4">
-                        {/* <div>material</div> */}
-                        <TextField fullWidth select label="Phân loại" helperText="Chọn phân Loại" variant="filled" onChange={handleCategoryChange }>
-                            <MenuItem value={'All'}>All</MenuItem>
-                            {tmpType.map((option) => (
-                                <MenuItem key={option} value={option}>
-                                    {option}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </div>
-                    <div className="w-3/4">
-                        {/* <div>material</div> */}
-                        <TextField
-                            fullWidth
-                            label={'Chất Liệu'}
-                            variant="standard"
-                            onChange={handleMaterialChange}
-                            value={tmpMaterial}
-                        />
-                    </div>
-                    <div className="w-3/4">
-                        {/* <div>material</div> */}
-                        <TextField
-                            fullWidth
-                            label={'Màu sắc'}
-                            variant="standard"
-                            onChange={handleColorChange}
-                            value={tmpColor}
-                        />
-                    </div>
-                    <div className="w-3/4">
-                        {/* <div>price</div> */}
-                        <TextField
-                            fullWidth
-                            label={'Giá'}
-                            variant="standard"
-                            onChange={handlePriceChange}
-                            value={tmpPrice}
-                        />
-                    </div>
+            <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }]} current="Thêm thành phần" />
+            <div className="text-xl font-bold">Thêm mới thành phần lồng </div>
+            <div className="flex mx-60 my-2  gap-4">
+                <div className="px-4 flex flex-col basis-1/2 items-center gap-4 py-10 justify-start  bg-white rounded-3xl">
+                    <div className=" flex flex-col basis-1/2 items-center gap-4  h-full justify-start w-full ">
+                        <div>Chung</div>
 
-                    <div className="w-3/4">
-                        {/* <div>description</div> */}
-                        <TextField
-                            fullWidth
-                            label={'Mô tả'}
-                            variant="standard"
-                            onChange={handleDescriptionChange}
-                            value={tmpDescription}
-                             multiline rows={6} />
-                    </div>
-                    <div className="w-3/4">
-                        {/* <div>description</div> */}
-                        {/*<TextField*/}
-                        {/*    fullWidth*/}
-                        {/*    label={'Link ảnh'}*/}
-                        {/*    variant="standard"*/}
-                        {/*    onChange={handleUrlChange}*/}
-                        {/*    value={tmpUrl }*/}
-                        {/*/>*/}
-                        
+                        <div className="w-3/4">
+                            {/* <div>name</div> */}
+                            <TextField fullWidth label={'Tên sản phẩm'} variant="standard" onChange={handleNameChange} value={tmpName} />
                         </div>
+                        <div className="w-3/4">
+                            {/* <div>material</div> */}
+                            <TextField
+                                fullWidth
+                                select
+                                label="Phân loại"
+                                helperText="Chọn phân Loại"
+                                variant="filled"
+                                onChange={handleCategoryChange}
+                            >
+                                <MenuItem value={'All'}>All</MenuItem>
+                                {tmpType.map((option) => (
+                                    <MenuItem key={option} value={option}>
+                                        {option}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        </div>
+                        <div className="w-3/4">
+                            {/* <div>material</div> */}
+                            <TextField fullWidth label={'Chất Liệu'} variant="standard" onChange={handleMaterialChange} value={tmpMaterial} />
+                        </div>
+
+                        <div className="w-3/4">
+                            {/* <div>material</div> */}
+                            <TextField fullWidth label={'Màu sắc'} variant="standard" onChange={handleColorChange} value={tmpColor} />
+                        </div>
+                        <div className="w-3/4">
+                            {/* <div>price</div> */}
+                            <TextField fullWidth label={'Giá'} variant="standard" onChange={handlePriceChange} value={tmpPrice} />
+                        </div>
+
+                        <div className="w-3/4">
+                            {/* <div>description</div> */}
+                            <TextField
+                                fullWidth
+                                label={'Mô tả'}
+                                variant="standard"
+                                onChange={handleDescriptionChange}
+                                value={tmpDescription}
+                                multiline
+                                rows={6}
+                            />
+                        </div>
+                        <div className="w-3/4">
+                            {/* <div>description</div> */}
+                            {/*<TextField*/}
+                            {/*    fullWidth*/}
+                            {/*    label={'Link ảnh'}*/}
+                            {/*    variant="standard"*/}
+                            {/*    onChange={handleUrlChange}*/}
+                            {/*    value={tmpUrl }*/}
+                            {/*/>*/}
+                        </div>
+                    </div>
                 </div>
-                <div className="px-4 pl-40 flex flex-col basis-1/2 items-start gap-4 py-10">
+                <div className="px-4 pl-40 flex flex-col basis-1/2 items-start gap-4 py-10  bg-white rounded-3xl">
                     <div>
                         <div>Hình ảnh </div>
                         <ImageUploader images={images} setImages={setImages} maxNumber={maxNumber} setUrls={setUrls} />
@@ -186,8 +192,8 @@ export default function NewComponent() {
                             <FormControl>
                                 <FormLabel id="status">Trạng thái</FormLabel>
                                 <RadioGroup aria-labelledby="Trạng thái" defaultValue="Enable" onChange={handleStatusChange}>
-                                    <FormControlLabel value="Enable" control={<Radio />} label="Enable" onClick={ () => setStatus("Enable")} />
-                                    <FormControlLabel value="Disable" control={<Radio />} label="Disable" onClick={() => setStatus("Disable")} />
+                                    <FormControlLabel value="Enable" control={<Radio />} label="Enable" onClick={() => setStatus('Enable')} />
+                                    <FormControlLabel value="Disable" control={<Radio />} label="Disable" onClick={() => setStatus('Disable')} />
                                 </RadioGroup>
                             </FormControl>
                         </div>
@@ -195,26 +201,31 @@ export default function NewComponent() {
 
                     <div>
                         <div className="mt-12">
-                        <TextField
-                            fullWidth
-                            label={'Tồn kho'}
-                            variant="standard"
-                            onChange={handleStockChange}
-                            value={tmpStock}
-                        />
+                            <TextField fullWidth label={'Tồn kho'} variant="standard" onChange={handleStockChange} value={tmpStock} />
                         </div>
                     </div>
                     <div>
                         <div>Áp dụng cho</div>
-                        {categories.map((cate) => (
-                            cate.Allow_customize && (
-                            <div key={cate.id}>
-                                    <Checkbox value={cate.id} onChange={handleApplyForChange } />{cate.name }
-                                </div>
-                            )
-                        ))}
+                        {categories.map(
+                            (cate) =>
+                                cate.Allow_customize && (
+                                    <div key={cate.id}>
+                                        <Checkbox value={cate.id} onChange={handleApplyForChange} />
+                                        {cate.name}
+                                    </div>
+                                )
+                        )}
                     </div>
-                    <Button variant="contained" onClick={handleAdd}> update</Button>
+                    <Button
+                        variant="contained"
+                        onClick={() => {
+                            uploadToHost()
+                            handleAdd()
+                        }}
+                    >
+                        {' '}
+                        update
+                    </Button>
                 </div>
             </div>
         </form>

@@ -73,7 +73,7 @@ export default function AddressCard({id, city, district, ward, street, fetchAddr
                 "city":tinhTP
             }
             await axios.post(`http://localhost:3000/address/edit`,json)
-            alert('ADdress updated')
+            alert('Địa chỉ được cập nhật')
             fetchAddress()
         } else {
             alert("Xin vui lòng điền đầy đủ thông tin")
@@ -92,7 +92,7 @@ export default function AddressCard({id, city, district, ward, street, fetchAddr
     async function handleDelete() {
         await axios.delete(`http://localhost:3000/address/delete/${id}`)
         console.log(id)
-        alert('ADdress deleted')
+        alert('Địa chỉ đã được xoá')
         fetchAddress()
     }
     //Popup ở đây dùng để update
@@ -178,8 +178,8 @@ export default function AddressCard({id, city, district, ward, street, fetchAddr
                                     }}>
                                 </input>
                                 <div className="buttons">
-                                    <button className="decision" onClick={close}>Cancel</button>
-                                    <button className="decision" onClick={(event) => { handleUpdate(event); }}>Ok</button>
+                                    <button className="decision" onClick={close}>Đóng</button>
+                                    <button className="decision" onClick={(event) => { handleUpdate(event); }}>Lưu</button>
                                 </div>
                             </div>
                         )}

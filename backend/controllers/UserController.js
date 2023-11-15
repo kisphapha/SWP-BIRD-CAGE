@@ -43,15 +43,6 @@ const updateUser = async (req, res) => {
 };
 
 
-
-// const deleteUser = async (req, res) => {
-//     try {
-//     const
-//     }catch (error){
-//         res.status(500).json({message: error.message})
-//     }
-// }
-
 const getPointForUser = async (req, res) =>{
     try {
         const id = req.body.id;
@@ -64,10 +55,30 @@ const getPointForUser = async (req, res) =>{
     }
 }
 
+const filterUser = async (req, res) => {
+    try {
+        const name = req.body.name;
+        const email = req.body.email;
+        const phone = req.body.phone;
+        const dob = req.body.dob;
+        const role = req.body.role;
+        const status = req.body.status;
+        const lower_point = req.body.lower_point;
+        const upper_point = req.body.upper_point;
+        const create = req.body.create;
+        const page = req.body.page;
+        const user = await User.filterUser(name, email, phone, dob, lower_point, upper_point, create, status, role, page);
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     getAllUser,
     getUserByEmail,
     newUser,
     updateUser,
-    getPointForUser
+    getPointForUser,
+    filterUser
 };

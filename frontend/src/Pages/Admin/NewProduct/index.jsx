@@ -1,14 +1,14 @@
 ﻿import { ButtonBase, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material'
-import { React, useState, useEffect , useRef} from 'react'
+import { React, useState, useEffect, useRef } from 'react'
 import { Button } from '@mui/material'
 import MenuItem from '@mui/material/MenuItem'
 import axios from 'axios'
 import ImageUploader from '../../../components/features/ImageUploader/index'
+import CategoryNav from '../../../components/features/CategoryNav'
 export default function NewProduct() {
     const [categories, setCategories] = useState([])
-    const [images, setImages] = useState([]);
-    const maxNumber = 6;
-
+    const [images, setImages] = useState([])
+    const maxNumber = 6
 
     //temp varible
     const [tmpName, setTempName] = useState('')
@@ -20,11 +20,31 @@ export default function NewProduct() {
     const [tmpStock, setStock] = useState('')
     const [tmpHeight, setHeight] = useState('')
     const [tmpWidth, setWidth] = useState('')
-    const [tmpUrls, setUrls] = useState([])
     const [tmpCate, setCate] = useState('')
     const [tmpStatus, setStatus] = useState('')
 
-   
+    async function uploadToHost() {
+        const API_key = 'd924a9e7cb663c6ceaf42becb5b52542'
+        const host = 'https://api.imgbb.com/1/upload'
+        const expiration = 1800000
+        const urls = []
+
+        // Use Promise.all to wait for all the asynchronous requests to complete
+        await Promise.all(
+            images.map(async (image) => {
+                const response = await axios.postForm(`${host}?expiration=${expiration}&key=${API_key}`, {
+                    image: image.data_url.substring(image.data_url.indexOf(',') + 1)
+                })
+                if (response.data) {
+                    urls.push(response.data.data.url)
+                }
+            })
+        )
+
+        console.log(urls)
+        handleAdd(urls)
+    }
+
     async function fetchCategories() {
         const response = await axios.get('http://localhost:3000/category/')
         if (response.data) {
@@ -32,8 +52,8 @@ export default function NewProduct() {
         }
     }
 
-    async function handleAdd(event) {
-        const _size = (tmpWidth + ',' + tmpHeight)
+    async function handleAdd(urls) {
+        const _size = tmpWidth + ',' + tmpHeight
         if (!tmpDiscount) setDiscount(0)
         const json = {
             Name: tmpName,
@@ -46,11 +66,13 @@ export default function NewProduct() {
             SuitableBird: tmpBird,
             discount: tmpDiscount,
             Status: tmpStatus,
-            Urls: tmpUrls
+            Urls: urls
         }
+
         if (json.Stock && json.Name && json.Category && json.Price && json.Status) {
             await axios.post(`http://localhost:3000/products/add`, json)
             alert('Đã thêm sản phẩm')
+            window.location.reload()
         } else {
             alert('Vui lòng điền đủ thông tin')
         }
@@ -94,77 +116,47 @@ export default function NewProduct() {
         fetchCategories()
     }, [])
 
-
     return (
         <form action="" className="w-full mb-96">
-            <div className="flex mx-60 my-2 ">
-                <div className="px-4 flex flex-col basis-1/2 items-center gap-4 py-10 justify-start">
-                    <div>Chung</div>
+            <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }]} current="Thêm sản phẩm" />
+            <div className="text-xl font-bold">Thêm mới sản phẩm </div>
+            <div className="flex mx-60 my-2 gap-4">
+                <div className="px-4 flex flex-col basis-1/2 items-center gap-4 py-10 justify-start bg-white    rounded-lg  mx-2">
                     <div className="w-3/4">
                         {/* <div>name</div> */}
-                        <TextField
-                            fullWidth
-                            label={'Tên sản phẩm'}
-                            variant="standard"
-                            onChange={handleNameChange}
-                            value={tmpName}
-                        />
+                        <TextField fullWidth label={'Tên sản phẩm'} variant="standard" onChange={handleNameChange} value={tmpName} />
                     </div>
                     <div className="w-3/4">
                         {/* <div>material</div> */}
-                        <TextField fullWidth select label="Phân loại" helperText="Chọn phân Loại" variant="filled" onChange={handleCategoryChange }>
+                        <TextField fullWidth select label="Phân loại" helperText="Chọn phân Loại" variant="filled" onChange={handleCategoryChange}>
                             {categories.map((option) => (
                                 <MenuItem key={option.id} value={option.id}>
-                                    {option.name}   
+                                    {option.name}
                                 </MenuItem>
                             ))}
                         </TextField>
                     </div>
                     <div className="w-3/4">
                         {/* <div>material</div> */}
-                        <TextField
-                            fullWidth
-                            label={'Chất Liệu'}
-                            variant="standard"
-                            onChange={handleMaterialChange}
-                            value={tmpMaterial}
-                        />
+                        <TextField fullWidth label={'Chất Liệu'} variant="standard" onChange={handleMaterialChange} value={tmpMaterial} />
                     </div>
                     {tmpCate != 'PK' && (
                         <>
-                    
-                    <div className="w-3/4">
-                        {/* <div>bird suitable</div> */}
+                            <div className="w-3/4">
+                                {/* <div>bird suitable</div> */}
 
-                        <TextField
-                            fullWidth
-                            label={'Loại chim'}
-                            variant="standard"
-                            onChange={handleBirdChange}
-                            value={tmpBird}
-                        />
+                                <TextField fullWidth label={'Loại chim'} variant="standard" onChange={handleBirdChange} value={tmpBird} />
                             </div>
-                    </>
+                        </>
                     )}
                     <div className="w-3/4">
                         {/* <div>price</div> */}
-                        <TextField
-                            fullWidth
-                            label={'Giá'}
-                            variant="standard"
-                            onChange={handlePriceChange}
-                            value={tmpPrice}
-                        />
+                        <TextField fullWidth label={'Giá'} variant="standard" onChange={handlePriceChange} value={tmpPrice} />
                     </div>
                     <div className="w-3/4">
                         {/* <div>discount</div> */}
-                        <TextField
-                            fullWidth
-                            label={'Discount'}
-                            variant="standard"
-                            onChange={handleDiscountChange}
-                            value={tmpDiscount}
-                        />                    </div>
+                        <TextField fullWidth label={'Discount'} variant="standard" onChange={handleDiscountChange} value={tmpDiscount} />{' '}
+                    </div>
                     <div className="w-3/4">
                         {/* <div>description</div> */}
                         <TextField
@@ -173,7 +165,9 @@ export default function NewProduct() {
                             variant="standard"
                             onChange={handleDescriptionChange}
                             value={tmpDescription}
-                             multiline rows={6} />
+                            multiline
+                            rows={6}
+                        />
                     </div>
                     <div className="w-3/4">
                         {/* <div>description</div> */}
@@ -184,12 +178,11 @@ export default function NewProduct() {
                         {/*    onChange={handleUrlChange}*/}
                         {/*    value={tmpUrl }*/}
                         {/*/>*/}
-                       
-                        </div>
+                    </div>
                 </div>
-                <div className="px-4 pl-40 flex flex-col basis-1/2 items-start gap-4 py-10">
+                <div className="px-4 pl-40 flex flex-col basis-1/2 items-start gap-4 py-10 bg-white rounded-lg mx-2">
                     <div>Hình ảnh </div>
-                    <ImageUploader images={images} setImages={setImages} maxNumber={maxNumber} setUrls={setUrls} />
+                    <ImageUploader images={images} setImages={setImages} maxNumber={maxNumber} />
                     <div>
                         {tmpCate != 'PK' && (
                             <>
@@ -198,35 +191,24 @@ export default function NewProduct() {
                                     <div className="">
                                         {/* <div>height</div> */}
                                         <div>
-                                            <TextField
-                                                fullWidth
-                                                label={'Dài'}
-                                                variant="standard"
-                                                onChange={handleWidthChange}
-                                                value={tmpWidth}
-                                            />
+                                            <TextField fullWidth label={'Dài'} variant="standard" onChange={handleWidthChange} value={tmpWidth} />
                                         </div>
                                     </div>
                                     <div className="mt-5">
                                         {/* <div>width</div> */}
                                         <div>
-                                            <TextField
-                                                fullWidth
-                                                label={'Cao'}
-                                                variant="standard"
-                                                onChange={handleHeightChange}
-                                                value={tmpHeight}
-                                            />
+                                            <TextField fullWidth label={'Cao'} variant="standard" onChange={handleHeightChange} value={tmpHeight} />
                                         </div>
                                     </div>
                                 </div>
-                            </>)}
+                            </>
+                        )}
                         <div className="mt-12">
                             <FormControl>
                                 <FormLabel id="status">Trạng thái</FormLabel>
                                 <RadioGroup aria-labelledby="Trạng thái" defaultValue="Enable" onChange={handleStatusChange}>
-                                    <FormControlLabel value="Enable" control={<Radio />} label="Enable" onClick={ () => setStatus("Enable")} />
-                                    <FormControlLabel value="Disable" control={<Radio />} label="Disable" onClick={() => setStatus("Disable")} />
+                                    <FormControlLabel value="Enable" control={<Radio />} label="Enable" onClick={() => setStatus('Enable')} />
+                                    <FormControlLabel value="Disable" control={<Radio />} label="Disable" onClick={() => setStatus('Disable')} />
                                 </RadioGroup>
                             </FormControl>
                         </div>
@@ -234,16 +216,18 @@ export default function NewProduct() {
 
                     <div>
                         <div className="mt-12">
-                        <TextField
-                            fullWidth
-                            label={'Tồn kho'}
-                            variant="standard"
-                            onChange={handleStockChange}
-                            value={tmpStock}
-                        />
+                            <TextField fullWidth label={'Tồn kho'} variant="standard" onChange={handleStockChange} value={tmpStock} />
                         </div>
                     </div>
-                    <Button variant="contained" onClick={handleAdd}> update</Button>
+                    <Button
+                        variant="contained"
+                        onClick={() => {
+                            uploadToHost()
+                        }}
+                    >
+                        {' '}
+                        update
+                    </Button>
                 </div>
             </div>
         </form>

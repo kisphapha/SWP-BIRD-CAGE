@@ -10,9 +10,7 @@ AdminRouter.get("/getBestSelling", AdminController.getBestSellingProducts);
 
 AdminRouter.get("/getUsers", AdminController.getAllUser);
 
-AdminRouter.post("/deleteUser", AdminController.deleteUser);
-
-AdminRouter.get("/updateUser", AdminController.updateUser);
+AdminRouter.post("/updateUser", AdminController.updateUser);
 
 AdminRouter.get("/loadUnseen/:id", AdminController.loadUnSeen);
 

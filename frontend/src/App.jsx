@@ -97,7 +97,7 @@ function App() {
                     <Route element={<Collection />} path="Collection" />
                     <Route element={<Attribute />} path="Attribute" />
                     <Route element={<Order />} path="Orders" />
-                    <Route element={<Users />} path="Users" />
+                    <Route element={<UserProvider><Users /></UserProvider>} path="Users" />
                     <Route element={<Coupons />} path="Coupons" />
                 </Route>
             </Routes>

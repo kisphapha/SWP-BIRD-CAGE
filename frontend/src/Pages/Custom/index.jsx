@@ -62,8 +62,8 @@ export default function Custom() {
     }
 
     async function fetchComponents(categoryId) {
-        const response = await axios.get('http://localhost:3000/component/getAllComponentByCate/'+categoryId)
-           
+        const response = await axios.get('http://localhost:3000/component/getAllComponentByCate/' + categoryId)
+
         if (response.data) {
             setComponents(response.data)
         }
@@ -140,7 +140,7 @@ export default function Custom() {
 
                     <div className="flex ">
                         <div className="content-center w-1/4">
-                            <div className="m-4 font-bold">Các thành phần của lồng </div>
+                            <div className="m-4 font-bold">Các thành phần của {selectedImage ? categories[selectedImage - 1].name : 'Lồng'}</div>
                             <div className="w-full mx-4  flex-row space-y-4 pb-8 mb-16 bg-white">
                                 <div className="w-full pt-2 pl-4 h-20">
                                     <TextField
@@ -260,6 +260,17 @@ export default function Custom() {
                                         value={tmpDescription}
                                         multiline
                                         rows={6}
+                                    />
+                                </div>
+                                <div className="w-1/6 mt-6 ">
+                                    <TextField
+                                        fullWidth
+                                        label={'Số lượng'}
+                                        variant="standard"
+                                        onChange={handleDescriptionChange}
+                                        value={tmpDescription}
+                                        multiline
+                                        rows={1}
                                     />
                                 </div>
                                 <div className="mt-8 w-3/8">

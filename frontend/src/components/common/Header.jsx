@@ -105,7 +105,7 @@ function Header() {
                 <div className="service">
                     <div className="contact">
                         <div>
-                            Chăm sóc khách hàng: <Link to="/user/contact">0935039353</Link>
+                            Chăm sóc khách hàng: <Link to="/Contact">0935039353</Link>
                         </div>
                     </div>
                 </div>

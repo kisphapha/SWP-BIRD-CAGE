@@ -21,20 +21,27 @@ const getBestSellingProducts = async () => {
         let poolConnection = await sql.connect(config);
         const result  = await poolConnection.request()
             .query(`
+            WITH sales_data AS (
                 SELECT
-                    P.Id,
-                    P.Name,
-                    SUM(OI.quantity) AS total_quantity_sold
+                ProductId,
+                SUM(quantity) AS total_quantity_sold
                 FROM
-                    Products P
+                orders
                 JOIN
-                    dbo.OrderItem OI ON P.Id = OI.OrdersId
-                JOIN
-                    Orders O ON OI.OrdersId = O.Id
+                dbo.OrderItem ON OrderItem.OrdersId = Orders.Id
                 GROUP BY
-                    P.Id, P.Name
+                ProductId
+                )
+                SELECT
+                products.Id,
+                products.Name,
+                sales_data.total_quantity_sold
+                FROM
+                products
+                JOIN
+                sales_data ON products.Id = sales_data.ProductId
                 ORDER BY
-                    total_quantity_sold DESC;
+                sales_data.total_quantity_sold DESC
             `);
         return result.recordset;
     }catch (error) {
@@ -66,28 +73,20 @@ const newUser = async (name, email, picture) => {
     }
 };
 
-const updateUser = async (name, email, phone, dateOfBirth) => {
+
+const updateUser = async (userId, status, role, ReasonBlock) => {
     try {
         let poolConnection = await sql.connect(config);
-        await poolConnection.request().query(
-            `UPDATE [User] 
-            SET Name=N'${name}',PhoneNumber='${phone}',DateOfBirth='${dateOfBirth}'
-            WHERE Email='${email}'`
-        );
-    } catch (error) {
-        console.log("error: ", error);
-    }
-};
-
-
-const deleteUser = async (userId, status, ReasonBlock) => {
-    try {
-        let poolConnection = await sql.connect(config);
-        await poolConnection.request().query(
+        await poolConnection.request()
+            .input("Id", sql.Int, userId)
+            .input("Status", sql.VarChar, status)
+            .input("Reason", sql.NVarChar, ReasonBlock)
+            .input("Role",sql.VarChar, role)
+            .query(
             `
                 UPDATE dbo.[User]
-                SET BlockDate = GETDATE(), ReasonBlocked= N'${ReasonBlock}', Status = '${status}' 
-                WHERE Id = ${userId}
+                SET BlockDate = GETDATE(), ReasonBlocked= @Reason, Status = @Status, Role = @Role
+                WHERE Id = @Id
             `
         );
     }catch (error){
@@ -150,8 +149,7 @@ const deleteJunkData = async() => {
             DELETE dbo.OrderItem WHERE OrdersId IN (  SELECT id FROM dbo.Orders
             WHERE PaymentDate IS NULL AND AddressID IS NULL )
             DELETE dbo.Orders
-            WHERE PaymentDate IS NULL AND AddressID IS NULL a
-          
+            WHERE PaymentDate IS NULL AND AddressID IS NULL 
         `) 
     } catch (error) {
         console.log("error: ", error);
@@ -198,7 +196,6 @@ module.exports = {
     getAllUser,
     updateUser,
     newUser,
-    deleteUser,
     loadUnSeen,
     deleteJunkData,
     orderStatisticByMonth,

@@ -74,7 +74,7 @@ const OrderList = (props) => {
         <>
             <div className="form-header">
                 <h1>Đơn Hàng Của Tôi</h1>
-                <p>Những mặt hàng bạn đã mua</p>
+                <p>Những đơn hàng bạn đã đặt</p>
             </div>
             <hr />
             {/*Loop*/}
@@ -163,12 +163,12 @@ const OrderList = (props) => {
                                                             onChange={handleFeedbackContent}
                                                         ></TextField>
                                                     </div>
-                                                    <div className="flex justify-end">
+                                                    <div className="flex justify-end space-x-3">
                                                         <Button variant="outlined" onClick={close}>
-                                                            Cancel
+                                                            Đóng
                                                         </Button>
-                                                        <Button variant="outlined" onClick={() => submitFeedback(item.Id, close)}>
-                                                            OK
+                                                        <Button variant="contained" onClick={() => submitFeedback(item.Id, close)}>
+                                                            Lưu
                                                         </Button>
                                                     </div>
                                                 </div>

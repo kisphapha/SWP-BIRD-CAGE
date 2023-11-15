@@ -29,9 +29,9 @@ export default function Cart() {
         setCartData(emptyCart)
         sessionStorage.setItem('cart', JSON.stringify(emptyCart))
         toast.dismiss()
-        toast.error('Toàn bộ sản phẩm đã được xoá', {
+        toast.error('Đã xoá toàn bộ sản phẩm', {
             position: 'bottom-left',
-            autoClose: 3000,
+            autoClose: 1000,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: false,
@@ -147,7 +147,7 @@ export default function Cart() {
             console.log(sessionStorage.getItem('cart'))
         }
         toast.dismiss()
-        toast.error('Sản phẩm bạn chọn đã được xoá', {
+        toast.error('Sản phẩm đã được xoá', {
             position: 'bottom-left',
             autoClose: 1000,
             hideProgressBar: false,
@@ -219,6 +219,7 @@ export default function Cart() {
                                     <td className="text-center">
                                         <Button onClick={() => removeProductFromCart(product.id)}>
                                             <DeleteIcon />
+                                            <ToastContainer/>
                                         </Button>
                                     </td>
                                     {/* <hr className="border  border-slate-300 my-2 w-full" /> */}
@@ -285,6 +286,7 @@ export default function Cart() {
                                     </Popup>
                                     <Button variant="contained" onClick={clearCart} disableRipple>
                                         Xóa tất cả
+                                        <ToastContainer/>
                                     </Button>
                                     <Button variant="contained" onClick={() => navigate('/')}>
                                         Tiếp tục mua hàng
