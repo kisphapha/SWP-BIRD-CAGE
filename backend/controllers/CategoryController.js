@@ -20,7 +20,7 @@ const getACategory = async (req, res) => {
 
 const updateCategory = async (req, res) => {
     try {
-        const name  = req.query.name;
+        const name  = req.body.name;
         const imageUrl = req.query.imageUrl;
         const Allow_Customize = req.query.Allow_Customize;
         const Id = req.query.Id;
