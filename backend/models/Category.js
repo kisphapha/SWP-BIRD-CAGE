@@ -44,6 +44,9 @@ const updateCategory = async (name, imageUrl, Allow_Customize, id) => {
             UPDATE dbo.Category
             SET Name = @Name, imageUrl = @ImageUrl, Allow_Customize = @AllowCustomize
             WHERE id = @Id
+
+            update Products
+			set Category = @Id
         `);
     } catch (error) {
         console.log("error: ", error);
