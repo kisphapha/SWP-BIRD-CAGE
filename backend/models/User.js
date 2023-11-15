@@ -80,7 +80,7 @@ const getPointForUser = async(id, point) => {
 
             SELECT *
             FROM [dbo].[User]
-            WHERE Id = @Id;
+            WHERE Id = @id;
         `)
         return response.recordset[0]
     } catch (error) {

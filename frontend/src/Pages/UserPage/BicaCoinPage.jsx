@@ -27,21 +27,21 @@ const BicaCoinPage = () => {
             window.scrollTo(0, 0)
             setOpenPopup(true)
         } else {
-            alert("Tài khoản của bạn hiện chưa đủ Bica Coin. Hãy tích thêm thật nhiều và quay lại nhé ^^!")
+            alert('Tài khoản của bạn hiện chưa đủ Bica Coin. Hãy tích thêm thật nhiều và quay lại nhé ^^!')
         }
         
     }
 
     const addVoucher = async (discount) => {
-         await axios.post('http://localhost:3000/users/addVoucher', {
+        await axios.post('http://localhost:3000/users/addVoucher', {
             UserID: user.Id,
-            discount : discount
-         })
+            discount: discount
+        })
         const response = await axios.post('http://localhost:3000/users/exchangePoint', {
             UserID: user.Id,
             point: point
         })
-        sessionStorage.setItem("loginedUser", JSON.stringify(response.data))
+        sessionStorage.setItem('loginedUser', JSON.stringify(response.data))
     }
 
     const handleClose = (value) => {
@@ -160,8 +160,7 @@ const BicaCoinPage = () => {
                                         <Button className="w-48 h-16" variant="contained" onClick={() => {
                                             close();
                                             window.location.reload()
-                                        }
-
+                                        }                                             
                                                 }>
                                             <div className="text-2xl font-bold">
                                                 NHẬN

@@ -36,6 +36,7 @@ import Components from './Pages/Admin/Component'
 import Shipper from './Pages/ShipperPage'
 import Compare from './Pages/Compare'
 import VoucherPage from './Pages/UserPage/VoucherPage'
+import CustomPurchasePage from './Pages/UserPage/CustomPurchasePage'
 function App() {
     return (
         <div>
@@ -85,6 +86,14 @@ function App() {
                     <Route
                         element={
                             <UserProvider>
+                                <CustomPurchasePage />
+                            </UserProvider>
+                        }
+                        path="/user/customPurchase"
+                    />
+                    <Route
+                        element={
+                            <UserProvider>
                                 <VoucherPage />
                             </UserProvider>
                         }
@@ -109,13 +118,21 @@ function App() {
                     />
                     <Route
                         element={
-                        <UserProvider>
-                            <Cart />
-                        </UserProvider>
+                            <UserProvider>
+                                <Cart />
+                            </UserProvider>
                         }
-                        path="cart" />
+                        path="cart"
+                    />
                     <Route element={<FilteredPage />} path="/filter/:filter/:keyword" />
-                    <Route element={<Custom />} path="/Custom" />
+                    <Route
+                        element={
+                            <UserProvider>
+                                <Custom />
+                            </UserProvider>
+                        }
+                        path="/Custom"
+                    />
                     <Route element={<VNPaySuccess />} path="/test" />
                     <Route element={<Custom />} path="/custom" />
                     <Route element={<Compare />} path="/Compare" />
