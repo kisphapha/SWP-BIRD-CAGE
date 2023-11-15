@@ -2,8 +2,8 @@ const User = require("../models/User");
 
 const getAllUser = async (req, res) => {
     try {
-        const user = await User.getAllUser();
-        res.json(user);
+        const response = await User.getAllUser();
+        res.json(response);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -11,8 +11,8 @@ const getAllUser = async (req, res) => {
 
 const getUserByEmail = async (req, res) => {
     try {
-        const user = await User.getUserByEmail(req.params.email);
-        res.json(user);
+        const response = await User.getUserByEmail(req.params.email);
+        res.json(response);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -23,8 +23,8 @@ const newUser = async (req, res) => {
         const name = req.query.name;
         const email = req.query.email;
         const picture = req.query.picture;
-        await User.newUser(name, email, picture);
         res.json({ message: "done" });
+        await User.newUser(name, email, picture);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -35,8 +35,8 @@ const updateUser = async (req, res) => {
         const email = req.query.email;
         const phone = req.query.phone;
         const dob = req.query.dob;
-        const user = await User.updateUser(name, email, phone, dob);
-        res.json(user);
+        const response = await User.updateUser(name, email, phone, dob);
+        res.json(response);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -67,18 +67,56 @@ const filterUser = async (req, res) => {
         const upper_point = req.body.upper_point;
         const create = req.body.create;
         const page = req.body.page;
-        const user = await User.filterUser(name, email, phone, dob, lower_point, upper_point, create, status, role, page);
-        res.json(user);
+        const response = await User.filterUser(name, email, phone, dob, lower_point, upper_point, create, status, role, page);
+        res.json(response);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
+const addVoucher = async(req, res) => {
+    try{
+        const UserID = req.body.UserID;
+        const discount = req.body.discount;
+
+        const response = await User.addVoucher(UserID, discount);
+        res.status(200).json({message: "success"});
+    }catch (error) {
+        res.status(500).json({message: error.message});
+    }
+
+}
+
+const getVoucherByUserID = async(req, res) => {
+    try {
+        const userID= req.params.UserID;
+
+        const response = await User.getVoucherByUserID(userID);
+        res.status(200).json({response});
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+}
+
+const exchangePoint = async (req, res) => {
+    try {
+        const userID = req.body.UserID;
+        const point = req.body.point;
+
+        const response = await User.exchangePoint(userID, point);
+        res.status(200).json({message: "success"})
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+}
 module.exports = {
     getAllUser,
     getUserByEmail,
     newUser,
     updateUser,
     getPointForUser,
-    filterUser
+    filterUser,
+    addVoucher,
+    getVoucherByUserID,
+    exchangePoint
 };

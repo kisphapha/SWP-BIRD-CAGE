@@ -452,6 +452,7 @@ const pagingSearchBar = async (name, page) => {
 }
 
 
+
 module.exports = {
     getAllProducts,
     getProductsByCategory,
@@ -465,6 +466,6 @@ module.exports = {
     paging,
     filterProduct,
     pagingSearchBar,
-    getImgsOfProduct
+    getImgsOfProduct,
 }
 
