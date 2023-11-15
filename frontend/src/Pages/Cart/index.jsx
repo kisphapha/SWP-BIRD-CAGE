@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 import DeleteIcon from '@mui/icons-material/Delete'
-import { Button, TextField } from '@mui/material'
+import { Button, TextField, MenuItem } from '@mui/material'
 import { UserContext, UserProvider } from '../../UserContext'
 import Header from '../../components/common/Header'
 import Navbar from '../../components/common/Navbar'
@@ -14,6 +14,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import AddressPopup from '../../components/features/AddressPopup/AddressPopup'
 import VNPay from '../../image/icons/VNPay.svg'
 import COD from '../../image/icons/COD.svg'
+import voucherImage from '../../image/icons/voucher.png'
 
 export default function Cart() {
     const { user } = useContext(UserContext)
@@ -28,6 +29,7 @@ export default function Cart() {
     const [phoneNumber, setPhoneNumber] = useState('')
     const [checkValidation, setCheckValidation] = useState(true)
     const [voucherList, setVoucherList] = useState([])
+
 
     const loadCartData = async () => {
         const cartDataFromSession = sessionStorage.getItem('cart')
@@ -55,9 +57,9 @@ export default function Cart() {
 
     useEffect(() => {
         loadCartData()
-        fetchVouchers() 
+        fetchVouchers()
         fetchAddresses()
-    },[])
+    }, [])
 
     const handleDecrement = (productId) => {
         const updatedCart = { ...cartData }
@@ -107,11 +109,11 @@ export default function Cart() {
 
                             const response = await axios.post('http://localhost:3000/users/updatePoint', {
                                 id: user.Id,
-                                point: calculateBonus
+                                point: calculateBonus()
                             })
 
-                            await axios.post('https://localhost:3000/users/updateVoucher', {
-                                Id : orderVoucher
+                            await axios.post('http://localhost:3000/users/updateVoucher', {
+                                Id: orderVoucher
                             })
 
                             if (paymentMethod == 'vnpay') {
@@ -401,7 +403,9 @@ export default function Cart() {
                                                     </div>
                                                 </div>
                                                 <div className=" border-gray-300 rounded   ">
+
                                                     <div className="flex place-content-between">
+
                                                         <TextField
                                                             select
                                                             label="Chọn phiếu giảm giá"
@@ -409,25 +413,30 @@ export default function Cart() {
                                                             id="voucher"
                                                             size="small"
                                                             SelectProps={{
-                                                                native: true
+                                                                native: true,
                                                             }}
+                                                            InputLabelProps={{ shrink: true }}
+
                                                             onChange={(event) => {
-                                                                const selectedValue = event.target.value
-                                                                const [voucherId, voucherDiscount] = selectedValue.split(',')
-                                                                setVoucherValue(voucherDiscount.trim())
-                                                                setOrderVoucher(voucherId.trim())
+                                                                const selectedValue = event.target.value;
+                                                                const [voucherId, voucherDiscount] = selectedValue.split(',');
+                                                                setVoucherValue(voucherDiscount.trim());
+                                                                setOrderVoucher(voucherId.trim());
                                                             }}
                                                         >
-                                                            <option value="" selected></option>
-                                                            {voucherList.map(
-                                                                (voucher) =>
-                                                                    voucher.UsedAt == null && (
-                                                                        <option key={voucher} value={[voucher.ID, voucher.discount]}>
-                                                                            {voucher.discount + ' % , Hết hạn ' + voucher.ExpireAt.substr(0, 10)}
-                                                                        </option>
-                                                                    )
+                                                            <option value={["",0]} selected>
+                                                                <em>Không sử dụng phiếu giảm giá</em>
+                                                            </option>
+
+                                                            {voucherList.map((voucher) =>
+                                                                voucher.UsedAt == null && (
+                                                                    <option key={voucher.ID} value={[voucher.ID, voucher.discount]}>
+                                                                        {voucher.discount + '% , Hết hạn ' + voucher.ExpireAt.substr(0, 10)}
+                                                                    </option>
+                                                                )
                                                             )}
                                                         </TextField>
+                                                        
                                                     </div>
                                                     <div className="font-bold flex place-content-end">
                                                         <div className="mr-4">Được giảm giá:</div>
