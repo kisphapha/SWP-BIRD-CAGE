@@ -37,7 +37,7 @@ const deleteComponent = async (req, res) => {
     try {
         // res.json(Type);
         const rs = await component.deleteComponent(req.params.id);
-
+        
         res.json(rs);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -121,6 +121,8 @@ const filterComponent = async (req, res) => {
 
 
 }
+
+
 
 
 

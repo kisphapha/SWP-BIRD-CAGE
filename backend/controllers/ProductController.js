@@ -164,8 +164,6 @@ const pagingSearchBar = async(req, res) => {
 }
 
 
-
-
 module.exports = {
     getAllProducts,
     getProductById,
