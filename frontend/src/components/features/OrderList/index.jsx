@@ -84,12 +84,13 @@ const OrderList = (props) => {
     }
 
     const handleFeedbackButtonClick = (card, item) => {
-        if (card.items.find(item => item.ratings.some(rating => rating.userid === props.user.Id))) {
-            handleRebuy(item.Id)
+        if (item.ratings.some((rating) => rating.userid === props.user.Id)) {
+            handleRebuy(item.Id);
         } else {
-            setOpenPopup(true)
+            setOpenPopup(true);
         }
     };
+
 
     useEffect(() => {
         fetchOrder();
@@ -162,9 +163,16 @@ const OrderList = (props) => {
                                         </div>
                                     </div>
                                     <div className="text-end">
-                                        <Button className="" variant="contained" onClick={() => handleFeedbackButtonClick(card, item)}>
-                                            {card.items.find(item => item.ratings.some(rating => rating.userid === props.user.Id)) ? 'Xem đánh giá' : 'Đánh giá'}
+                                        <Button
+                                            className=""
+                                            variant="contained"
+                                            onClick={() => handleFeedbackButtonClick(card, item)}
+                                        >
+                                            {item.ratings.some((rating) => rating.userid === props.user.Id)
+                                                ? 'Xem đánh giá'
+                                                : 'Đánh giá'}
                                         </Button>
+
                                         <Popup
                                             open={openPopup}
                                             position="right center"
