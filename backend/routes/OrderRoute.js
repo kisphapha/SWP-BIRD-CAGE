@@ -24,6 +24,8 @@ OrderRouter.get("/loadUnseen/:id", OrderController.loadUnSeen);
 
 OrderRouter.patch("/changeToSeen", OrderController.changeToSeen);
 
+OrderRouter.get("/getCustomComponentImageByOrderID", OrderController.getCustomComponentImageByOrderID);
+
 OrderRouter.post("/addCustomProduct", OrderController.addCustomProduct);
 
 OrderRouter.get("/:id", OrderController.getOrderById);

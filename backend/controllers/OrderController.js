@@ -44,9 +44,10 @@ const addOrderToDB = async (req, res) => {
         const Note = req.body.Note;
         const TotalAmount = req.body.TotalAmount;
         const PaymentId = req.body.PaymentId;
+        const VoucherID = req.body.VoucherID;
         const Items = req.body.Items;
 
-        var id = await Order.addOrderToDB(UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentId, Items);
+        var id = await Order.addOrderToDB(UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentId, VoucherID, Items);
         res.json({
             message: "done",
             orderid: id
@@ -129,6 +130,17 @@ const addCustomProduct = async (req, res) => {
     }
 }
 
+const getCustomComponentImageByOrderID  = async(req, res) => {
+    try {
+        const orderId = req.query.orderId;
+            
+        const result =  await Order.getCustomComponentImageByOrderID(orderId);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+
+}
 module.exports = {
     getAllOrder,
     getOrderById,
@@ -140,5 +152,6 @@ module.exports = {
     loadUnSeen,
     changeToSeen,
     pieChartData,
-    addCustomProduct
+    addCustomProduct,
+    getCustomComponentImageByOrderID
 }
