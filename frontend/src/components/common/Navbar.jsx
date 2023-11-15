@@ -8,6 +8,7 @@ import InfoIcon from '@mui/icons-material/Info'
 import PhoneIcon from '@mui/icons-material/Phone'
 import HandymanIcon from '@mui/icons-material/Handyman'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import CompareIcon from '@mui/icons-material/Compare'
 import { Badge } from '@mui/material'
 import axios from 'axios'
 
@@ -91,6 +92,12 @@ export default function Navbar({getCardListFilter}) {
                     <div className="nav-content">
                         <HandymanIcon className="pb-1" />
                         Lồng Tùy Chỉnh
+                    </div>
+                </NavLink>
+                <NavLink to="/Compare" acctiveClassName="active">
+                    <div className="nav-content">
+                        <CompareIcon className="pb-1" />
+                        So sánh sản phẩm
                     </div>
                 </NavLink>
 

@@ -19,11 +19,11 @@ import COD from '../../image/icons/COD.svg'
 export default function ProductDetails() {
     const { user } = useContext(UserContext)
     const [imgList, setImgList] = useState([])
+    const [focusUrl, setFocusUrl] = useState('')
     const { productId } = useParams()
     const [quantity, setQuantity] = useState(1)
     const [product, setProduct] = useState([])
     const [ratingsData, setRatingsData] = useState([])
-    const [focusUrl, setFocusUrl] = useState('')
     const [paymentMethod, setPaymentMethod] = useState('COD')
     const [addressList, setAddressList] = useState([])
     const [orderAddress, setOrderAddress] = useState('')
@@ -66,12 +66,13 @@ export default function ProductDetails() {
 
     const getFeedback = () => {
         if (sessionStorage.loginedUser != null) {
-            const user = JSON.parse(sessionStorage.loginedUser)
             if (user.Role === 'Admin' || user.Role === 'Staff') {
                 return (
                     <div className="flex ml-8 my-2 pl-8">
                         <TextField variant="standard" label="Reply to comment" />
-                        <Button variant="text">Save</Button>
+                        <div>
+                            <Button variant="contained">Save</Button>
+                        </div>
                     </div>
                 )
             }
@@ -157,6 +158,17 @@ export default function ProductDetails() {
         }
         // Store the updated cart in sessionStorage
         sessionStorage.setItem('cart', JSON.stringify(cart))
+        toast.dismiss()
+        toast.success('Thêm vào giỏ hàng thành công', {
+            position: 'bottom-left',
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: 'colored'
+        })
     }
 
     const handlePayment = async () => {
@@ -165,7 +177,7 @@ export default function ProductDetails() {
                 if (orderAddress) {
                     if (phoneNumber) {
                         const res = await axios.post('http://localhost:3000/order/addordertodb', {
-                            UserID: JSON.parse(sessionStorage.loginedUser).Id,
+                            UserID: user.Id,
                             OrderDate: new Date().toISOString().slice(0, 10),
                             PaymentDate: null,
                             AddressID: orderAddress,
@@ -184,13 +196,17 @@ export default function ProductDetails() {
                                 }
                             ]
                         })
+                        const updatedUser = await axios.post('http://localhost:3000/users/updatePoint', {
+                            id: user.Id,
+                            point: (quantity * product.Price) / 1000
+                        })
                         if (paymentMethod == 'vnpay') {
                             const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
                                 amount: ((product.Price * (100 - product.discount)) / 100) * quantity,
                                 bankCode: '',
                                 language: 'vn',
-                                email: JSON.parse(sessionStorage.loginedUser).Email,
-                                phoneNumber: JSON.parse(sessionStorage.loginedUser).PhoneNumber,
+                                email: user.Email,
+                                phoneNumber: user.PhoneNumber,
                                 orderid: res.data.orderid
                             })
                             // setTimeout(() => {
@@ -210,6 +226,7 @@ export default function ProductDetails() {
                                 progress: undefined,
                                 theme: 'colored'
                             })
+                            sessionStorage.setItem('loginedUser', JSON.stringify(updatedUser))
                             close()
                             // sessionStorage.setItem('cart', '{"products":[]}')
                             // window.location.reload(false)
@@ -228,6 +245,11 @@ export default function ProductDetails() {
             console.error('Lỗi thanh toán:', error)
         }
     }
+    const calculateBonus = () => {
+        let bonus = 0
+        bonus += (product.price * product.quantity) / 1000
+        return bonus
+    }
 
     return (
         <div id="page-product">
@@ -244,7 +266,7 @@ export default function ProductDetails() {
             ></CategoryNav>
 
             <div className="product-container">
-                <div className="product">
+                <div className="product rounded-lg">
                     <div className="img-container">
                         <div className="img-main">
                             <img className="big-img" src={focusUrl} />
@@ -289,7 +311,7 @@ export default function ProductDetails() {
                             </div>
                             <hr className="border border-slate-300 " />
                         </div>
-                        <div className="option">
+                        <div className="option flex place-content-between">
                             <div className="quantity">
                                 <button type="button" onClick={handleDecrement} className="button">
                                     -
@@ -299,32 +321,32 @@ export default function ProductDetails() {
                                     +
                                 </button>
                             </div>
-                            {user == null ? (
-                            <Popup
-                                contentStyle={{ width: '500px', height: '250px', borderRadius: '10px' }}
-                                trigger={
-                                    <Button variant="contained">
-                                        Thêm vào giỏ hàng
-                                    </Button>
-                                }
-                                position="center"
-                                modal
-                                onClose ={addToCart}
-                            >
-                                {(close) => (
-                                    <div className="login-popup">
-                                        <LoginCard />
-                                    </div>
-                                )}
-                            </Popup>
-                        ) : (
-                            <div>
-                                <Button variant="contained" className="add-cart" onClick={addToCart}>
-                                    Thêm vào giỏ hàng
-                                </Button>
-                                <ToastContainer />
+                            <div className="flex gap-2">
+                                <Button variant="outlined">So sánh</Button>
+                                <div>
+                                    {user == null ? (
+                                        <Popup
+                                            contentStyle={{ width: '500px', height: '250px', borderRadius: '10px' }}
+                                            trigger={<Button variant="contained">Thêm vào giỏ hàng</Button>}
+                                            position="center"
+                                            modal
+                                        >
+                                            {(close) => (
+                                                <div className="login-popup">
+                                                    <LoginCard />
+                                                </div>
+                                            )}
+                                        </Popup>
+                                    ) : (
+                                        <div>
+                                            <Button variant="contained" className="add-cart" onClick={addToCart}>
+                                                Thêm vào giỏ hàng
+                                            </Button>
+                                            <ToastContainer />
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                        )}
                         </div>
 
                         {user == null ? (
@@ -480,7 +502,22 @@ export default function ProductDetails() {
                                         </div>
 
                                         <hr className="border  border-slate-300 my-2 w-full" />
+                                        <div>
+                                            <div className="font-bold flex place-content-end">
+                                                <div className="mr-2">Tổng cộng:</div>
+                                                <div>
+                                                    {parseInt(((product.Price * (100 - product.discount)) / 100) * quantity).toLocaleString('vi', {
+                                                        style: 'currency',
+                                                        currency: 'VND'
+                                                    })}{' '}
+                                                </div>
+                                            </div>
 
+                                            <div className="font-bold flex place-content-end">
+                                                <div className="mr-2">Số điểm bonus sẽ tích được:</div>
+                                                <div>{calculateBonus}</div>
+                                            </div>
+                                        </div>
                                         <div className="flex place-content-between">
                                             <div>
                                                 <div className="flex mb-2">
@@ -541,7 +578,7 @@ export default function ProductDetails() {
                         )}
                     </div>
                 </div>
-                <div className="description">
+                <div className="description rounded-lg">
                     <div>
                         <div className="font-bold text-xl my-4">Mô tả</div>
                         <div className="mb-4">{product.Description}</div>
@@ -581,7 +618,7 @@ export default function ProductDetails() {
                         </table>
                     </div>
                 </div>
-                <div className="feedback">
+                <div className="feedback rounded-lg">
                     <div className="font-bold my-4 text-xl ">Đánh giá sản phẩm </div>
 
                     <hr className="border border-slate-300  mt-1" />
@@ -595,13 +632,19 @@ export default function ProductDetails() {
                                         </div>
                                         <div className="mx-4">
                                             <div className="">
-                                                <h4 className=" ">{rating.Name}</h4>
+                                                <div className="flex">
+                                                    <h4 className="font-bold ">{rating.Name}</h4>
+                                                </div>
 
-                                                <div className="text-sm">
+                                                <div className="text-sm flex">
                                                     <Rating name="hover-feedback " size="small" value={rating.StarPoint} precision={1} readOnly />
+                                                    <div className="mx-4"></div>
+                                                    <div className="text-sm text-center flex align-middle">
+                                                        {new Date(rating.createAt).toLocaleDateString()}
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <p>{rating.Content}</p>
+                                            <p className="mt-4">{rating.Content}</p>
                                         </div>
                                     </div>
                                     <div className="mx-8">{getFeedback()}</div>

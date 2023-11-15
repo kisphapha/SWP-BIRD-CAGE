@@ -70,14 +70,19 @@ const updateUser = async (name, email, phone, dateOfBirth) => {
 const getPointForUser = async(id, point) => {
     try {
         let poolConnection = await sql.connect(config);
-        await poolConnection.request()
+        const response = await poolConnection.request()
         .input('id', id)
         .input('point', point)
         .query(`
             UPDATE dbo.[User]
             SET Point = Point + @point 
             WHERE Id = @id
+
+            SELECT *
+            FROM [dbo].[User]
+            WHERE Id = @Id;
         `)
+        return response.recordset[0]
     } catch (error) {
         console.log("error: ", error);
     }
@@ -125,11 +130,90 @@ const filterUser = async (name, email, phone, dob, lower_point, upper_point, cre
     }
 };
 
+const  addVoucher = async (UserID, discount) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('UserID', UserID)
+        .input('discount', discount)
+        .query(`
+        insert into Voucher(
+            [UserID],
+            [discount],
+            [CreatedAt],
+            [UsedAt],
+            [ExpireAt]
+        )
+        values(
+            @UserID,
+            @discount,
+            GETDATE(),
+            NULL,
+            DATEADD(MONTH, 1, GETDATE())
+        )
+        `)
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
+
+const getVoucherByUserID = async(userID) =>{
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('UserID', userID)
+        .query(`
+        select * from Voucher
+        where UserID = @UserID
+        `)
+        return result.recordset;
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
+
+const exchangePoint = async(UserID, Point) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('UserID', UserID)
+        .input('Point', Point)
+        .query(`
+            UPDATE dbo.[User]
+            SET Point = Point - @Point
+            WHERE id = @UserID
+        `)
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
+
+const replyFeedBack = async(id, ReplyContent, Replier) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('id', id)
+        .input('ReplyContent', ReplyContent)
+        .input('Replier', Replier)
+        .query(`
+            UPDATE dbo.Feedback
+            SET ReplyContent = @ReplyContent , ReplyDate = GETDATE(), Replier = @Replier
+            WHERE id =@id
+        `)
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
+
 module.exports = {
     getAllUser,
     getUserByEmail,
     newUser,
     updateUser,
     getPointForUser,
-    filterUser
+    filterUser,
+    addVoucher,
+    getVoucherByUserID,
+    exchangePoint,
+    replyFeedBack
 };

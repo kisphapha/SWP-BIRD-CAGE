@@ -214,24 +214,30 @@ export default function Components() {
                                 <div className="flex-row">
                                     {/* <div>Mã SP</div> */}
                                     <div>
-                                        <TextField className="w-16" id="outlined-basic" label="Mã SP" variant="standard" onChange={handleIdChange} />
+                                        <TextField
+                                            className="w-16"
+                                            id="outlined-basic"
+                                            placeholder="Mã SP"
+                                            variant="standard"
+                                            onChange={handleIdChange}
+                                        />
                                     </div>
                                 </div>
                             </TableCell>
                             <TableCell>
                                 <div>
-                                    <div>Image</div>
+                                    <div className="font-bold text-base">Image</div>
                                     {/* <div>Hình ảnh</div> */}
                                 </div>
                             </TableCell>
                             <TableCell>
                                 <div>
-                                    <div>Name</div>
+                                    <div className="font-bold text-base">Name</div>
                                     <div>
                                         <TextField
                                             className="w-64"
                                             id="outlined-basic"
-                                            label="Tên sản phẩm"
+                                            placeholder="Tên sản phẩm"
                                             variant="standard"
                                             onChange={handleNameChange}
                                         />
@@ -240,13 +246,13 @@ export default function Components() {
                             </TableCell>
                             <TableCell>
                                 <div>
-                                    <div>Giá</div>
+                                    <div className="font-bold text-base">Giá</div>
                                     <div className="flex">
                                         <div className="w-16">
                                             <TextField
                                                 className="w-12"
                                                 id="outlined-basic"
-                                                label="From"
+                                                placeholder="From"
                                                 variant="standard"
                                                 onChange={handleLowerPriceChange}
                                             />
@@ -255,7 +261,7 @@ export default function Components() {
                                             <TextField
                                                 className="w-12"
                                                 id="outlined-basic"
-                                                label="To"
+                                                placeholder="To"
                                                 variant="standard"
                                                 onChange={handleUpperPriceChange}
                                             />
@@ -265,13 +271,13 @@ export default function Components() {
                             </TableCell>
                             <TableCell>
                                 <div>
-                                    <div>Số lượng</div>
+                                    <div className="font-bold text-base">Số lượng</div>
                                     <div className="flex">
                                         <div className="w-16">
                                             <TextField
                                                 className="w-12"
                                                 id="outlined-basic"
-                                                label="From"
+                                                placeholder="From"
                                                 variant="standard"
                                                 onChange={handleLowerStockChange}
                                             />
@@ -280,7 +286,7 @@ export default function Components() {
                                             <TextField
                                                 className="w-12"
                                                 id="outlined-basic"
-                                                label="To"
+                                                placeholder="To"
                                                 variant="standard"
                                                 onChange={handleUpperStockChange}
                                             />
@@ -290,12 +296,12 @@ export default function Components() {
                             </TableCell>
                             <TableCell>
                                 <div>
-                                    <div>Phân loại</div>
+                                    <div className="font-bold text-base">Phân loại</div>
                                     <div>
                                         <TextField
                                             className="w-64"
                                             select
-                                            label="Loại"
+                                            placeholder="Loại"
                                             variant="filled"
                                             onChange={handleCategoryChange}
                                             defaultValue="All"
@@ -312,12 +318,12 @@ export default function Components() {
                             </TableCell>
                             <TableCell>
                                 <div>
-                                    <div> Trạng thái</div>
+                                    <div className="font-bold text-base"> Trạng thái</div>
                                     <div>
                                         <TextField
                                             className="w-32 text-left"
                                             select
-                                            label="Status"
+                                            placeholder="Status"
                                             variant="filled"
                                             onChange={handleStatusChange}
                                             defaultValue="All"
@@ -330,6 +336,9 @@ export default function Components() {
                                         </TextField>
                                     </div>
                                 </div>
+                            </TableCell>
+                            <TableCell>
+                                <div className="font-bold text-sm text-right">Sửa/xóa</div>
                             </TableCell>
                         </TableRow>
                     </TableHead>

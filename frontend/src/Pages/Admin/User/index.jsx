@@ -1,5 +1,12 @@
 ﻿import {
-    Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField, Table,
+    Button,
+    FormControl,
+    FormControlLabel,
+    FormLabel,
+    Radio,
+    RadioGroup,
+    TextField,
+    Table,
     TableBody,
     TableCell,
     TableContainer,
@@ -7,13 +14,13 @@
     TableRow,
     Paper
 } from '@mui/material'
-import SettingsIcon from '@mui/icons-material/Settings';
+import SettingsIcon from '@mui/icons-material/Settings'
 import React, { useState, useEffect, useContext } from 'react'
 import MenuItem from '@mui/material/MenuItem'
 import axios from 'axios'
 import Popup from 'reactjs-popup'
 import { UserContext } from '../../../UserContext'
-import CategoryNav from '../../../components/features/CategoryNav';
+import CategoryNav from '../../../components/features/CategoryNav'
 export default function Users() {
     const { user } = useContext(UserContext)
 
@@ -36,7 +43,6 @@ export default function Users() {
     const [txtRole, setTxtRole] = useState('')
     const [txtStatus, setTxtStatus] = useState('')
 
-
     const fetchUser = async () => {
         const response = await axios.get(`http://localhost:3000/users`)
         setUsers(response.data)
@@ -44,25 +50,24 @@ export default function Users() {
     const updateUser = async (userId) => {
         const json = {
             userId: userId,
-            role : role,
+            role: role,
             status: ban,
-            ReasonBlock : reason
+            ReasonBlock: reason
         }
         if (userId != user.Id) {
             const response = await axios.post(`http://localhost:3000/admin/updateUser`, json)
             setUsers(response.data)
-            alert("Đã cập nhật người dùng")
+            alert('Đã cập nhật người dùng')
         } else {
-            alert("Bạn không thể thao tác với tài khoản của mình")
+            alert('Bạn không thể thao tác với tài khoản của mình')
         }
-        
     }
     useEffect(() => {
-        handleButtonClick("Người dùng","User")
-    },[])
+        handleButtonClick('Người dùng', 'User')
+    }, [])
 
     useEffect(() => {
-        handleFilter()  
+        handleFilter()
     })
 
     const handleSwitchPage = (page) => {
@@ -72,7 +77,6 @@ export default function Users() {
     const handleRole = (event) => {
         setRole(event.target.value)
         setPage(1)
-
     }
     const handleStatus = (event) => {
         setBan(event.target.value)
@@ -83,50 +87,49 @@ export default function Users() {
         setPage(1)
     }
     const handleNameChange = (event) => {
-        setName(event.target.value);
+        setName(event.target.value)
         setPage(1)
-    };
+    }
 
     const handleEmailChange = (event) => {
-        setEmail(event.target.value);
+        setEmail(event.target.value)
         setPage(1)
-    };
+    }
 
     const handlePhoneChange = (event) => {
-        setPhone(event.target.value);
+        setPhone(event.target.value)
         setPage(1)
-    };
+    }
 
     const handleDobChange = (event) => {
-        setDob(event.target.value);
+        setDob(event.target.value)
         setPage(1)
-    };
+    }
 
     const handleUpperPointChange = (event) => {
-        setUpperPoint(event.target.value);
+        setUpperPoint(event.target.value)
         setPage(1)
-    };
+    }
 
     const handleUpperCreateChange = (event) => {
-        setUpperCreate(event.target.value);
+        setUpperCreate(event.target.value)
         setPage(1)
-    };
+    }
 
     const handleLowerPointChange = (event) => {
-        setLowerPoint(event.target.value);
+        setLowerPoint(event.target.value)
         setPage(1)
-    };
+    }
 
     const handleRoleChange = (role) => {
-        setTxtRole(role);
+        setTxtRole(role)
         setPage(1)
-    };
+    }
 
     const handleStatusChange = (event) => {
-        setTxtStatus(event.target.value);
+        setTxtStatus(event.target.value)
         setPage(1)
-    };
-
+    }
 
     const handleChange = (status, reason, role) => {
         setBan(status)
@@ -154,7 +157,8 @@ export default function Users() {
             status: txtStatus,
             page: page
         }
-        axios.post('http://localhost:3000/users/filter/', json)
+        axios
+            .post('http://localhost:3000/users/filter/', json)
             .then((response) => {
                 setUsers(response.data.data)
                 setMaxPage(Math.ceil(response.data.lines.Count / 10))
@@ -204,7 +208,11 @@ export default function Users() {
     return (
         <div className="px-2 py-2 w-full  mb-96">
             <div className="flex-col">
-                <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }, { name: 'Bảng điều khiển', link: '/admin' }]}
+                <CategoryNav
+                    parents={[
+                        { name: 'Trang chủ', link: '/' },
+                        { name: 'Bảng điều khiển', link: '/admin' }
+                    ]}
                     current="Người dùng"
                     margin={0}
                 />
@@ -214,17 +222,16 @@ export default function Users() {
             <div className="flex align-bottom ">
                 {/* <div className="mx-2 ">Lồng</div> */}
                 <div className="flex">
-                    {roles.map(
-                        (role, index) =>
-                            <div key={index}>
-                                <button
-                                    className={`p-2 rounded-t-lg ${activeButton === role.label ? 'bg-white' : 'bg-slate-300'}`}
-                                    onClick={() => handleButtonClick(role.label, role.value)}
-                                >
-                                    {role.label}
-                                </button>
-                            </div>                            
-                    )}
+                    {roles.map((role, index) => (
+                        <div key={index}>
+                            <button
+                                className={`p-2 rounded-t-lg ${activeButton === role.label ? 'bg-white' : 'bg-slate-300'}`}
+                                onClick={() => handleButtonClick(role.label, role.value)}
+                            >
+                                {role.label}
+                            </button>
+                        </div>
+                    ))}
                 </div>
             </div>
 
@@ -232,6 +239,9 @@ export default function Users() {
                 <Table>
                     <TableHead>
                         <TableRow>
+                            <TableCell>
+                                <div className="font-bold text-lg"></div>
+                            </TableCell>
                             <TableCell>
                                 <div className="font-bold text-lg">Tên</div>
                             </TableCell>
@@ -248,27 +258,29 @@ export default function Users() {
                                 <div className="font-bold text-lg">Điểm số </div>
                             </TableCell>
                             <TableCell>
-                                 <div className="font-bold text-lg ">Ngày tạo </div>
+                                <div className="font-bold text-lg ">Ngày tạo </div>
                             </TableCell>
                             <TableCell>
                                 <div className="font-bold text-lg">Trạng thái</div>
                             </TableCell>
                             <TableCell>
+                                <div className="font-bold text-lg"> Sửa</div>
                             </TableCell>
                         </TableRow>
                         <TableRow>
+                            <TableCell></TableCell>
                             <TableCell>
-                                <TextField className="" id="outlined-basic" label="Full Name " variant="standard" onChange={ handleNameChange} />
+                                <TextField className="" id="outlined-basic" placeholder="Full Name " variant="standard" onChange={handleNameChange} />
                             </TableCell>
                             <TableCell>
-                                <TextField className="" id="outlined-basic" label="Email" variant="standard" onChange={handleEmailChange} />
+                                <TextField className="" id="outlined-basic" placeholder="Email" variant="standard" onChange={handleEmailChange} />
                             </TableCell>
 
                             <TableCell>
-                                <TextField className="" id="outlined-basic" label="Phone" variant="standard" onChange={handlePhoneChange} />
+                                <TextField className="" id="outlined-basic" placeholder="Phone" variant="standard" onChange={handlePhoneChange} />
                             </TableCell>
                             <TableCell>
-                                <TextField className="" id="outlined-basic" label="DateOfBirth" variant="standard" onChange={handleDobChange} />
+                                <TextField className="" id="outlined-basic" placeholder="DateOfBirth" variant="standard" onChange={handleDobChange} />
                             </TableCell>
                             <TableCell>
                                 <TextField className="w-16" id="outlined-basic" label="From" variant="standard" onChange={handleLowerPointChange} />
@@ -276,10 +288,24 @@ export default function Users() {
                             </TableCell>
 
                             <TableCell>
-                                <TextField className="w-16" id="outlined-basic" label="Ngày tạo" variant="standard" onChange={handleUpperCreateChange} />
+                                <TextField
+                                    className="w-16"
+                                    id="outlined-basic"
+                                    placeholder="Ngày tạo"
+                                    variant="standard"
+                                    onChange={handleUpperCreateChange}
+                                />
                             </TableCell>
                             <TableCell>
-                                <TextField className="text-left" fullWidth select label="Status" variant="filled" defaultValue="All" onChange={handleStatusChange}>
+                                <TextField
+                                    className="text-left"
+                                    fullWidth
+                                    select
+                                    placeholder="Status"
+                                    variant="filled"
+                                    defaultValue="All"
+                                    onChange={handleStatusChange}
+                                >
                                     {status.map((option) => (
                                         <MenuItem key={option.value} value={option.value}>
                                             {option.label}
@@ -287,100 +313,124 @@ export default function Users() {
                                     ))}
                                 </TextField>
                             </TableCell>
+                            <TableCell> </TableCell>
                         </TableRow>
                     </TableHead>
-                <TableBody>
-                {users.map((user) => (
-                    <>
-                    <TableRow >
-                            <TableCell>
-                                <div className="">
-                                    <img
-                                        className="w-16 h-16"
-                                        src={user.Picture}
-                                    />
-                                    <div className="text-lg">{user.Name}</div>
-                                </div>
-                            </TableCell>
-                            <TableCell>
-                                <div className="truncate text-lg">{user.Email}</div>
-                            </TableCell>
-                            <TableCell>
-                                <div className="text-lg">{ user.PhoneNumber}</div>
-                            </TableCell>
-                            <TableCell>
-                                <div className="text-lg">{ user.DateOfBirth ? user.DateOfBirth.substr(0,10) : ""}</div>
-                            </TableCell>
-                            <TableCell>
-                                    <div className="text-lg">{user.Point}</div>
-                            </TableCell>
-                            <TableCell>
-                                <div className="text-lg">{user.CreatedAt ? user.CreatedAt.substr(0, 10) : ""} </div>
-                            </TableCell>
-                            <TableCell>
-                                <div className="text-lg">{user.Status}</div>
-                            </TableCell>            
-                            {user && user.Role == "Admin" && (
-
-                                <TableCell>
-                                    <Popup
-                                        trigger={
-                                            <button><SettingsIcon fontSize="large" /></button>
-                                        }
-                                        position="right center"
-                                        closeOnDocumentClick={false}
-                                        closeOnEscape={false}
-                                        modal
-                                        onOpen={() => handleChange(user.Status, user.ReasonBlocked, user.Role)}
-                                    >
-                                        {(close) => (
-                                            <div className="p-4">
-                                                <div className="text-xl font-bold mb-8 mt-8">CẬP NHẬT VAI TRÒ</div>
-                                                <div>
-                                                    <TextField className="text-left w-1/2" select label="Vai trò" variant="filled" defaultValue={user.Role} onChange={handleRole}>
-                                                        {roles.map((role) => (
-                                                            <MenuItem key={role} value={role.value}>{role.label}</MenuItem>
-                                                        ))}
-                                                    </TextField>
-                                                </div>
-                                                <hr />
-
-                                                <div className="text-xl font-bold mb-8 mt-8">CẬP NHẬT TRẠNG THÁI</div>
-                                                <div>
-                                                    <TextField className="text-left w-1/2" select label="Trạng thái" variant="filled" defaultValue={user.Status} onChange={handleStatus}>
-                                                        <MenuItem value="Active">Active</MenuItem>
-                                                        <MenuItem value="Inactive">Inactive</MenuItem>
-                                                    </TextField>
-                                                </div>
-                                                {ban == "Inactive" && (
-                                                    <div>
-                                                        <TextField className="text-left" fullWidth variant="standard"
-                                                            label="Lí do vô hiệu hóa tài khoản này"
-                                                            multiline rows={6}
-                                                            onChange={handleReasoon}
-                                                            defaultValue={reason}
-                                                        >
-                                                        </TextField>
-                                                    </div>
-                                                )}
-
-                                                <div className="flex justify-end">
-                                                    <Button variant="outlined" onClick={close}>Cancel</Button>
-                                                    <Button variant="outlined" onClick={() => handleOk(user.Id, close)}>OK</Button>
-                                                </div>
+                    <TableBody>
+                        {users &&
+                            users.map((_user) => (
+                                <>
+                                    <TableRow>
+                                        <TableCell>
+                                            <img className="w-16 h-16" src={_user.Picture} />
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="">
+                                                <div className="text-lg">{_user.Name}</div>
                                             </div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="truncate text-lg">{_user.Email}</div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="text-lg">{_user.PhoneNumber}</div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="text-lg">{_user.DateOfBirth ? _user.DateOfBirth.substr(0, 10) : ''}</div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="text-lg">{_user.Point}</div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="text-lg">{_user.CreatedAt ? _user.CreatedAt.substr(0, 10) : ''} </div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="text-lg">{_user.Status == 'Active' ? 'Hoạt động' : 'Không hoạt động'}</div>
+                                        </TableCell>
+                                        {user && user.Role == 'Admin' && (
+                                            <TableCell>
+                                                <div className="text-right mr-2">
+                                                    <Popup
+                                                        trigger={
+                                                            <button>
+                                                                <SettingsIcon fontSize="large" />
+                                                            </button>
+                                                        }
+                                                        position="right center"
+                                                        closeOnDocumentClick={false}
+                                                        closeOnEscape={false}
+                                                        modal
+                                                        onOpen={() => handleChange(_user.Status, _user.ReasonBlocked, _user.Role)}
+                                                    >
+                                                        {(close) => (
+                                                            <div className="p-4">
+                                                                <div className="text-xl font-bold mb-8 mt-8">CẬP NHẬT VAI TRÒ</div>
+                                                                <div>
+                                                                    <TextField
+                                                                        className="text-left w-1/2"
+                                                                        select
+                                                                        label="Vai trò"
+                                                                        variant="filled"
+                                                                        defaultValue={user.Role}
+                                                                        onChange={handleRole}
+                                                                    >
+                                                                        {roles.map((role) => (
+                                                                            <MenuItem key={role} value={role.value}>
+                                                                                {role.label}
+                                                                            </MenuItem>
+                                                                        ))}
+                                                                    </TextField>
+                                                                </div>
+                                                                <hr />
+
+                                                                <div className="text-xl font-bold mb-8 mt-8">CẬP NHẬT TRẠNG THÁI</div>
+                                                                <div>
+                                                                    <TextField
+                                                                        className="text-left w-1/2"
+                                                                        select
+                                                                        placeholder="Trạng thái"
+                                                                        variant="filled"
+                                                                        defaultValue={user.Status}
+                                                                        onChange={handleStatus}
+                                                                    >
+                                                                        <MenuItem value="Active">Active</MenuItem>
+                                                                        <MenuItem value="Inactive">Inactive</MenuItem>
+                                                                    </TextField>
+                                                                </div>
+                                                                {ban == 'Inactive' && (
+                                                                    <div>
+                                                                        <TextField
+                                                                            className="text-left"
+                                                                            fullWidth
+                                                                            variant="standard"
+                                                                            placeholder="Lí do vô hiệu hóa tài khoản này"
+                                                                            multiline
+                                                                            rows={6}
+                                                                            onChange={handleReasoon}
+                                                                            defaultValue={reason}
+                                                                        ></TextField>
+                                                                    </div>
+                                                                )}
+
+                                                                <div className="flex justify-end">
+                                                                    <Button variant="outlined" onClick={close}>
+                                                                        Cancel
+                                                                    </Button>
+                                                                    <Button variant="outlined" onClick={() => handleOk(_user.Id, close)}>
+                                                                        OK
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </Popup>
+                                                </div>
+                                            </TableCell>
                                         )}
-
-                                    </Popup>
-                                </TableCell>
-                                )}
-                        </TableRow >
-                </>
-                ))}
-                        </TableBody>
-
+                                    </TableRow>
+                                </>
+                            ))}
+                    </TableBody>
                 </Table>
-
             </TableContainer>
             <div className="flex justify-center my-4">
                 {pageList.map((pg, index) => (

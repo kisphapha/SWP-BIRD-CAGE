@@ -10,21 +10,21 @@ OrderRouter.route("/pieChartData").get(OrderController.pieChartData);
 
 
 
-OrderRouter.route("/addordertodb").post(OrderController.addOrderToDB);
+OrderRouter.post("/addordertodb", OrderController.addOrderToDB);
 
-OrderRouter.route("/list/:id").get(OrderController.getOrderItemByOrderID);
+OrderRouter.get("/list/:id", OrderController.getOrderItemByOrderID);
 
-OrderRouter.route("/user/:id").get(OrderController.getOrderByUserId);
+OrderRouter.get("/user/:id", OrderController.getOrderByUserId);
 
-OrderRouter.route("/paidstatus/:id").get(OrderController.changeStatus_Paid);
+OrderRouter.get("/paidstatus/:id", OrderController.changeStatus_Paid);
 
-OrderRouter.route("/loadUnseen/:id").get(OrderController.loadUnSeen);
+OrderRouter.get("/loadUnseen/:id", OrderController.loadUnSeen);
 
-OrderRouter.route("/changeToSeen").patch(OrderController.changetoSeen);
+OrderRouter.patch("/changeToSeen", OrderController.changeToSeen);
 
-OrderRouter.route("/addCustomProduct").post(OrderController.addCustomProduct);
+OrderRouter.post("/addCustomProduct", OrderController.addCustomProduct);
 
-OrderRouter.route("/:id").get(OrderController.getOrderById);
+OrderRouter.get("/:id", OrderController.getOrderById);
 
 module.exports = OrderRouter;
-    
+
