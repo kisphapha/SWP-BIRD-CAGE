@@ -31,6 +31,7 @@ export default function Categories() {
     const { user } = useContext(UserContext)
     const [categories, setCategories] = useState([])
     const [openPopup, setOpenPopup] = useState(false)
+    const [isAdd, setAdd] = useState(false)
 
     const [selectedCategory, setSelectedCategory] = useState({})
     const [images, setImages] = useState([]);
@@ -45,15 +46,21 @@ export default function Categories() {
     useEffect(() => {
         fetchCategories()
     }, [])
+    
     async function fetchCategories() {
-        axios
-            .get('http://localhost:3000/category')
-            .then((response) => {
-                setCategories(response.data)
-            })
-            .catch((error) => {
-                console.error('Error fetching category data:', error)
-            })
+        const response = await axios.get('http://localhost:3000/category')
+        if (response) {
+            setCategories(response.data)
+        }
+    }
+
+
+    
+    function getImageList(images) {
+        const imagesFromUrls = images.map((image) => ({
+            data_url: image,
+        }));
+        return (imagesFromUrls);
     }
 
     async function getCategory(id) {
@@ -62,13 +69,13 @@ export default function Categories() {
             setSelectedCategory(response.data[0])
         }
         const img = response.data[0].imageUrl
-        setImages(img ? [img] : '')
+        setImages(getImageList(img ? [img] : []))
         setOpenPopup(true)
 
     }
     async function handleDelete(id) {
         try{
-            const response = await axios.delete('http://localhost:3000/category/' + id)
+            const response = await axios.delete('http://localhost:3000/category/delete/' + id)
         } catch {
             alert("Không thể xóa danh mục này")
             fetchCategories()
@@ -85,12 +92,36 @@ export default function Categories() {
 
     }
 
+    async function handleAdd(url, close) {
+        
+        try{
+            const json = {
+                id: tmpCode,
+                name: tmpName,
+                Allow_Customize: tmpAllow == "Yes" ? true : false,
+                imageUrl: url,
+                isHide : 0
+            }
+            console.log(json)
+            await axios.post(`http://localhost:3000/category/add`, json)
+            alert('Đã thêm Danh mục sản phẩm')
+            close()
+            handleClose()
+            fetchCategories()
+        } catch {
+            alert("Có lỗi xảy ra khi thêm sản phẩm")
+        }  
+        
+    }
+
+
+
     async function handleUpdate(url, close) {
         const json = {
             Id: tmpCode ? tmpCode : selectedCategory.Id,
             name: tmpName ? tmpName : selectedCategory.Name,
             Allow_Customize: tmpAllow ? (tmpAllow == "Yes" ? true : false) : selectedCategory.Allow_Customize,
-            imageUrl: url
+            imageUrl: url,
         }
         console.log(json)
         await axios.post(`http://localhost:3000/category/update`, json)
@@ -114,12 +145,17 @@ export default function Categories() {
             }
         }))
         console.log(urls[0])
-        handleUpdate(urls[0], close)
+        if (isAdd){
+            handleAdd(urls[0], close)
+        } else {
+            handleUpdate(urls[0], close)
+        }
+
     }
     const handleNameChange = (event) => {
         setTempName(event.target.value)
     }
-    const handleCodeChange = (event) => {
+    const  handleCodeChange = (event) => {
         setTmpCode(event.target.value)
     }
     const handleUrlChange = (event) => {
@@ -154,6 +190,13 @@ export default function Categories() {
             </div>
 
             <div className="my-5 text-2xl font-bold">Danh mục sản phẩm</div>
+            <Button variant="contained" onClick={() => {
+                setAdd(true)
+                setImages([])
+                setOpenPopup(true)
+            }}>
+                    THÊM MỚI
+            </Button>
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
@@ -187,6 +230,7 @@ export default function Categories() {
                                 <TableCell>
                                     <Button>
                                         <ModeEditIcon fontSize='medium' onClick={() => {
+                                            setAdd(false)
                                             getCategory(category.id)
                                         }} />
                                     </Button>
@@ -247,8 +291,8 @@ export default function Categories() {
                                 label={'Mã'}
                                 variant="standard"
                                 onChange={handleCodeChange}
-                                value={tmpCode ? tmpCode : selectedCategory.Id}
-                                disabled={true}
+                                value={tmpCode || isAdd ? tmpCode : selectedCategory.Id}
+                                disabled={!isAdd}
                             />
                         </div>
                         <div className="w-1/2">
@@ -258,7 +302,7 @@ export default function Categories() {
                                 label={'Tên'}
                                 variant="standard"
                                 onChange={handleNameChange}
-                                value={tmpName ? tmpName : selectedCategory.Name}
+                                value={tmpName || isAdd ? tmpName  : selectedCategory.Name}
                                 InputLabelProps={{ shrink: true }}
                             />
                         </div>
@@ -272,7 +316,7 @@ export default function Categories() {
                                     className=""
                                     aria-labelledby="Cho phép customize"
                                     onChange={handleAllowChange}
-                                    defaultValue={selectedCategory.Allow_Customize ? "Yes" : "No"}
+                                    defaultValue={!isAdd && selectedCategory.Allow_Customize ? "Yes" : "No"}
                                 >
                                     <div>
                                         <FormControlLabel value="Yes" control={<Radio />} label="Có" />

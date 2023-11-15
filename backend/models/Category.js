@@ -8,6 +8,8 @@ const getAllCategory = async () => {
             `SELECT c.id, c.name, c.imageUrl, c.Allow_customize
             FROM Category c
             LEFT JOIN Products p ON p.Category = c.id
+            WHERE c.isHide = 0 
+
             GROUP BY c.id, c.name, c.imageUrl, c.Allow_customize
             ORDER BY c.id;`
         );
@@ -54,7 +56,7 @@ const deleteCategory = async (id) => {
     try {
         let poolConnection = await sql.connect(config);
         const request = poolConnection.request()
-            .input('Id', sql.Int, id);
+            .input('Id', sql.VarChar, id);
 
         await request.query(`
             UPDATE dbo.Category
@@ -72,7 +74,7 @@ const addCategory = async (Id, Name, imageU, Allow_Customize, isHide) => {
     try {
         let poolConnection = await sql.connect(config);
         const request = poolConnection.request()
-            .input('Id', sql.Int, Id)
+            .input('Id', sql.VarChar, Id)
             .input('Name', sql.NVarChar, Name)
             .input('ImageUrl', sql.NVarChar, imageU)
             .input('AllowCustomize', sql.Bit, Allow_Customize)

@@ -33,7 +33,7 @@ const updateCategory = async (req, res) => {
 
 const deleteCategory = async (req, res) => {
     try {
-        const category = await Category.deteleCategory(req.params.id);
+        const category = await Category.deleteCategory(req.params.id);
         res.json("delete success");
     }catch (error){
         res.status(500).json({message: error.message})

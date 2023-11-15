@@ -107,10 +107,10 @@ export default function Cart() {
 
                             const response = await axios.post('http://localhost:3000/users/updatePoint', {
                                 id: user.Id,
-                                point: calculateBonus
+                                point: calculateBonus()
                             })
 
-                            await axios.post('https://localhost:3000/users/updateVoucher', {
+                            await axios.post('http://localhost:3000/users/updateVoucher', {
                                 Id : orderVoucher
                             })
 
@@ -413,9 +413,12 @@ export default function Cart() {
                                                                 className="user-input"
                                                                 id="voucher"
                                                                 size="small"
+                                                                defaultValue=""
                                                                 SelectProps={{
                                                                     native: true
                                                                 }}
+                                                                InputLabelProps={{ shrink: true }}
+
                                                                 onChange={(event) => {
                                                                     const selectedValue = event.target.value;
                                                                     const [voucherId, voucherDiscount] = selectedValue.split(',');
@@ -423,7 +426,7 @@ export default function Cart() {
                                                                     setOrderVoucher(voucherId.trim());
                                                                 }}
                                                             >
-                                                                <option value="" selected></option>
+                                                                <option value="" selected>Không dùng phiếu giảm giá</option>
                                                                 {voucherList.map((voucher) => (
                                                                     voucher.UsedAt == null && (
 
