@@ -29,7 +29,6 @@ const BicaCoinPage = () => {
         } else {
             alert('Tài khoản của bạn hiện chưa đủ Bica Coin. Hãy tích thêm thật nhiều và quay lại nhé ^^!')
         }
-        
     }
 
     const addVoucher = async (discount) => {
@@ -62,12 +61,11 @@ const BicaCoinPage = () => {
         console.log(percentage)
         var randomNum;
         probability_distrubution.map((distribution, index) => {
-            
+
             if (100 - percentage >= distribution.probability) {
                 randomNum = Math.floor(Math.random() * (distribution.end - distribution.start + 1)) + distribution.start;
             }
         })
-        
         setVoucher(randomNum);
         return randomNum;
     };
@@ -85,7 +83,6 @@ const BicaCoinPage = () => {
                     { "name": "Trang chủ", "link": "/" }
                 ]}
                 current="BicaCoin"></CategoryNav>
-            
             <div className="user-container">
                 {user != null ? (
                     <>
