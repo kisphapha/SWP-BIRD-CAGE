@@ -234,6 +234,7 @@ export default function Order() {
                                     </TableRow>
                                 ))}
                             <Popup
+                            
                                 open={openPopup}
                                 onClose={() => setOpenPopup(false)}
                                 position="right center"
@@ -272,6 +273,7 @@ export default function Order() {
                                                         </Stepper>
                                                     </div>
                                                 </div>
+                                                <div className="overflow-y-scroll h-96">
                                                 {orderItem.map((item) => (
                                                     <div key={item.Id}>
                                                         <hr />
@@ -300,7 +302,7 @@ export default function Order() {
                                                         <hr />
                                                     </div>
                                                 ))}
-
+                                                </div>
                                                 <div className="text-right mx-8 my-4  flex justify-end ">
                                                     <div className="text-xl font-bold   ">Tổng cộng:</div>
                                                     <div className="mx-2"></div>

@@ -1,23 +1,8 @@
 ﻿import React, { useEffect, useState } from "react";
 import Chart from "react-apexcharts";
 import axios from "axios";
-import {
-    Button,
-    ButtonBase,
-    FormControl,
-    FormControlLabel,
-    FormLabel,
-    Paper,
-    Radio,
-    RadioGroup,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    TextField
-} from '@mui/material'
+import { Button } from '@mui/material'
+import './LineChart.css';
 function LineChart() {
 
   const [data, setData] = useState([]);
@@ -62,6 +47,13 @@ function LineChart() {
         <Button variant="outlined" onClick={() => {setIsMonthly(!isMonthly); fetchData(10,2023)}}>
                   {isMonthly ? "Thống kê theo năm" : "Thống kê theo ngày"}
         </Button>
+        <label class="switch">
+          <input type="checkbox"/>
+            <span class="slider">
+              <div class="period">Day</div>
+            <div class="period">Month</div>
+            </span>
+        </label>
       </div>
       <Chart
         type="line"

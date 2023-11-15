@@ -13,10 +13,10 @@ export default function FilteredPage() {
     const [page, setPage] = useState(1)
     const [maxPage, setMaxPage] = useState(1)
     const [pageList, setPageList] = useState([])
-
     const { filter, keyword } = useParams()
     const [search, setSearch] = useState([])
     const [proList, setProList] = useState([])
+
 
     useEffect(() => {
         getCardListFilter(filter, keyword)
@@ -25,6 +25,7 @@ export default function FilteredPage() {
     useEffect(() => {
         setPageList(Array.from({ length: maxPage }))
     }, [maxPage])
+
 
     const handleSwitchPage = (page) => {
         setPage(page)
@@ -66,7 +67,7 @@ export default function FilteredPage() {
                 <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }]} current={search}></CategoryNav>
                 <CardListExtend categoryId={keyword} proList={proList} />
             </main>
-            <div className="flex justify-center">
+            {/* <div className="flex justify-center">
                 {pageList.map((pg, index) => (
                     <td key={index}>
                         <div className="items-center">
@@ -76,7 +77,7 @@ export default function FilteredPage() {
                         </div>
                     </td>
                 ))}
-            </div>
+            </div> */}
         </div>
     )
 }

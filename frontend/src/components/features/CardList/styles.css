@@ -9,11 +9,12 @@
 #item-container > .name {
     border-radius: 10px;
     padding: 5px 20px;
-    background-color: #eeeeee;
+    background-color: gray;
     color: #262626;
     font-weight: 700;
     display: flex;
     justify-content: space-between;
+    margin: 0 5%;
 }
 
 #item-container > .name > .more {
