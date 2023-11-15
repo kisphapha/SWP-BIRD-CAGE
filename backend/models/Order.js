@@ -172,7 +172,7 @@ const changeStatus_Paid = async (id) => {
         .input('id', id)
         .query(
             ` UPDATE dbo.Orders
-              SET Status_Paid = 'Paid', View_Status = 0
+              SET Status_Paid = N'Đã thanh toán', View_Status = 0, PaymentDate = GETDATE() 
               WHERE id = @id
               `
         )
@@ -323,7 +323,8 @@ const addCustomProduct = async (productName, Description, Price, Category, Size,
                     UpdateAt,
                     View_Status,
                     Status_Shipping,
-                    Status_Paid
+                    Status_Paid,
+                    [haveCustomProduct]
                 )
                 OUTPUT Inserted.Id
                 VALUES
@@ -339,7 +340,8 @@ const addCustomProduct = async (productName, Description, Price, Category, Size,
                     GETDATE(),
                     0,
                     N'Chờ duyệt',
-                    N'Chưa Thanh Toán'
+                    N'Chưa Thanh Toán',
+                    1
                 )
             `);
         const orderId = orderQuery.recordset[0].Id;
