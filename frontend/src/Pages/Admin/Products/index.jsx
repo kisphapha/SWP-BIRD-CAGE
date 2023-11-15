@@ -56,37 +56,31 @@ export default function Products() {
     const handleCategoryChange = (event) => {
         setCategory(event.target.value)
         setPage(1)
-
     }
 
     const handleUpperPriceChange = (event) => {
         setUpperPrice(event.target.value)
         setPage(1)
-
     }
 
     const handleLowerPriceChange = (event) => {
         setLowerPrice(event.target.value)
         setPage(1)
-
     }
 
     const handleUpperStockChange = (event) => {
         setUpperStock(event.target.value)
         setPage(1)
-
     }
 
     const handleLowerStockChange = (event) => {
         setLowerStock(event.target.value)
         setPage(1)
-
     }
 
     const handleStatusChange = (event) => {
         setProStatus(event.target.value)
         setPage(1)
-
     }
     const handleSwitchPage = (page) => {
         setPage(page)
@@ -153,7 +147,11 @@ export default function Products() {
 
     return (
         <div className="px-2 py-2 w-full  mb-96">
-            <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }, { name: 'Bảng điều khiển', link: '/admin' }]}
+            <CategoryNav
+                parents={[
+                    { name: 'Trang chủ', link: '/' },
+                    { name: 'Bảng điều khiển', link: '/admin' }
+                ]}
                 current="Danh sách sản phẩm"
                 margin={0}
             />
@@ -201,7 +199,7 @@ export default function Products() {
                                     <div className="font-bold text-lg "> Trạng thái</div>
                                 </div>
                             </TableCell>
-                            {user && user.Role == "Admin" && (
+                            {user && user.Role == 'Admin' && (
                                 <TableCell>
                                     <div className="font-bold text-lg "> Chỉnh sửa</div>
                                 </TableCell>
@@ -288,7 +286,14 @@ export default function Products() {
                             <TableCell>
                                 <div>
                                     <div>
-                                        <TextField className="w-64" select label="Loại" variant="filled" onChange={handleCategoryChange} defaultValue="All">
+                                        <TextField
+                                            className="w-64"
+                                            select
+                                            label="Loại"
+                                            variant="filled"
+                                            onChange={handleCategoryChange}
+                                            defaultValue="All"
+                                        >
                                             <MenuItem value={'All'}>All</MenuItem>
                                             {cate.map((option) => (
                                                 <MenuItem key={option.id} value={option.id}>
@@ -302,7 +307,14 @@ export default function Products() {
                             <TableCell>
                                 <div>
                                     <div>
-                                        <TextField className="w-32 text-left" select label="Status" variant="filled" onChange={handleStatusChange} defaultValue="All">
+                                        <TextField
+                                            className="w-32 text-left"
+                                            select
+                                            label="Status"
+                                            variant="filled"
+                                            onChange={handleStatusChange}
+                                            defaultValue="All"
+                                        >
                                             {status.map((option) => (
                                                 <MenuItem key={option.value} value={option.value}>
                                                     {option.label}
@@ -340,8 +352,7 @@ export default function Products() {
                                 <TableCell>
                                     <div className="text-base text-center">{product.Status}</div>
                                 </TableCell>
-                                {user && user.Role == "Admin" && (
-
+                                {user && user.Role == 'Admin' && (
                                     <TableCell>
                                         {' '}
                                         <div className="flex justify-end">
@@ -383,13 +394,22 @@ export default function Products() {
                                                     <>
                                                         <div className="flex justify-center">Bạn có chắc chắn muốn xóa lồng này không?</div>
                                                         <div className="flex justify-center">
-                                                            <Button variant="contained" onClick={() => { handleDelete(product.Id); close() }}>Có</Button>
-                                                            <Button variant="outlined" onClick={close}>Không</Button>
+                                                            <Button
+                                                                variant="contained"
+                                                                onClick={() => {
+                                                                    handleDelete(product.Id)
+                                                                    close()
+                                                                }}
+                                                            >
+                                                                Có
+                                                            </Button>
+                                                            <Button variant="outlined" onClick={close}>
+                                                                Không
+                                                            </Button>
                                                         </div>
                                                     </>
                                                 )}
                                             </Popup>
-
                                         </div>
                                     </TableCell>
                                 )}
