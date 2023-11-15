@@ -102,6 +102,14 @@ const orderStatisticByMonth = async (req, res) => {
     }
 }
 
+const deleteExpiresVoucher = async(req, res) => {
+    try {
+        const deleteAt = await Admin.deleteExpiresVoucher();
+        res.json({message: "success"});
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
 
 module.exports = {
     getOrderBy5Month,
@@ -113,5 +121,6 @@ module.exports = {
     changetoSeen,
     getMonthLyIncome,
     deleteJunkData,
-    orderStatisticByMonth
+    orderStatisticByMonth,
+    deleteExpiresVoucher
 }
