@@ -11,13 +11,16 @@ import Popup from 'reactjs-popup'
 import { useWindowSize } from 'usehooks-ts'
 import Confetti from 'react-confetti'
 import PropTypes from 'prop-types'
+import axios from 'axios'
+
+
 
 const BicaCoinPage = () => {
     const { user } = useContext(UserContext)
     const { width, height } = useWindowSize()
-    const [congrat, setCongrat] = useState(false)
     const [openPopup, setOpenPopup] = useState(false)
     const [voucher, setVoucher] = useState(0)
+    const point = 1000
 
     const handleClick = () => {
         getAVoucher()
@@ -27,7 +30,28 @@ const BicaCoinPage = () => {
         setTimeout(() => {
             setCongrat(false)
         }, 5000) // Set the delay in milliseconds (e.g., 2000ms = 2 seconds)
+        if (user.Point >= point) {
+            addVoucher(getAVoucher())
+            window.scrollTo(0, 0)
+            setOpenPopup(true)
+        } else {
+            alert("Tài khoản của bạn hiện chưa đủ Bica Coin. Hãy tích thêm thật nhiều và quay lại nhé ^^!")
+        }
+        
     }
+
+    const addVoucher = async (discount) => {
+         await axios.post('http://localhost:3000/users/addVoucher', {
+            UserID: user.Id,
+            discount : discount
+         })
+        const response = await axios.post('http://localhost:3000/users/exchangePoint', {
+            UserID: user.Id,
+            point: point
+        })
+        sessionStorage.setItem("loginedUser", JSON.stringify(response.data))
+    }
+
     const handleClose = (value) => {
         setOpenPopup(false)
     }
@@ -127,6 +151,15 @@ const BicaCoinPage = () => {
                                     <div className="flex justify-center mt-8">
                                         <Button className="" variant="contained" onClick={close}>
                                             <div className="text-2xl font-bold">NHẬN</div>
+                                        <Button className="w-48 h-16" variant="contained" onClick={() => {
+                                            close();
+                                            window.location.reload()
+                                        }
+                                                
+                                                }>
+                                            <div className="text-2xl font-bold">
+                                                NHẬN
+                                            </div>
                                         </Button>
                                     </div>
                                 </div>

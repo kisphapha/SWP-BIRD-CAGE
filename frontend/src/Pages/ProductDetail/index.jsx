@@ -251,6 +251,41 @@ export default function ProductDetails() {
         return bonus
     }
 
+    const handleCompare = () => {
+        let compareList = sessionStorage.getItem('compareList')
+
+        if (!compareList) {
+            compareList = []
+        } else {
+            compareList = JSON.parse(compareList)
+        }
+        const duplicate = compareList.some(compareItem => compareItem.productId === productId);
+        if (compareList.length < 3) {
+            if (!duplicate) {
+                compareList.push({
+                    productId
+                })
+                // Store the updated cart in sessionStorage
+                sessionStorage.setItem('compareList', JSON.stringify(compareList))
+                toast.dismiss()
+                toast.success('Đã thêm vào danh sách so sánh', {
+                    position: 'bottom-left',
+                    autoClose: 1000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggable: true,
+                    progress: undefined,
+                    theme: 'colored'
+                })
+            } else {
+                alert("Đã thêm sản này vào danh sách so sánh")
+            }
+        } else {
+            alert("Không thể so sánh quá 3 sản phẩm")
+        }
+    }
+
     return (
         <div id="page-product">
             <UserProvider>
@@ -322,7 +357,7 @@ export default function ProductDetails() {
                                 </button>
                             </div>
                             <div className="flex gap-2">
-                                <Button variant="outlined">So sánh</Button>
+                                <Button variant="outlined" onClick={handleCompare }>So sánh</Button>
                                 <div>
                                     {user == null ? (
                                         <Popup

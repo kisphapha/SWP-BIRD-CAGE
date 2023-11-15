@@ -182,7 +182,12 @@ const exchangePoint = async(UserID, Point) => {
             UPDATE dbo.[User]
             SET Point = Point - @Point
             WHERE id = @UserID
+
+            SELECT *
+            FROM [dbo].[User]
+            WHERE Id = @UserID;
         `)
+        return result.recordset[0]
     } catch (error) {
         console.log("error: ", error);
     }
