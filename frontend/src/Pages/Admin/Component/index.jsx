@@ -29,6 +29,8 @@ import EditComponentForm from '../EditComponentForm'
 import CategoryNav from '../../../components/features/CategoryNav'
 import { UserContext } from '../../../UserContext'
 
+import FilterAltIcon from '@mui/icons-material/FilterAlt'
+import FilterAlt from '@mui/icons-material/FilterAlt'
 
 export default function Components() {
     const { user } = useContext(UserContext)
@@ -171,9 +173,14 @@ export default function Components() {
     return (
         <div className="px-2 py-2 w-full  mb-96">
             <div className="flex-col">
-                <CategoryNav parents={[{ name: 'Trang chủ', link: '/' }, { name: 'Bảng điều khiển', link: '/admin' }]}
+                <CategoryNav
+                    parents={[
+                        { name: 'Trang chủ', link: '/' },
+                        { name: 'Bảng điều khiển', link: '/admin' }
+                    ]}
                     margin={0}
-                    current="Danh sách thành phần" />
+                    current="Danh sách thành phần"
+                />
                 <div className="my-5 text-2xl font-bold">Danh sách thành phần lồng</div>
                 {/* <Button onClick={() => '/admin/NewComponent'}>New Component</Button> */}
             </div>
@@ -194,6 +201,9 @@ export default function Components() {
                             )
                     )}
                 </div>
+                {/* <div>
+                    <FilterAlt />
+                </div> */}
             </div>
 
             <TableContainer component={Paper}>
@@ -282,7 +292,14 @@ export default function Components() {
                                 <div>
                                     <div>Phân loại</div>
                                     <div>
-                                        <TextField className="w-64" select label="Loại" variant="filled" onChange={handleCategoryChange} defaultValue="All">
+                                        <TextField
+                                            className="w-64"
+                                            select
+                                            label="Loại"
+                                            variant="filled"
+                                            onChange={handleCategoryChange}
+                                            defaultValue="All"
+                                        >
                                             <MenuItem value={'All'}>All</MenuItem>
                                             {cate.map((option) => (
                                                 <MenuItem key={option} value={option}>
@@ -297,7 +314,14 @@ export default function Components() {
                                 <div>
                                     <div> Trạng thái</div>
                                     <div>
-                                        <TextField className="w-32 text-left" select label="Status" variant="filled" onChange={handleStatusChange} defaultValue="All">
+                                        <TextField
+                                            className="w-32 text-left"
+                                            select
+                                            label="Status"
+                                            variant="filled"
+                                            onChange={handleStatusChange}
+                                            defaultValue="All"
+                                        >
                                             {status.map((option) => (
                                                 <MenuItem key={option.value} value={option.value}>
                                                     {option.label}
@@ -339,8 +363,7 @@ export default function Components() {
                                     <TableCell>{Component.Stock}</TableCell>
                                     <TableCell>{Component.Type}</TableCell>
                                     <TableCell>{Component.Status}</TableCell>
-                                    {user && user.Role == "Admin" && (
-
+                                    {user && user.Role == 'Admin' && (
                                         <TableCell>
                                             {' '}
                                             <div className="flex justify-end">

@@ -80,7 +80,7 @@ const OrderList = (props) => {
             {/*Loop*/}
 
             {cards.map((card) => (
-                <div className=" flex-col bg-slate-50 m-2 p-2" key={card.Id}>
+                <div className=" flex-col bg-slate-50 m-2 p-2 rounded-lg" key={card.Id}>
                     <div className=" flex place-content-between px-4 my-4">
                         <div className="flex">
                             <div className="px-2">Mã đơn hàng: {card.Id} </div>
@@ -104,7 +104,7 @@ const OrderList = (props) => {
                             {/* <div className="px-2"> Trạng thái đơn hàng: {card.Status} </div> */}
                         </div>
                     </div>
-                    <hr className="border  border-slate-300 my-2 w-full" />
+                    <hr className="border  border-slate-300 my-2 w-full " />
 
                     <div className="flex-row w-full">
                         {card.items.map((item) => (
@@ -186,9 +186,7 @@ const OrderList = (props) => {
 
                         <div className="text-right mx-8 my-4  text-red-500 text-2xl">
                             {parseInt(card.TotalAmount).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
-
                         </div>
-
                     </div>
                 </div>
             ))}

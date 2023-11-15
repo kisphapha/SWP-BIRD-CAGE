@@ -34,6 +34,8 @@ import About from './Pages/NaviFooter/Information/About'
 import Contact from './Pages/NaviFooter/Information/Contact'
 import Components from './Pages/Admin/Component'
 import Shipper from './Pages/ShipperPage'
+import Compare from './Pages/Compare'
+import VoucherPage from './Pages/UserPage/VoucherPage'
 function App() {
     return (
         <div>
@@ -83,6 +85,23 @@ function App() {
                     <Route
                         element={
                             <UserProvider>
+                                <VoucherPage />
+                            </UserProvider>
+                        }
+                        path="/user/voucher"
+                    />
+                    <Route
+                        element={
+                            <UserProvider>
+                                <Cart />
+                            </UserProvider>
+                        }
+                        path="cart"
+                    />
+
+                    <Route
+                        element={
+                            <UserProvider>
                                 <BicaCoinPage />
                             </UserProvider>
                         }
@@ -99,18 +118,68 @@ function App() {
                     <Route element={<Custom />} path="/Custom" />
                     <Route element={<VNPaySuccess />} path="/test" />
                     <Route element={<Custom />} path="/custom" />
+                    <Route element={<Compare />} path="/Compare" />
                 </Route>
 
-                <Route element={<UserProvider><AdminLayout /></UserProvider>} path="/admin">
-                    <Route element={<UserProvider><Dashboard /></UserProvider>} path="" />
+                <Route
+                    element={
+                        <UserProvider>
+                            <AdminLayout />
+                        </UserProvider>
+                    }
+                    path="/admin"
+                >
+                    <Route
+                        element={
+                            <UserProvider>
+                                <Dashboard />
+                            </UserProvider>
+                        }
+                        path=""
+                    />
                     <Route element={<NewCoupon />} path="NewCoupon" />
                     <Route element={<NewProduct />} path="NewProduct" />
                     <Route element={<NewComponent />} path="NewComponent" />
-                    <Route element={<UserProvider><Products /></UserProvider>} path="Products" />
-                    <Route element={<UserProvider><Components /></UserProvider>} path="Components" />
-                    <Route element={<UserProvider><Categories /></UserProvider>} path="Categories" />
-                    <Route element={<UserProvider><Order /></UserProvider>} path="Orders" />
-                    <Route element={<UserProvider><Users /></UserProvider>} path="Users" />
+                    <Route
+                        element={
+                            <UserProvider>
+                                <Products />
+                            </UserProvider>
+                        }
+                        path="Products"
+                    />
+                    <Route
+                        element={
+                            <UserProvider>
+                                <Components />
+                            </UserProvider>
+                        }
+                        path="Components"
+                    />
+                    <Route
+                        element={
+                            <UserProvider>
+                                <Categories />
+                            </UserProvider>
+                        }
+                        path="Categories"
+                    />
+                    <Route
+                        element={
+                            <UserProvider>
+                                <Order />
+                            </UserProvider>
+                        }
+                        path="Orders"
+                    />
+                    <Route
+                        element={
+                            <UserProvider>
+                                <Users />
+                            </UserProvider>
+                        }
+                        path="Users"
+                    />
                     <Route element={<Coupons />} path="Coupons" />
                 </Route>
             </Routes>

@@ -76,7 +76,7 @@ const loadUnSeen = async (req, res) => {
 }
 
 // cach dung cho tui frontend (luc user bam vao cai chuong thi no gui 2 tham so la id vs status = 1 xuong)
-const changetoSeen = async (req, res) => {
+const changeToSeen = async (req, res) => {
     try {
         const id = req.body.id;
         const userid = req.body.userid;
@@ -86,7 +86,7 @@ const changetoSeen = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 }
-const pieChartData = async(req, res) => {
+const pieChartData = async (req, res) => {
     try {
         const order = await Order.pieChartData();
         res.json(order);
@@ -96,9 +96,9 @@ const pieChartData = async(req, res) => {
     }
 }
 
-const addCustomProduct = async(req, res) => {
+const addCustomProduct = async (req, res) => {
     try {
-        
+
         const productName = req.body.productName;
         const Description = req.body.Description;
         const Price = req.body.Price;
@@ -113,11 +113,11 @@ const addCustomProduct = async(req, res) => {
         const PaymentMethod = req.body.PaymentMethod;
         const Quantity = req.body.Quantity;
 
-        const ComponentItems  = req.body.ComponentItems;
-        const order = await Order.addCustomProduct(productName, Description, Price,Category, Size, material,Quantity , userId, AddressID, PhoneNumber, TotalAmount, PaymentMethod, ComponentItems);
+        const ComponentItems = req.body.ComponentItems;
+        const order = await Order.addCustomProduct(productName, Description, Price, Category, Size, material, Quantity, userId, AddressID, PhoneNumber, TotalAmount, PaymentMethod, ComponentItems);
         res.json({ status: "Success", result: respone });
     } catch (error) {
-        res.status(500).json({message: error.message});
+        res.status(500).json({ message: error.message });
     }
 }
 
@@ -129,7 +129,7 @@ module.exports = {
     getOrderByUserId,
     changeStatus_Paid,
     loadUnSeen,
-    changetoSeen,
+    changeToSeen,
     pieChartData,
     addCustomProduct
 }

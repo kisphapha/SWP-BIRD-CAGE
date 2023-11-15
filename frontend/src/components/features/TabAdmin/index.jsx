@@ -7,14 +7,20 @@ import AddIcon from '@mui/icons-material/Add'
 import InventoryIcon from '@mui/icons-material/Inventory'
 import CategoryIcon from '@mui/icons-material/Category'
 import logo from '../../../image/icons/logo.png'
+import LogoutIcon from '@mui/icons-material/Logout'
 
-export default function TabAdmin({user }) {
+export default function TabAdmin({ user }) {
     const navigate = useNavigate()
     const [activeButton, setActiveButton] = useState('/admin')
 
     const handleButtonClick = (path) => {
         navigate(path)
         setActiveButton(path)
+    }
+    function handleSignOut(e) {
+        sessionStorage.removeItem('loginedUser')
+        navigate('/')
+        window.location.reload()
     }
 
     return (
@@ -33,7 +39,7 @@ export default function TabAdmin({user }) {
                     >
                         DashBoard
                     </Button>
-                    {user.Role == "Admin" && (
+                    {user.Role == 'Admin' && (
                         <>
                             <Button
                                 startIcon={<AddIcon />}
@@ -130,6 +136,17 @@ export default function TabAdmin({user }) {
                         style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
                     >
                         Đơn hàng
+                    </Button>
+
+                    <Button
+                        onClick={(e) => handleSignOut(e)}
+                        startIcon={<LogoutIcon />}
+                        fullWidth
+                        // classes={{ root: activeButton === '/admin/Coupons' ? 'active-dashboard' : '' }}
+                        style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
+                        // disabled
+                    >
+                        Logout
                     </Button>
                 </div>
             </div>

@@ -39,16 +39,15 @@ const updateCategory = async (name, imageUrl, Allow_Customize, id) => {
             .input('ImageUrl', sql.NVarChar, imageUrl)
             .input('AllowCustomize', sql.Bit, Allow_Customize)
             .input('Id', sql.Int, id);
-    
+
         await request.query(`
-            UPDATE dbo.Category 
+            UPDATE dbo.Category
             SET Name = @Name, imageUrl = @ImageUrl, Allow_Customize = @AllowCustomize
             WHERE id = @Id
         `);
     } catch (error) {
         console.log("error: ", error);
     }
-    
 };
 
 const deleteCategory = async (id) => {
