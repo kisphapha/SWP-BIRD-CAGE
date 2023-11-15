@@ -22,9 +22,12 @@ export default function Cart() {
     const [paymentMethod, setPaymentMethod] = useState('COD') // Default to 'onDelivery'
     const navigate = useNavigate()
     const [orderAddress, setOrderAddress] = useState('')
+    const [orderVoucher, setOrderVoucher] = useState('')
+    const [voucherValue, setVoucherValue] = useState(0)
     const [addressList, setAddressList] = useState([])
     const [phoneNumber, setPhoneNumber] = useState('')
     const [checkValidation, setCheckValidation] = useState(true)
+    const [voucherList, setVoucherList] = useState([])
 
     const loadCartData = async () => {
         const cartDataFromSession = sessionStorage.getItem('cart')
@@ -52,7 +55,9 @@ export default function Cart() {
 
     useEffect(() => {
         loadCartData()
-    }, [])
+        fetchVouchers() 
+        fetchAddresses()
+    },[])
 
     const handleDecrement = (productId) => {
         const updatedCart = { ...cartData }
@@ -94,8 +99,9 @@ export default function Cart() {
                                 AddressID: orderAddress,
                                 PhoneNumber: phoneNumber,
                                 Note: 'Cart',
-                                TotalAmount: calculateTotalPrice(),
+                                TotalAmount: calculateGrandTotal(),
                                 PaymentMethod: paymentMethod,
+                                VoucherID: orderVoucher,
                                 Items: cartItems
                             })
 
@@ -106,7 +112,7 @@ export default function Cart() {
 
                             if (paymentMethod == 'vnpay') {
                                 const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
-                                    amount: calculateTotalPrice(),
+                                    amount: calculateGrandTotal(),
                                     bankCode: '',
                                     language: 'vn',
                                     email: user.Email,
@@ -150,6 +156,13 @@ export default function Cart() {
         return total
     }
 
+    const calculateGrandTotal = () => {
+        let total = calculateTotalPrice()
+        total = total * (100 - voucherValue) / 100
+        return total
+    }
+
+
     const calculateBonus = () => {
         let bonus = 0
 
@@ -192,6 +205,13 @@ export default function Cart() {
         const response = await axios.get(`http://localhost:3000/address/${user.Id}`)
         setAddressList(response.data)
     }
+
+    async function fetchVouchers() {
+        const response = await axios.get(`http://localhost:3000/users/getVoucher/${user.Id}`)
+        setVoucherList(response.data)
+        console.log(voucherList)
+    }
+
 
     const checkPattern = (inputValue, pattern) => {
         const regex = new RegExp(pattern)
@@ -344,11 +364,12 @@ export default function Cart() {
                                                             >
                                                                 <option value="" selected></option>
                                                                 {addressList.map((adr) => (
-                                                                    <option key={adr} value={adr.ID}>
+                                                                    <option key={adr} value={adr.ID} >
                                                                         {adr.SoNha + ', ' + adr.PhuongXa + ', ' + adr.QuanHuyen + ', ' + adr.TinhTP}
                                                                     </option>
                                                                 ))}
                                                             </TextField>
+                                                            
                                                         </div>
                                                         <div>
                                                             <Popup trigger={<Button variant="contained">Thêm</Button>} position="right center" modal>
@@ -376,22 +397,55 @@ export default function Cart() {
                                                             error={!checkValidation}
                                                             helperText={!checkValidation ? 'Số điện thoại không hợp lệ' : ''}
                                                         ></TextField>
+                                                        
                                                     </div>
-                                                    <hr className="border  border-slate-100 my-2 mx-10" />
-                                                    {/* <h1>Sản phẩm</h1>
-                                                     */}
+                                                   
                                                 </div>
                                                 <div className=" border-gray-300 rounded   ">
-                                                    <div className="font-bold flex place-content-end ">
-                                                        <div className=" mr-4">Tổng cộng:</div>
-                                                        <div>
-                                                            {calculateTotalPrice().toLocaleString('vi', { style: 'currency', currency: 'VND' })}
-                                                        </div>
-                                                    </div>
+                                                        <div className="flex place-content-between">
+                                                            <TextField
+                                                                select
+                                                                label="Chọn phiếu giảm giá"
+                                                                className="user-input"
+                                                                id="voucher"
+                                                                size="small"
+                                                                SelectProps={{
+                                                                    native: true
+                                                                }}
+                                                                onChange={(event) => {
+                                                                    const selectedValue = event.target.value;
+                                                                    const [voucherId, voucherDiscount] = selectedValue.split(',');
+                                                                    setVoucherValue(voucherDiscount.trim());
+                                                                    setOrderVoucher(voucherId.trim());
+                                                                }}
+                                                            >
+                                                                <option value="" selected></option>
+                                                                {voucherList.map((voucher) => (
+                                                                    voucher.UsedAt == null && (
 
+                                                                        <option key={voucher} value={[voucher.ID, voucher.discount]}>
+                                                                            {voucher.discount + ' % , Hết hạn ' + voucher.ExpireAt.substr(0, 10)}
+                                                                        </option>
+                                                                    )
+                                                                ))}
+                                                            </TextField>
+                                                        </div>
                                                     <div className="font-bold flex place-content-end">
-                                                        <div className=" mr-4">Số điểm bonus sẽ tích được:</div>
-                                                        <div>{calculateBonus()}</div>
+                                                        <div className="mr-4">Được giảm giá:</div>
+                                                            <div className="text-xl">
+                                                                {(calculateTotalPrice() * voucherValue/100).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+                                                            </div>
+                                                    </div>
+                                                    <div className="font-bold flex place-content-end">
+                                                        <div className="mr-4">Số điểm bonus sẽ tích được:</div>
+                                                        <div className="text-xl">{calculateBonus()}</div>
+                                                        </div>
+                                                    <hr></hr>
+                                                    <div className="font-bold flex place-content-end ">
+                                                        <div className="text-xl font-bold mr-4">THANH TOÁN:</div>
+                                                        <div className="text-4xl font-bold mr-4 text-red-400">
+                                                            {calculateGrandTotal().toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div className="flex place-content-between mt-4">
