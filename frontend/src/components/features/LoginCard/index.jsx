@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import jwtDecode from 'jwt-decode'
 import logo from '../../../image/icons/logo.png'
@@ -7,7 +6,6 @@ import logo from '../../../image/icons/logo.png'
 function LoginCard() {
     const [email, setEmail] = useState('')
     const [googleUser, setGoogleUser] = useState('')
-    const navigate = useNavigate()
 
     function handlecallbackResponse(response) {
         document.getElementById('google').hidden = true
@@ -37,14 +35,18 @@ function LoginCard() {
             const response = await axios.get('http://localhost:3000/users/' + email)
 
             if (response.data) {
-                sessionStorage.setItem('loginedUser', JSON.stringify(response.data))
+                if (response.data.Status == "Inactive") {
+                    alert("Tài khoản của bạn đã bị vô hiệu hóa. Vui lòng liên lạc ban quản lý để được hỗ trợ"
+                        + "\nLý do : " + response.data.ReasonBlocked)
+                } else {
+                    sessionStorage.setItem('loginedUser', JSON.stringify(response.data))
+                }
             } else {
                 await axios.post(
                     'http://localhost:3000/users/new/?name=' + googleUser.name + '&email=' + googleUser.email + '&picture=' + googleUser.picture
                 )
                 await fetchUsers()
             }
-            // navigate('/')
             window.location.reload()
         }
 
@@ -52,10 +54,6 @@ function LoginCard() {
             fetchUsers()
         }
     })
-
-    const handleClick = () => {
-        navigate('/')
-    }
 
     return (
         <div
@@ -74,7 +72,7 @@ function LoginCard() {
                     alignItems: 'center'
                 }}
             >
-                <img src={logo} style={{ height: '128px', width: '128px' }} />
+                <img src={logo} style={{ height: '128px', width: '128px' }}/>
                 <h1>Đăng nhập</h1>
             </div>
             <div

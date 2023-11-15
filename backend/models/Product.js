@@ -170,7 +170,7 @@ const addNewProductToDB = async (Name, Description, Price, Category, Material, S
     }
 }
 
-const updateProduct = async (Id, Name, Description, Price, Stock, Category, material, Size, SuitableBird, discount, Status,Url) => {
+const updateProduct = async (Id, Name, Description, Price, Stock, Category, material, Size, SuitableBird, discount, Status,Urls) => {
     try {
         const poolConnection = await sql.connect(config);
         const result = await poolConnection.request()
@@ -200,11 +200,26 @@ const updateProduct = async (Id, Name, Description, Price, Stock, Category, mate
         [Discount] = @Discount 
         WHERE [Id] = @Id
       `);
-      await poolConnection.request()
-          .input('Id', sql.Int, Id)
-          .query(
-        `UPDATE Image SET Url='${Url}' WHERE id=${Id}`
-      )
+
+      //Reset images
+        let deleteImages = await sql.connect(config)
+        await deleteImages.request().query(
+            `DELETE FROM Image WHERE ProductId=${Id}`
+        )
+
+
+        for (const url of Urls) {
+            const imageRequest = poolConnection.request(); // Create a new Request object for each iteration
+            const query = `
+                   INSERT INTO Image (ProductId, Url, isDeleted)
+                    VALUES (@ProductId, @Url, 0)
+
+                `;
+            await imageRequest
+                .input("ProductId", sql.Int, Id)
+                .input("Url", sql.NVarChar, url)
+                .query(query);
+        }
         return result.recordset;
     } catch (error) {
         console.log("error:", error);
@@ -221,7 +236,8 @@ const getRatingByProductId = async (ProductId) => {
                 u.Picture, 
                 u.Name, 
                 f.StarPoint, 
-                f.Content 
+                f.Content ,
+                f.createAt
             from 
                 Feedback f, 
                 [User] u 
@@ -436,6 +452,7 @@ const pagingSearchBar = async (name, page) => {
 }
 
 
+
 module.exports = {
     getAllProducts,
     getProductsByCategory,
@@ -449,6 +466,6 @@ module.exports = {
     paging,
     filterProduct,
     pagingSearchBar,
-    getImgsOfProduct
+    getImgsOfProduct,
 }
 

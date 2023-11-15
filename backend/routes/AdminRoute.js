@@ -10,9 +10,7 @@ AdminRouter.get("/getBestSelling", AdminController.getBestSellingProducts);
 
 AdminRouter.get("/getUsers", AdminController.getAllUser);
 
-AdminRouter.post("/deleteUser", AdminController.deleteUser);
-
-AdminRouter.get("/updateUser", AdminController.updateUser);
+AdminRouter.post("/updateUser", AdminController.updateUser);
 
 AdminRouter.get("/loadUnseen/:id", AdminController.loadUnSeen);
 
@@ -20,8 +18,10 @@ AdminRouter.patch("/changeToSeen", AdminController.changetoSeen);
 
 AdminRouter.get("/getMonthLyIncome", AdminController.getMonthLyIncome);
 
-AdminRouter.route("/statistic").post(AdminController.orderStatisticByMonth)
+AdminRouter.route("/statistic").post(AdminController.orderStatisticByMonth);
 
 AdminRouter.get("/deleteJunkData", AdminController.deleteJunkData);
+
+AdminRouter.get("/deleteExpiresVoucher", AdminController.deleteExpiresVoucher);
 
 module.exports = AdminRouter;

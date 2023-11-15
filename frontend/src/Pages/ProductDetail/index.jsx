@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import axios from 'axios'
 import { useParams } from 'react-router-dom'
 import './styles.css'
@@ -8,32 +8,36 @@ import Navbar from '../../components/common/Navbar'
 import CategoryNav from '../../components/features/CategoryNav'
 import AddressPopup from '../../components/features/AddressPopup/AddressPopup'
 import LoginCard from '../../components/features/LoginCard'
-import { useNavigate } from 'react-router-dom'
-import ArrowBack from '@mui/icons-material/ArrowBack'
-import ArrowForward from '@mui/icons-material/ArrowForward'
-import { Button, TextField, Rating, Avatar, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material'
 import Popup from 'reactjs-popup'
+import { Button, TextField, Rating, Avatar, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { useContext } from 'react'
+// import { useContext } from 'react'
+import VNPay from '../../image/icons/VNPay.svg'
+import COD from '../../image/icons/COD.svg'
 
 export default function ProductDetails() {
     const { user } = useContext(UserContext)
     const [imgList, setImgList] = useState([])
+    const [focusUrl, setFocusUrl] = useState('')
     const { productId } = useParams()
     const [quantity, setQuantity] = useState(1)
     const [product, setProduct] = useState([])
     const [ratingsData, setRatingsData] = useState([])
-    const [focusUrl, setFocusUrl] = useState('')
-    const [addressList, setAddressList] = useState([])
     const [paymentMethod, setPaymentMethod] = useState('COD')
+    const [addressList, setAddressList] = useState([])
     const [orderAddress, setOrderAddress] = useState('')
     const [phoneNumber, setPhoneNumber] = useState('')
-    const [checkValidation, setCheckValidation] = useState(false)
-    const navigate = useNavigate()
+    const [checkValidation, setCheckValidation] = useState(true)
+
+    window.addEventListener('popstate', function () {
+        // This function will be triggered when the window is unloaded, including when it's reloaded.
+        sessionStorage.setItem('quantity', 1)
+    })
 
     useEffect(() => {
         window.scrollTo(0, 0)
+        const sesQuantity = parseInt(sessionStorage.getItem('quantity'))
         const fetchProduct = async () => {
             const response = await axios.get(`http://localhost:3000/products/${productId}`)
             setProduct(response.data)
@@ -51,21 +55,23 @@ export default function ProductDetails() {
         fetchProduct()
         fetchRatings()
         fetchImage()
+        sesQuantity ? setQuantity(sesQuantity) : setQuantity(1)
     }, [productId])
+
     async function fetchAddresses() {
         const response = await axios.get(`http://localhost:3000/address/${user.Id}`)
-        console.log(response.data)
         setAddressList(response.data)
     }
 
     const getFeedback = () => {
         if (sessionStorage.loginedUser != null) {
-            const user = JSON.parse(sessionStorage.loginedUser)
             if (user.Role === 'Admin' || user.Role === 'Staff') {
                 return (
                     <div className="flex ml-8 my-2 pl-8">
                         <TextField variant="standard" label="Reply to comment" />
-                        <Button variant="text">Save</Button>
+                        <div>
+                            <Button variant="contained">Save</Button>
+                        </div>
                     </div>
                 )
             }
@@ -76,31 +82,52 @@ export default function ProductDetails() {
         if (quantity > 1) {
             setQuantity((prevCount) => prevCount - 1)
         }
+        sessionStorage.setItem('quantity', quantity - 1)
     }
     const handleIncrement = () => {
         if (quantity < 10) {
             // Change this condition to quantity < 10
             setQuantity((prevCount) => prevCount + 1)
         }
+        sessionStorage.setItem('quantity', quantity + 1)
     }
+
+    function isOrderAddressEmpty(orderAddress) {
+        return !orderAddress || orderAddress.trim() === ''
+    }
+
     const checkPattern = (inputValue, pattern) => {
         const regex = new RegExp(pattern)
         return regex.test(inputValue)
     }
 
-    const handlePattern = (event) => {
-        const inputValue = event.target.value
-        const pattern = '[0-9]{10,12}'
+    const handlePhoneChange = (event) => {
+        let inputPhoneNumber = event.target.value
 
-        const isValid = checkPattern(inputValue, pattern)
-        if (isValid) {
-            setCheckValidation(!isValid)
+        // Remove unwanted characters "e", "+", and "-"
+        inputPhoneNumber = inputPhoneNumber.replace(/[e+-]/gi, '')
+
+        // Regular expression pattern for a valid phone number. You can adjust it as needed.
+        const phonePattern =
+            '(032|033|034|035|036|037|038|039|096|097|098|086|083|084|085|081|082|088|091|094|070|079|077|076|078|090|093|089|056|058|092|059|099)[0-9]{7}'
+
+        if (inputPhoneNumber.length <= 11) {
+            if (checkPattern(inputPhoneNumber, phonePattern)) {
+                setCheckValidation(true)
+            } else {
+                setCheckValidation(false)
+            }
+        } else {
+            setValid(false)
         }
-        return isValid
+        setPhoneNumber(event.target.value)
     }
 
-    const handlePhoneChange = (event) => {
-        setPhoneNumber(event.table.value)
+    const handleKeyDown = (event) => {
+        // Prevent the characters "e", "+", and "-" from being entered.
+        if (['e', '+', '-', '.'].includes(event.key)) {
+            event.preventDefault()
+        }
     }
 
     const addToCart = () => {
@@ -127,13 +154,10 @@ export default function ProductDetails() {
                 price: (product.Price * (100 - product.discount)) / 100
             })
         }
-
         // Store the updated cart in sessionStorage
         sessionStorage.setItem('cart', JSON.stringify(cart))
-
-        console.log(sessionStorage.getItem('cart'))
         toast.dismiss()
-        toast.success('Sản phẩm đã được thêm vào', {
+        toast.success('Thêm vào giỏ hàng thành công', {
             position: 'bottom-left',
             autoClose: 1000,
             hideProgressBar: false,
@@ -147,14 +171,11 @@ export default function ProductDetails() {
 
     const handlePayment = async () => {
         try {
-            console.log(product)
             if (sessionStorage.loginedUser != null) {
                 if (orderAddress) {
-                    console.log(orderAddress)
                     if (phoneNumber) {
-                        console.log(phoneNumber)
                         const res = await axios.post('http://localhost:3000/order/addordertodb', {
-                            UserID: JSON.parse(sessionStorage.loginedUser).Id,
+                            UserID: user.Id,
                             OrderDate: new Date().toISOString().slice(0, 10),
                             PaymentDate: null,
                             AddressID: orderAddress,
@@ -173,31 +194,40 @@ export default function ProductDetails() {
                                 }
                             ]
                         })
-                        // await axios.post('http://localhost:3000/users/updatePoint', {
-                        //     id: 17,
-                        //     point: 1000
-                        // })
-                        console.log(res.data.orderid)
+                        const updatedUser = await axios.post('http://localhost:3000/users/updatePoint', {
+                            id: user.Id,
+                            point: (quantity * product.Price) / 1000
+                        })
                         if (paymentMethod == 'vnpay') {
                             const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
                                 amount: ((product.Price * (100 - product.discount)) / 100) * quantity,
                                 bankCode: '',
                                 language: 'vn',
-                                email: JSON.parse(sessionStorage.loginedUser).Email,
-                                phoneNumber: JSON.parse(sessionStorage.loginedUser).PhoneNumber,
+                                email: user.Email,
+                                phoneNumber: user.PhoneNumber,
                                 orderid: res.data.orderid
                             })
                             // setTimeout(() => {
                             //     alert('Đang chuyển tiếp đến VNPay')
                             // }, 2000)
                             close()
-                            console.log(response.data.url)
                             window.location.href = response.data.url
                         } else {
-                            alert('Đặt hàng thành công')
+                            toast.dismiss()
+                            toast.success('Đặt hàng thành công', {
+                                position: 'bottom-left',
+                                autoClose: 1000,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: false,
+                                draggable: true,
+                                progress: undefined,
+                                theme: 'colored'
+                            })
+                            sessionStorage.setItem('loginedUser', JSON.stringify(updatedUser))
                             close()
                             // sessionStorage.setItem('cart', '{"products":[]}')
-                            window.location.reload(false)
+                            // window.location.reload(false)
                         }
                         // sessionStorage.setItem('cart', '{"products":[]}')
                     } else {
@@ -212,22 +242,11 @@ export default function ProductDetails() {
         } catch (error) {
             console.error('Lỗi thanh toán:', error)
         }
-        toast.dismiss()
-        toast.success('Sản phẩm đã được thêm vào', {
-            position: 'bottom-left',
-            autoClose: 1000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: true,
-            progress: undefined,
-            theme: 'colored'
-        })
     }
-
-    const handleBuy = () => {
-        addToCart()
-        navigate('/cart')
+    const calculateBonus = () => {
+        let bonus = 0
+        bonus += (product.price * product.quantity) / 1000
+        return bonus
     }
 
     return (
@@ -245,10 +264,10 @@ export default function ProductDetails() {
             ></CategoryNav>
 
             <div className="product-container">
-                <div className="product">
+                <div className="product rounded-lg">
                     <div className="img-container">
                         <div className="img-main">
-                            <img src={focusUrl} />
+                            <img className="big-img" src={focusUrl} />
                         </div>
                         <div className="img-more ">
                             {imgList.map((image) => (
@@ -290,7 +309,7 @@ export default function ProductDetails() {
                             </div>
                             <hr className="border border-slate-300 " />
                         </div>
-                        <div className="option">
+                        <div className="option flex place-content-between">
                             <div className="quantity">
                                 <button type="button" onClick={handleDecrement} className="button">
                                     -
@@ -300,11 +319,31 @@ export default function ProductDetails() {
                                     +
                                 </button>
                             </div>
-                            <div>
-                                <Button variant="contained" className="add-cart" onClick={addToCart}>
-                                    Thêm vào giỏ hàng
-                                </Button>
-                                <ToastContainer />
+                            <div className="flex gap-2">
+                                <Button variant="outlined">So sánh</Button>
+                                <div>
+                                    {user == null ? (
+                                        <Popup
+                                            contentStyle={{ width: '500px', height: '250px', borderRadius: '10px' }}
+                                            trigger={<Button variant="contained">Thêm vào giỏ hàng</Button>}
+                                            position="center"
+                                            modal
+                                        >
+                                            {(close) => (
+                                                <div className="login-popup">
+                                                    <LoginCard />
+                                                </div>
+                                            )}
+                                        </Popup>
+                                    ) : (
+                                        <div>
+                                            <Button variant="contained" className="add-cart" onClick={addToCart}>
+                                                Thêm vào giỏ hàng
+                                            </Button>
+                                            <ToastContainer />
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -342,99 +381,65 @@ export default function ProductDetails() {
                             >
                                 {(close) => (
                                     <div className="popup-order">
-                                        {/* <AddressPopup user={user} close={close} /> */}
                                         <h1>Thông tin người nhận</h1>
-                                        <div className="adr-container">
-                                            <div className="w-3/4">
+                                        <div className="container">
+                                            <div className="adr-container">
+                                                <div className="w-3/4">
+                                                    <TextField
+                                                        select
+                                                        required
+                                                        fullWidth
+                                                        label="Chọn địa chỉ của bạn"
+                                                        className="user-input"
+                                                        id="adrress"
+                                                        size="small"
+                                                        SelectProps={{
+                                                            native: true
+                                                        }}
+                                                        onChange={(event) => {
+                                                            setOrderAddress(event.target.value)
+                                                        }}
+                                                        error={isOrderAddressEmpty(orderAddress)}
+                                                        helperText={isOrderAddressEmpty(orderAddress) ? 'Xin hãy chọn địa chỉ' : ''}
+                                                    >
+                                                        <option value="" selected></option>
+                                                        {addressList.map((adr) => (
+                                                            <option key={adr} value={adr.ID}>
+                                                                {adr.SoNha + ', ' + adr.PhuongXa + ', ' + adr.QuanHuyen + ', ' + adr.TinhTP}
+                                                            </option>
+                                                        ))}
+                                                    </TextField>
+                                                </div>
+                                                <div>
+                                                    <Popup trigger={<Button variant="contained">Thêm</Button>} position="right center" modal>
+                                                        {(close) => (
+                                                            <div className="popup-address">
+                                                                <h1>Thêm địa chỉ</h1>
+                                                                <AddressPopup user={user} fetchAddresses={fetchAddresses} close={close} />
+                                                            </div>
+                                                        )}
+                                                    </Popup>
+                                                </div>
+                                            </div>
+                                            <div className="phone-container w-3/4">
                                                 <TextField
-                                                    select
+                                                    type="number"
                                                     required
                                                     fullWidth
-                                                    label="Chọn địa chỉ của bạn"
+                                                    label="Số điện thoại"
                                                     className="user-input"
-                                                    id="adrress"
+                                                    id="phoneNumber"
                                                     size="small"
-                                                    SelectProps={{
-                                                        native: true
-                                                    }}
-                                                    onChange={(event) => {
-                                                        setOrderAddress(event.target.value)
-                                                    }}
-                                                >
-                                                    <option value="" selected></option>
-                                                    {addressList.map((adr) => (
-                                                        <option key={adr} value={adr.ID}>
-                                                            {adr.SoNha + ', ' + adr.PhuongXa + ', ' + adr.QuanHuyen + ', ' + adr.TinhTP}
-                                                        </option>
-                                                    ))}
-                                                </TextField>
+                                                    value={phoneNumber}
+                                                    onChange={handlePhoneChange}
+                                                    onKeyDown={handleKeyDown}
+                                                    error={!checkValidation}
+                                                    helperText={!checkValidation ? 'Số điện thoại không hợp lệ' : ''}
+                                                ></TextField>
                                             </div>
-                                            <div className="">
-                                                <Popup trigger={<Button variant="contained">Thêm</Button>} position="right center" modal>
-                                                    {(close) => (
-                                                        <div className="popup-address">
-                                                            <h1>Thêm địa chỉ</h1>
-                                                            <AddressPopup user={user} fetchAddresses={fetchAddresses} close={close} />
-                                                        </div>
-                                                    )}
-                                                </Popup>
-                                            </div>
+                                            <hr className="border  border-slate-300 my-2 w-full" />
+                                            <h1>Sản phẩm</h1>
                                         </div>
-                                        <div className="phone-container w-3/4">
-                                            <TextField
-                                                type="number"
-                                                required
-                                                fullWidth
-                                                label="Số điện thoại"
-                                                className="user-input"
-                                                id="phoneNumber"
-                                                size="small"
-                                                onChange={{ handlePhoneChange }}
-                                                error={checkValidation}
-                                            ></TextField>
-                                        </div>
-                                        <h1>Sản phẩm</h1>
-                                        {/* <div className="curr-item-container">
-                                            <table className="curr-item">
-                                                
-                                                <tr>
-                                                    <th>Ảnh</th>
-                                                    <th>Tên sản phẩm</th>
-                                                    <th>Giá</th>
-                                                    <th>Số lượng</th>
-                                                    <th>Tổng</th>
-                                                </tr>
-                                                
-                                                <tr>
-                                                    <td className="text-center">
-                                                        <img className="h-full w-16 rounded-md" src={product.Url} alt={product.name} />
-                                                    </td>
-                                                    <td className="text-center">
-                                                        <div>{product.Name}</div>
-                                                    </td>
-                                                    <td className="text-center">
-                                                        {parseInt((product.Price * (100 - product.discount)) / 100).toLocaleString('vi', {
-                                                            style: 'currency',
-                                                            currency: 'VND'
-                                                        })}{' '}
-                                                    </td>
-                                                    <td className="text-center">
-                                                        <div>{quantity}</div>
-                                                    </td>
-                                                    <td>
-                                                        <div>
-                                                            {parseInt(((product.Price * (100 - product.discount)) / 100) * quantity).toLocaleString(
-                                                                'vi',
-                                                                {
-                                                                    style: 'currency',
-                                                                    currency: 'VND'
-                                                                }
-                                                            )}{' '}
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </div> */}
                                         <div>
                                             <TableContainer className=" " component={Paper}>
                                                 <Table aria-label="simple table">
@@ -460,7 +465,7 @@ export default function ProductDetails() {
                                                     <TableBody>
                                                         <TableRow>
                                                             <TableCell>
-                                                                <div className="     flex justify-center">
+                                                                <div className="flex justify-center">
                                                                     <img className="h-full w-16 rounded-md" src={product.Url} alt={product.name} />
                                                                 </div>
                                                             </TableCell>
@@ -495,45 +500,74 @@ export default function ProductDetails() {
                                         </div>
 
                                         <hr className="border  border-slate-300 my-2 w-full" />
-
-                                        <div className="flex place-content-between">
-                                            <div>
-                                                <div className="">
-                                                    <input
-                                                        type="radio"
-                                                        name="paymentMethod"
-                                                        value="COD"
-                                                        checked={paymentMethod === 'COD'}
-                                                        onChange={() => setPaymentMethod('COD')}
-                                                    />
-                                                    Thanh toán khi nhận hàng
-                                                </div>
-
-                                                <div className=" ">
-                                                    <input
-                                                        type="radio"
-                                                        name="paymentMethod"
-                                                        value="vnpay"
-                                                        checked={paymentMethod === 'vnpay'}
-                                                        onChange={() => setPaymentMethod('vnpay')}
-                                                    />
-                                                    Thanh toán nhanh cùng VNPay
+                                        <div>
+                                            <div className="font-bold flex place-content-end">
+                                                <div className="mr-2">Tổng cộng:</div>
+                                                <div>
+                                                    {parseInt(((product.Price * (100 - product.discount)) / 100) * quantity).toLocaleString('vi', {
+                                                        style: 'currency',
+                                                        currency: 'VND'
+                                                    })}{' '}
                                                 </div>
                                             </div>
 
-                                            <div className="buttons">
+                                            <div className="font-bold flex place-content-end">
+                                                <div className="mr-2">Số điểm bonus sẽ tích được:</div>
+                                                <div>{calculateBonus}</div>
+                                            </div>
+                                        </div>
+                                        <div className="flex place-content-between">
+                                            <div>
+                                                <div className="flex mb-2">
+                                                    <label className="flex">
+                                                        <input
+                                                            type="radio"
+                                                            name="paymentMethod"
+                                                            value="COD"
+                                                            checked={paymentMethod === 'COD'}
+                                                            onChange={() => setPaymentMethod('COD')}
+                                                        />
+                                                        <div className="flex align-middle items-center text-lg">
+                                                            Thanh toán khi nhận hàng
+                                                            <img className="w-1/12 mx-2" src={COD} alt="" />
+                                                        </div>
+                                                    </label>
+                                                </div>
+
+                                                <div className="flex">
+                                                    <label className="flex">
+                                                        <input
+                                                            type="radio"
+                                                            name="paymentMethod"
+                                                            value="vnpay"
+                                                            checked={paymentMethod === 'vnpay'}
+                                                            onChange={() => setPaymentMethod('vnpay')}
+                                                        />
+                                                        <div className="flex items-center text-lg">
+                                                            Thanh toán nhanh cùng VNPay
+                                                            <img className="w-2/12 m-2" src={VNPay} alt="" />
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex gap-4 items-center ">
                                                 {/* <button className="decision" onClick={close}></button> */}
-                                                <Button variant="contained" onClick={close}>
-                                                    Hủy
-                                                </Button>
-                                                <Button
-                                                    variant="contained"
-                                                    onClick={() => {
-                                                        handlePayment()
-                                                    }}
-                                                >
-                                                    Đặt hàng
-                                                </Button>
+                                                <div>
+                                                    <Button
+                                                        variant="contained"
+                                                        onClick={() => {
+                                                            handlePayment()
+                                                        }}
+                                                    >
+                                                        Đặt hàng
+                                                    </Button>
+                                                </div>
+                                                <div>
+                                                    <Button variant="contained" onClick={close}>
+                                                        Hủy
+                                                    </Button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -542,7 +576,7 @@ export default function ProductDetails() {
                         )}
                     </div>
                 </div>
-                <div className="description">
+                <div className="description rounded-lg">
                     <div>
                         <div className="font-bold text-xl my-4">Mô tả</div>
                         <div className="mb-4">{product.Description}</div>
@@ -582,7 +616,7 @@ export default function ProductDetails() {
                         </table>
                     </div>
                 </div>
-                <div className="feedback">
+                <div className="feedback rounded-lg">
                     <div className="font-bold my-4 text-xl ">Đánh giá sản phẩm </div>
 
                     <hr className="border border-slate-300  mt-1" />
@@ -596,13 +630,19 @@ export default function ProductDetails() {
                                         </div>
                                         <div className="mx-4">
                                             <div className="">
-                                                <h4 className=" ">{rating.Name}</h4>
+                                                <div className="flex">
+                                                    <h4 className="font-bold ">{rating.Name}</h4>
+                                                </div>
 
-                                                <div className="text-sm">
+                                                <div className="text-sm flex">
                                                     <Rating name="hover-feedback " size="small" value={rating.StarPoint} precision={1} readOnly />
+                                                    <div className="mx-4"></div>
+                                                    <div className="text-sm text-center flex align-middle">
+                                                        {new Date(rating.createAt).toLocaleDateString()}
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <p>{rating.Content}</p>
+                                            <p className="mt-4">{rating.Content}</p>
                                         </div>
                                     </div>
                                     <div className="mx-8">{getFeedback()}</div>

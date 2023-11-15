@@ -56,7 +56,7 @@ const getOrderById = async (id) => {
     }
 };
 
-const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentMethod, Status, Items) => {
+const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentMethod, Items) => {
     try {
         let poolConnection = await sql.connect(config);
         const orderQuery = `
@@ -89,10 +89,9 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                 @PaymentMethod,
                 0,
                 GETDATE(),
-                @Status,
                 0,
                 N'Chờ duyệt',
-                'UnPaid'
+                N'Chưa Thanh Toán'
             );
         `;
         const orderRequest = poolConnection.request()
@@ -104,7 +103,6 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
             .input('Note', sql.NVarChar, Note)
             .input('TotalAmount', sql.Int, TotalAmount)
             .input('PaymentMethod', sql.NVarChar, PaymentMethod)
-            .input('Status', sql.NVarChar, Status);
         const orderResult = await orderRequest.query(orderQuery);
         const orderId = orderResult.recordset[0].Id;
         for (const item of Items) {
@@ -122,6 +120,10 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                     @Price,
                     GETDATE()
                 );
+
+                UPDATE Products
+                SET Stock = Stock - @Quantity
+                WHERE Id = @ProductId
             `;
             const itemRequest = poolConnection.request()
                 .input('ProductId', sql.Int, item.id)
@@ -192,7 +194,7 @@ const loadUnSeen = async (id) => {
     }
 }
 
-const changetoSeen = async(id, userid) => {
+const changeToSeen = async(id, userid) => {
     try {
         let poolConnection = await sql.connect(config);
         const result = await poolConnection.request()
@@ -230,7 +232,139 @@ const pieChartData = async() => {
         console.log("error: ", error);
     }
 }
-// dasda
+
+
+const addCustomProduct = async (productName, Description, Price, Category, Size, material, Quantity, userId, AddressID, PhoneNumber, TotalAmount, PaymentMethod, ComponentItems) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const productQuery = await poolConnection.request()
+            .input('Name', productName)
+            .input('Description', Description)
+            .input('Price', Price)
+            .input('Category', Category)
+            .input('Size', Size)
+            .input('material', material)
+            .query(`
+                INSERT INTO dbo.Products
+                (
+                    Name,
+                    Description,
+                    Price,
+                    Status,
+                    Category,
+                    Size,
+                    material,
+                    isDeleted,
+                    CreatedAt,
+                    UpdateAt
+                )
+                OUTPUT Inserted.Id
+                VALUES
+                (
+                    @Name,
+                    @Description,
+                    @Price,
+                    'Enable',
+                    @Category,
+                    @Size,
+                    @material,
+                    NULL,
+                    GETDATE(),
+                    GETDATE()
+                )
+            `);
+        const productId = productQuery.recordset[0].Id;
+        // console.log(productId);
+        const orderQuery = await poolConnection.request()
+            .input('UserID', userId)
+            .input('AddressID', sql.Int, AddressID)
+            .input('PhoneNumber', PhoneNumber)
+            .input('TotalAmount', TotalAmount)
+            .input('PaymentMethod', PaymentMethod)
+            .query(`
+                INSERT INTO dbo.Orders
+                (
+                    UserID,
+                    OrderDate,
+                    PaymentDate,
+                    AddressID,
+                    PhoneNumber,
+                    TotalAmount,
+                    PaymentMethod,
+                    IsDeleted,
+                    UpdateAt,
+                    View_Status,
+                    Status_Shipping,
+                    Status_Paid
+                )
+                OUTPUT Inserted.Id
+                VALUES
+                (
+                    @UserID,
+                    GETDATE(),
+                    GETDATE(),
+                    @AddressID,
+                    @PhoneNumber,
+                    @TotalAmount,
+                    @PaymentMethod,
+                    NULL,
+                    GETDATE(),
+                    0,
+                    N'Chờ Duyệt',
+                    N'Chưa Thanh Toán'
+                )
+            `);
+        const orderId = orderQuery.recordset[0].Id;
+        // console.log(orderId);
+        const OrderItem = await poolConnection.request()
+            .input('ProductId', productId)
+            .input('OrdersId', orderId)
+            .input('Quantity', Quantity) // Add a value for Quantity
+            .input('Price', Price)
+            .query(`
+                INSERT INTO dbo.OrderItem
+                (
+                    ProductId,
+                    OrdersId,
+                    Quantity,
+                    Price,
+                    CreatedAt
+                )
+                VALUES
+                (
+                    @ProductId,
+                    @OrdersId,
+                    @Quantity,
+                    @Price,
+                    GETDATE()
+                )
+            `);
+
+        for (const item of ComponentItems) {
+            const itemQuery = `
+                INSERT INTO dbo.CustomComponent
+                (
+                    ProductID,
+                    ComponentID
+                )
+                VALUES
+                (
+                    @ProductID,
+                    @ComponentID
+                )
+            `;
+            const itemRequest = poolConnection.request()
+                .input('ProductID', productId)
+                .input('ComponentID',sql.Int, parseInt(item));
+            await itemRequest.query(itemQuery);
+        }
+
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
+
+
 module.exports = {
     getAllOrder,
     getOrderById,
@@ -239,6 +373,7 @@ module.exports = {
     getAllOrderItemByOrderID,
     getOrderByUserId,
     loadUnSeen,
-    changetoSeen,
-    pieChartData
+    changeToSeen,
+    pieChartData,
+    addCustomProduct
 }

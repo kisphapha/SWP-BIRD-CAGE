@@ -56,22 +56,23 @@ const Profile = (props) => {
         )
         if (response.data) {
             sessionStorage.setItem('loginedUser', JSON.stringify(response.data))
-            alert('User is updated')
+            alert('Đã cập nhật hồ sơ')
+            window.location.reload()
         }
     }
 
     return (
         <div>
             <div className="form-header">
-                <h1>My Profile</h1>
-                <p>Manage your profile to increase your account's security</p>
+                <h1>Hồ sơ cá nhân</h1>
+                <p>Quản lý hồ sơ của bạn để tăng độ tin cậy</p>
             </div>
             <hr />
             <div className="form-inner">
                 {props.user != null && (
                     <table>
                         <tr>
-                            <td>Name </td>
+                            <td>Tên</td>
                             <td>
                                 <TextField
                                     fullWidth
@@ -83,13 +84,13 @@ const Profile = (props) => {
                             </td>
                         </tr>
                         <tr>
-                            <td>Email </td>
+                            <td>Email</td>
                             <td>
                                 <TextField fullWidth label={'Email'} variant="standard" value={props.user.Email} readOnly />
                             </td>
                         </tr>
                         <tr>
-                            <td>Phone number</td>
+                            <td>SĐT</td>
                             <td>
                                 <TextField
                                     fullWidth
@@ -101,7 +102,7 @@ const Profile = (props) => {
                             </td>
                         </tr>
                         <tr>
-                            <td>Date of Birth</td>
+                            <td>Ngày sinh</td>
                             <td>
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DatePicker label="Ngày sinh" value={dayjs(dob)} onChange={(value) => handleDOBChange(value)} />

@@ -16,19 +16,23 @@ var cron = require('node-cron');
 const port = 3000;
 const cors = require('cors');
 const axios = require('axios');
-// const swaggerUi = require('swagger-ui-express');
-// const swaggerDocument = require('./swagger.json');
+const swaggerJSDoc= require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express')
 
-// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+const options = {
+    swaggerDefinition: {
+      info: {
+        title: 'Node JS shipper API documentation',
+        version: '1.0.0',
+      },
+    },
+    apis: ['server.js'],
+  };
 
+const swaggerSpec = swaggerJSDoc(options);
 
-// Initialize swagger-jsdoc -> returns validated swagger spec in json format
-// var options = {
-//   explorer: true
-// };
-
-// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
-
+shipperRoutes.use('/api-docs-shipperRoutes', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// console.log(swaggerSpec);
 app.use(helmet());
 app.use(cors({
     origin: '*',
@@ -41,6 +45,13 @@ app.use((err, req, res, next) => {
     res.status(err.status || 500);
     res.json()
 })
+
+/**
+ *   @swagger
+ *      /products:
+ *          /get
+ *
+ */
 app.use("/products", productRoutes);
 app.use("/category", categoryRoutes);
 app.use("/users", userRoutes);
@@ -51,6 +62,7 @@ app.use("/payment", paymentRoutes);
 app.use("/shipper", shipperRoutes);
 app.use("/component", componentRouter);
 
+// test
 
 console.log("Starting... at port: ", port);
 
@@ -64,4 +76,9 @@ app.listen(port, hostname, () => {
     //     console.log(res.data);
     //     // http://localhost:3000/admin/deleteJunkData
     // });
+
+  //   cron.schedule('* 55 * * * *', async () => {
+  //     const res = await axios.get("http://localhost:3000/admin/deleteExpiresVoucher")
+  //     console.log(res.data);
+  // });
 });

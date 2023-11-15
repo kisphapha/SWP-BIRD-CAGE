@@ -51,7 +51,6 @@ const addOrderToDB = async (req, res) => {
 const getOrderItemByOrderID = async (req, res) => {
     try {
         const order = await Order.getAllOrderItemByOrderID(req.params.id);
-        console.log(order)
         res.json(order);
     } catch (error) {
         res.status(500).json({ message: error.message })
@@ -77,7 +76,7 @@ const loadUnSeen = async (req, res) => {
 }
 
 // cach dung cho tui frontend (luc user bam vao cai chuong thi no gui 2 tham so la id vs status = 1 xuong)
-const changetoSeen = async (req, res) => {
+const changeToSeen = async (req, res) => {
     try {
         const id = req.body.id;
         const userid = req.body.userid;
@@ -87,13 +86,38 @@ const changetoSeen = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 }
-const pieChartData = async(req, res) => {
+const pieChartData = async (req, res) => {
     try {
         const order = await Order.pieChartData();
         res.json(order);
     } catch (error) {
         res.status(500).json({ message: error.message });
 
+    }
+}
+
+const addCustomProduct = async (req, res) => {
+    try {
+
+        const productName = req.body.productName;
+        const Description = req.body.Description;
+        const Price = req.body.Price;
+        const Category = req.body.Category;
+        const Size = req.body.Size;
+        const material = req.body.material;
+
+        const userId = req.body.userId;
+        const AddressID = req.body.AddressID;
+        const PhoneNumber = req.body.PhoneNumber;
+        const TotalAmount = req.body.TotalAmount;
+        const PaymentMethod = req.body.PaymentMethod;
+        const Quantity = req.body.Quantity;
+
+        const ComponentItems = req.body.ComponentItems;
+        const order = await Order.addCustomProduct(productName, Description, Price, Category, Size, material, Quantity, userId, AddressID, PhoneNumber, TotalAmount, PaymentMethod, ComponentItems);
+        res.json({ status: "Success", result: respone });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 }
 
@@ -105,7 +129,7 @@ module.exports = {
     getOrderByUserId,
     changeStatus_Paid,
     loadUnSeen,
-    changetoSeen,
-    pieChartData
+    changeToSeen,
+    pieChartData,
+    addCustomProduct
 }
-

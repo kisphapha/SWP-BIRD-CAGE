@@ -70,14 +70,173 @@ const updateUser = async (name, email, phone, dateOfBirth) => {
 const getPointForUser = async(id, point) => {
     try {
         let poolConnection = await sql.connect(config);
-        await poolConnection.request()
+        const response = await poolConnection.request()
         .input('id', id)
         .input('point', point)
         .query(`
             UPDATE dbo.[User]
             SET Point = Point + @point 
             WHERE Id = @id
+
+            SELECT *
+            FROM [dbo].[User]
+            WHERE Id = @Id;
         `)
+        return response.recordset[0]
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
+
+const filterUser = async (name, email, phone, dob, lower_point, upper_point, create, status, role, page) => {
+    try {
+        const perPage = 10;
+        const poolConnection = await sql.connect(config);
+
+        const conditions = [];
+        if (email) conditions.push(`email LIKE '%${email}%'`);
+        if (name) conditions.push(`Name LIKE N'%${name}%'`);
+        if (phone) conditions.push(`Name LIKE N'%${phone}%'`);
+        if (dob) conditions.push(`DateOfBirth LIKE '%${dob}%'`);
+        if (role) conditions.push(`role LIKE '%${role}%'`);
+        if (status && status !== "All") conditions.push(`Status = '${status}'`);
+        if (upper_point) conditions.push(`Point <= ${upper_point}`);
+        if (lower_point) conditions.push(`Point >= ${lower_point}`);
+        if (create) conditions.push(`CreatedAt LIKE '%${create}%'`);
+
+        const conditionString = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
+        const query = `
+            SELECT * FROM [User] 
+            ${conditionString}
+            ORDER BY Id ASC
+            OFFSET ${(page - 1) * perPage} ROWS
+            FETCH NEXT ${perPage} ROWS ONLY;
+        `;
+
+        const result = await poolConnection.request().query(query);
+        const json = { data: result.recordset };
+
+        const linesQuery = `
+            SELECT * FROM [User]
+            ${conditionString}
+        `;
+
+        const linesResult = await poolConnection.request().query(linesQuery);
+        json.lines = linesResult.recordset[0];
+        return json;
+    } catch (error) {
+        console.log("error: ", error);
+    }
+};
+
+const  addVoucher = async (UserID, discount) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('UserID', UserID)
+        .input('discount', discount)
+        .query(`
+        insert into Voucher(
+            [UserID],
+            [discount],
+            [CreatedAt],
+            [UsedAt],
+            [ExpireAt]
+        )
+        values(
+            @UserID,
+            @discount,
+            GETDATE(),
+            NULL,
+            DATEADD(MONTH, 1, GETDATE())
+        )
+        `)
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
+
+const getVoucherByUserID = async(userID) =>{
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('UserID', userID)
+        .query(`
+        select * from Voucher
+        where UserID = @UserID
+        `)
+        return result.recordset;
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
+
+const exchangePoint = async(UserID, Point) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('UserID', UserID)
+        .input('Point', Point)
+        .query(`
+            UPDATE dbo.[User]
+            SET Point = Point - @Point
+            WHERE id = @UserID
+        `)
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
+
+const replyFeedBack = async(id, ReplyContent, Replier) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('id', id)
+        .input('ReplyContent', ReplyContent)
+        .input('Replier', Replier)
+        .query(`
+            UPDATE dbo.Feedback
+            SET ReplyContent = @ReplyContent , ReplyDate = GETDATE(), Replier = @Replier
+            WHERE id =@id
+        `)
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
+
+const addNotifications = async(content, userId) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('content', content)
+        .input('userId', userId)
+        .query(`
+        INSERT INTO dbo.Notification
+        (
+            content,
+            userId
+        )
+        VALUES
+        (   @content,
+            @userId
+            )
+        `)
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
+
+const loadNotifications = async (userId) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('userId', userId)
+        .query(`
+        SELECT * FROM dbo.Notification
+	    WHERE userId = @userId
+        `)
+        return result.recordset;
     } catch (error) {
         console.log("error: ", error);
     }
@@ -88,5 +247,12 @@ module.exports = {
     getUserByEmail,
     newUser,
     updateUser,
-    getPointForUser
+    getPointForUser,
+    filterUser,
+    addVoucher,
+    getVoucherByUserID,
+    exchangePoint,
+    replyFeedBack,
+    addNotifications,
+    loadNotifications
 };

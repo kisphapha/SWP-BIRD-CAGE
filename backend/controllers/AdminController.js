@@ -39,27 +39,15 @@ const newUser = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
 const updateUser = async (req, res) => {
-    try {
-        const name = req.query.name;
-        const email = req.query.email;
-        const phone = req.query.phone;
-        const dob = req.query.dob;
-
-        await Admin.updateUser(name, email, phone, dob);
-        res.json({ message: "done" });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-const deleteUser = async (req, res) => {
     try {
         const id = req.body.userId
         const status = req.body.status
         const reasonBlock = req.body.ReasonBlock
-        const admin = await Admin.deleteUser(id,status,reasonBlock);
-        res.json("delete success");
+        const role = req.body.role
+        const admin = await Admin.updateUser(id,status,role,reasonBlock);
+        res.json({ message: "done" });
     }catch (error){
         res.status(500).json({message: error.message})
     }
@@ -114,6 +102,14 @@ const orderStatisticByMonth = async (req, res) => {
     }
 }
 
+const deleteExpiresVoucher = async(req, res) => {
+    try {
+        const deleteAt = await Admin.deleteExpiresVoucher();
+        res.json({message: "success"});
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
 
 module.exports = {
     getOrderBy5Month,
@@ -121,10 +117,10 @@ module.exports = {
     getAllUser,
     newUser,
     updateUser,
-    deleteUser,
     loadUnSeen,
     changetoSeen,
     getMonthLyIncome,
     deleteJunkData,
-    orderStatisticByMonth
+    orderStatisticByMonth,
+    deleteExpiresVoucher
 }

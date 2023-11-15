@@ -105,7 +105,7 @@ function Header() {
                 <div className="service">
                     <div className="contact">
                         <div>
-                            Chăm sóc khách hàng: <Link to="/user/contact">0935039353</Link>
+                            Chăm sóc khách hàng: <Link to="/Contact">0935039353</Link>
                         </div>
                     </div>
                 </div>
@@ -133,7 +133,7 @@ function Header() {
                         </Link>
 
                         <ul className="user-info-list">
-                            {JSON.parse(sessionStorage.loginedUser).Role == 'Admin' ? (
+                            {user.Role == 'Admin' || user.Role == 'Staff' ? (
                                 <Link to="/admin" className="user-info-suboptions">
                                     <li>Thống kê</li>
                                 </Link>
