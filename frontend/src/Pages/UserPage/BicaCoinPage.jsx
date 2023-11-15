@@ -13,8 +13,6 @@ import Confetti from 'react-confetti'
 import PropTypes from 'prop-types';
 
 
-
-
 const BicaCoinPage = () => {
     const { user } = useContext(UserContext);
     const { width, height } = useWindowSize()
