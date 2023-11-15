@@ -16,6 +16,8 @@ const Profile = (props) => {
 
     const [name, setName] = useState('')
     const [phoneNumber, setPhoneNumber] = useState('')
+    const [checkValidation, setCheckValidation] = useState(true)
+    const [checkNumChar, setCheckNumChar] = useState(true)
     const [dob, setDob] = useState('')
 
     const [tempName, setTempName] = useState('')
@@ -36,8 +38,44 @@ const Profile = (props) => {
         setTempName(event.target.value)
     }
 
+    const checkPattern = (inputValue, pattern) => {
+        const regex = new RegExp(pattern)
+        return regex.test(inputValue)
+    }
+
+    const handleKeyDown = (event) => {
+        const forbiddenKeys = ['e', '+', '-', '.'];
+
+        // Prevent the characters "e", "+", and "-" from being entered.
+        if (forbiddenKeys.includes(event.key)) {
+            event.preventDefault();
+        }
+
+        // Prevent input when the length is 11 and the key pressed is not delete, backspace, or arrow keys.
+        if (event.target.value.length >= 11 && !['Delete', 'Backspace', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+            event.preventDefault();
+        }
+    }
+
     const handlePhoneNumberChange = (event) => {
-        setTempPhone(event.target.value)
+        let inputPhoneNumber = event.target.value
+
+
+        // Regular expression pattern for a valid phone number. You can adjust it as needed.
+        const phonePattern =
+            '(032|033|034|035|036|037|038|039|096|097|098|086|083|084|085|081|082|088|091|094|070|079|077|076|078|090|093|089|056|058|092|059|099)[0-9]{7}'
+
+        if (!checkPattern(inputPhoneNumber, phonePattern)) {
+            setCheckValidation(false)
+        } else {
+            setCheckValidation(true)
+            if (inputPhoneNumber.length > 9 && inputPhoneNumber.length <= 11) {
+                setCheckNumChar(true)
+            } else {
+                setCheckNumChar(false)
+            }
+        }
+        setPhoneNumber(event.target.value)
     }
 
     const handleDOBChange = (value) => {
@@ -97,7 +135,9 @@ const Profile = (props) => {
                                     label={'Số điện thoại'}
                                     variant="standard"
                                     onChange={handlePhoneNumberChange}
-                                    value={tempPhone ? tempPhone : phoneNumber}
+                                    onKeyDown={handleKeyDown}
+                                    error={!checkValidation || !checkNumChar}
+                                    helperText={(!checkValidation || !checkNumChar) ? (!phoneNumber ? 'Xin hãy nhập số điện thoại' : 'Số điện thoại không hợp lệ') : ('')}
                                 />
                             </td>
                         </tr>
