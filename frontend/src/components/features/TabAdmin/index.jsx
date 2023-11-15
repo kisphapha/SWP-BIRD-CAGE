@@ -7,14 +7,20 @@ import AddIcon from '@mui/icons-material/Add'
 import InventoryIcon from '@mui/icons-material/Inventory'
 import CategoryIcon from '@mui/icons-material/Category'
 import logo from '../../../image/icons/logo.png'
+import LogoutIcon from '@mui/icons-material/Logout'
 
-export default function TabAdmin() {
+export default function TabAdmin({ user }) {
     const navigate = useNavigate()
     const [activeButton, setActiveButton] = useState('/admin')
 
     const handleButtonClick = (path) => {
         navigate(path)
         setActiveButton(path)
+    }
+    function handleSignOut(e) {
+        sessionStorage.removeItem('loginedUser')
+        navigate('/')
+        window.location.reload()
     }
 
     return (
@@ -33,24 +39,28 @@ export default function TabAdmin() {
                     >
                         DashBoard
                     </Button>
-                    <Button
-                        startIcon={<AddIcon />}
-                        onClick={() => handleButtonClick('/admin/NewProduct')}
-                        fullWidth
-                        classes={{ root: activeButton === '/admin/NewProduct' ? 'active-dashboard' : '' }}
-                        style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
-                    >
-                        Thêm sản phẩm
-                    </Button>
-                    <Button
-                        startIcon={<AddIcon />}
-                        onClick={() => handleButtonClick('/admin/NewComponent')}
-                        fullWidth
-                        classes={{ root: activeButton === '/admin/NewComponent' ? 'active-dashboard' : '' }}
-                        style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
-                    >
-                        Thêm thành phần lồng
-                    </Button>
+                    {user.Role == 'Admin' && (
+                        <>
+                            <Button
+                                startIcon={<AddIcon />}
+                                onClick={() => handleButtonClick('/admin/NewProduct')}
+                                fullWidth
+                                classes={{ root: activeButton === '/admin/NewProduct' ? 'active-dashboard' : '' }}
+                                style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
+                            >
+                                Thêm sản phẩm
+                            </Button>
+                            <Button
+                                startIcon={<AddIcon />}
+                                onClick={() => handleButtonClick('/admin/NewComponent')}
+                                fullWidth
+                                classes={{ root: activeButton === '/admin/NewComponent' ? 'active-dashboard' : '' }}
+                                style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
+                            >
+                                Thêm thành phần lồng
+                            </Button>
+                        </>
+                    )}
                     {/* <Button
                         onClick={() => handleButtonClick('/admin/NewCoupon')}
                         fullWidth
@@ -87,7 +97,7 @@ export default function TabAdmin() {
                         classes={{ root: activeButton === '/admin/Categories' ? 'active-dashboard' : '' }}
                         style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
                     >
-                        Thể loại
+                        Danh mục sản phẩm
                     </Button>
                     {/* <Button
                         onClick={() => handleButtonClick('/admin/Collection')}
@@ -126,6 +136,17 @@ export default function TabAdmin() {
                         style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
                     >
                         Đơn hàng
+                    </Button>
+
+                    <Button
+                        onClick={(e) => handleSignOut(e)}
+                        startIcon={<LogoutIcon />}
+                        fullWidth
+                        // classes={{ root: activeButton === '/admin/Coupons' ? 'active-dashboard' : '' }}
+                        style={{ textTransform: 'none', display: 'flex', justifyContent: 'flex-start', textAlign: 'left' }}
+                        // disabled
+                    >
+                        Logout
                     </Button>
                 </div>
             </div>

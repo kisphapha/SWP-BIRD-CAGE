@@ -28,7 +28,6 @@ export default function Home() {
         fetchCate()
     }, [])
 
-
     const navigate = useNavigate()
 
     const handleButtonClick = (path) => {
@@ -46,10 +45,10 @@ export default function Home() {
                 <div className="body-logo">
                     <img className="w-full h-auto" src={banner} onClick={() => handleButtonClick('/Custom')} />
                 </div>
-                <div className="body-bottom">
-                    
-                </div>
-                { cates.map((cate) => <CardList key={cate.id} categoryId={cate.id} category={cate.name} />)}
+                <div className="body-bottom"></div>
+                {cates.map((cate) => (
+                    <CardList key={cate.id} categoryId={cate.id} category={cate.name} />
+                ))}
             </main>
         </div>
     )
