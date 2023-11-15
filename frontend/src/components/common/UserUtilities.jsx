@@ -22,6 +22,11 @@ const UserUtilities = (props) => {
                         <Assignment /> Đơn mua
                     </div>
                 </NavLink>
+                <NavLink to="/user/customPurchase" activeClassName="active">
+                    <div className="ult-txt">
+                        <Assignment /> Đơn mua custom
+                    </div>
+                </NavLink>
                 <NavLink to="/user/address" activeClassName="active">
                     <div className="ult-txt">
                         <LocationOn /> Địa chỉ

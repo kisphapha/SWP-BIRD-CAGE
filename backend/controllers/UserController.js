@@ -87,6 +87,19 @@ const addVoucher = async(req, res) => {
 
 }
 
+const updateVoucher = async (req, res) => {
+    try {
+        const Id = req.body.Id;
+
+        await User.addVoucher(Id);
+        res.status(200).json({ message: "success" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+
+}
+
+
 const getVoucherByUserID = async(req, res) => {
     try {
         const userID= req.params.UserID;
@@ -159,5 +172,6 @@ module.exports = {
     exchangePoint,
     replyFeedBack,
     addNotifications,
-    loadNotifications
+    loadNotifications,
+    updateVoucher
 };

@@ -110,6 +110,10 @@ export default function Cart() {
                                 point: calculateBonus
                             })
 
+                            await axios.post('https://localhost:3000/users/updateVoucher', {
+                                Id : orderVoucher
+                            })
+
                             if (paymentMethod == 'vnpay') {
                                 const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
                                     amount: calculateGrandTotal(),
@@ -125,7 +129,7 @@ export default function Cart() {
                             } else {
                                 alert('Đặt hàng thành công')
                                 sessionStorage.setItem('cart', '{"products":[]}')
-                                sessionStorage.setItem("loginedUser",JSON.stringify(response.data))
+                                sessionStorage.setItem('loginedUser', JSON.stringify(response.data))
                                 window.location.reload(false)
                             }
                         } else {
