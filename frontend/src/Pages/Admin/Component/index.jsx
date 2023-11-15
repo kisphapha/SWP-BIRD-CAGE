@@ -26,6 +26,8 @@ import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import axios from 'axios'
 import EditComponentForm from '../EditComponentForm'
+import FilterAltIcon from '@mui/icons-material/FilterAlt'
+import FilterAlt from '@mui/icons-material/FilterAlt'
 
 export default function Components() {
     const [Components, setComponents] = useState([])
@@ -178,6 +180,9 @@ export default function Components() {
                             )
                     )}
                 </div>
+                {/* <div>
+                    <FilterAlt />
+                </div> */}
             </div>
 
             <TableContainer component={Paper}>
