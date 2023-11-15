@@ -49,11 +49,11 @@ const BicaCoinPage = () => {
 
     const getAVoucher = () => {
         const probability_distrubution = [
-            { start: 5, end: 15, probability: 0 }, 
-            { start: 16, end: 30, probability: 50 },
-            { start: 31, end: 45, probability: 74 },
-            { start: 46, end: 60, probability: 90 },
-            { start: 61, end: 75, probability: 96 },
+            { start: 5, end: 15, probability: 0 },
+            { start: 16, end: 30, probability: 70 },
+            { start: 31, end: 45, probability: 88 },
+            { start: 46, end: 60, probability: 93 },
+            { start: 61, end: 75, probability: 97 },
             { start: 76, end: 90, probability: 99 }
 
         ]
