@@ -55,9 +55,9 @@ export default function Cart() {
 
     useEffect(() => {
         loadCartData()
-        fetchVouchers()
+        fetchVouchers() 
         fetchAddresses()
-    }, [])
+    },[])
 
     const handleDecrement = (productId) => {
         const updatedCart = { ...cartData }
@@ -108,6 +108,10 @@ export default function Cart() {
                             const response = await axios.post('http://localhost:3000/users/updatePoint', {
                                 id: user.Id,
                                 point: calculateBonus
+                            })
+
+                            await axios.post('https://localhost:3000/users/updateVoucher', {
+                                Id : orderVoucher
                             })
 
                             if (paymentMethod == 'vnpay') {

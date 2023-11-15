@@ -38,6 +38,7 @@ export default function VoucherPage() {
                             <p>Áp dụng ngay nào </p>
                         </div>
                         {voucher.map((voucher) => (
+                            voucher.UsedAt != null &&  (
                             <div key={voucher.Id }  className="flex-col bg-slate-50 m-2 p-2 rounded-lg">
                                 <div>Hết hạn : {voucher.ExpireAt.substr(0,10)} </div>
                                 <div className="flex place-content-between">
@@ -63,7 +64,7 @@ export default function VoucherPage() {
                                     </div>
                                 </div>
                             </div>
-                        )) }
+                        ))) }
                        
                     </div>
                 </div>
