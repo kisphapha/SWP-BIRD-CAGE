@@ -1,20 +1,65 @@
-﻿import React, { useState, useEffect } from 'react'
+﻿import React, { useContext, useState, useEffect } from 'react'
 import CategoryNav from '../../components/features/CategoryNav'
 import MenuItem from '@mui/material/MenuItem'
-import { UserProvider } from '../../UserContext'
+import { UserContext, UserProvider } from '../../UserContext'
 import Header from '../../components/common/Header'
+import AddressPopup from '../../components/features/AddressPopup/AddressPopup'
+import Popup from 'reactjs-popup'
 import DeleteIcon from '@mui/icons-material/Delete'
 import ClearIcon from '@mui/icons-material/Clear'
 import Navbar from '../../components/common/Navbar'
 import { Button, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material'
 import axios from 'axios'
+import { ToastContainer, toast } from 'react-toastify'
+
 
 export default function Custom() {
+    const { user } = useContext(UserContext)
     const [categories, setCategories] = useState([])
     const [components, setComponents] = useState([])
     const [tmpName, setTempName] = useState('')
     const [tmpDescription, setTempDescription] = useState('')
     const [selectedImage, setSelectedImage] = useState(null)
+    const [orderAddress, setOrderAddress] = useState('')
+    const [addressList, setAddressList] = useState([])
+    const [phoneNumber, setPhoneNumber] = useState('')
+    const [paymentMethod, setPaymentMethod] = useState('COD')
+    const [checkValidation, setCheckValidation] = useState(true)
+    const [openPopup, setOpenPopup] = useState(false)
+
+    async function fetchAddresses() {
+        const response = await axios.get(`http://localhost:3000/address/${user.Id}`)
+        setAddressList(response.data)
+    }
+
+    const handlePhoneChange = (event) => {
+        let inputPhoneNumber = event.target.value
+
+        // Remove unwanted characters "e", "+", and "-"
+        inputPhoneNumber = inputPhoneNumber.replace(/[e+-]/gi, '')
+
+        // Regular expression pattern for a valid phone number. You can adjust it as needed.
+        const phonePattern =
+            '(032|033|034|035|036|037|038|039|096|097|098|086|083|084|085|081|082|088|091|094|070|079|077|076|078|090|093|089|056|058|092|059|099)[0-9]{7}'
+
+        if (inputPhoneNumber.length <= 11) {
+            if (checkPattern(inputPhoneNumber, phonePattern)) {
+                setCheckValidation(true)
+            } else {
+                setCheckValidation(false)
+            }
+        } else {
+            setValid(false)
+        }
+        setPhoneNumber(event.target.value)
+    }
+
+    const handleKeyDown = (event) => {
+        // Prevent the characters "e", "+", and "-" from being entered.
+        if (['e', '+', '-', '.'].includes(event.key)) {
+            event.preventDefault()
+        }
+    }
 
     const handleNameChange = (event) => {
         setTempName(event.target.value)
@@ -22,6 +67,14 @@ export default function Custom() {
 
     const handleDescriptionChange = (event) => {
         setTempDescription(event.target.value)
+    }
+
+    function isOrderAddressEmpty(orderAddress) {
+        return !orderAddress || orderAddress.trim() === ''
+    }
+
+    function isOrderAddressEmpty(orderAddress) {
+        return !orderAddress || orderAddress.trim() === ''
     }
 
     const componentType = ['Móc', 'Khung', 'Nan', 'Nắp', 'Đáy', 'Bình nước']
@@ -69,6 +122,83 @@ export default function Custom() {
         }
     }
 
+    const checkPattern = (inputValue, pattern) => {
+        const regex = new RegExp(pattern)
+        return regex.test(inputValue)
+    }
+
+    const handlePayment = async () => {
+        if (sessionStorage.loginedUser != null) {
+            if (orderAddress) {
+                if (phoneNumber) {
+                    console.log("payment")
+                    var components1 = []
+                    selectedComponents.map(selectedComponents=>{
+                        components1.push(selectedComponents.data.ID)
+                    })
+                    const res = await axios.post('http://localhost:3000/order/addCustomProduct', {
+                        productName: tmpName,
+                        Description: tmpDescription,
+                        Price: total,
+                        Category: categories[selectedImage - 1].id,
+                        Size: null,
+                        material: 'Custom',
+                        userId: user.Id,
+                        AddressID: orderAddress,
+                        PhoneNumber: phoneNumber,
+                        OrderDate: new Date().toISOString().slice(0, 10),
+                        PaymentDate: null,
+                        Note: '',
+                        // Them voucher zo sau
+                        TotalAmount: total,
+                        PaymentMethod: paymentMethod,
+                        Quantity: 1,
+                        ComponentItems: components1
+                    })
+                    const updatedUser = await axios.post('http://localhost:3000/users/updatePoint', {
+                        id: user.Id,
+                        point: (1 * total) / 1000
+                    })
+                    if (paymentMethod == 'vnpay') {
+                        const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
+                            amount: 1 * total,
+                            bankCode: '',
+                            language: 'vn',
+                            email: user.Email,
+                            phoneNumber: user.PhoneNumber,
+                            orderid: res.data.orderid
+                        })
+                        close()
+                        window.location.href = response.data.url
+                    } else {
+                        toast.dismiss()
+                        toast.success('Đặt hàng thành công', {
+                            position: 'bottom-left',
+                            autoClose: 1000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: false,
+                            draggable: true,
+                            progress: undefined,
+                            theme: 'colored'
+                        })
+                        sessionStorage.setItem('loginedUser', JSON.stringify(updatedUser))
+                        close()
+                        // sessionStorage.setItem('cart', '{"products":[]}')
+                        // window.location.reload(false)
+                    }
+                    // sessionStorage.setItem('cart', '{"products":[]}')
+                } else {
+                    alert('Please enter your phone number')
+                }
+            } else {
+                alert('Please enter your address')
+            }
+        } else {
+            alert('Đăng nhập để tiến hành thanh toán')
+        }
+    }
+
     function calculateTotalPrice(selectedComponents) {
         let total = 0
         selectedComponents.forEach((selectedComponent) => {
@@ -80,6 +210,7 @@ export default function Custom() {
 
     useEffect(() => {
         fetchCategories()
+        fetchAddresses()
     }, [])
 
     const defaultImageClass = 'h-64 w-64 m-2 transition-transform transform-gpu rounded-lg'
@@ -146,6 +277,7 @@ export default function Custom() {
                                     <TextField
                                         helperText={`Đặt tên cho sản phẩm`}
                                         fullWidth
+                                        required
                                         label="Tên sản phẩm"
                                         variant="standard"
                                         onChange={handleNameChange}
@@ -161,6 +293,7 @@ export default function Custom() {
 
                                                 <TextField
                                                     fullWidth
+                                                    required
                                                     select
                                                     helperText={`Chọn ${type.toLowerCase()}`}
                                                     label={type}
@@ -291,9 +424,216 @@ export default function Custom() {
                                 </div>
                             </div>
                             <div className="text-right">
-                                <Button variant="contained" className="">
-                                    Đặt hàng
-                                </Button>
+                                <Button variant="contained" onClick={() => {
+                                    var mess;
+                                    if (tmpName) {
+                                        selectedComponents.map((selectedComponent) => {
+                                            if (selectedComponent.data == null) {
+                                                mess = `Hãy chọn thành phần ${selectedComponent.type} cho lồng của bạn`
+                                            }
+                                        })
+                                    } else {
+                                        mess = "Hãy đặt tên cho lồng của bạn"
+                                    }
+                                    if (mess) {
+                                        alert(mess)
+                                    } else {
+                                        setOpenPopup(true)
+                                    }
+                                }}>Đặt hàng</Button>
+                                <Popup
+                                    open={openPopup}
+                                    closeOnDocumentClick={false}
+                                    position="right center"
+                                    modal
+                                    onClose={() => setOpenPopup(false)}
+                                >
+                                    {(close) => (
+                                        <div className="popup-order">
+                                            <h1>Thông tin người nhận</h1>
+                                            <div className="container">
+                                                <div className="adr-container">
+                                                    <div className="w-3/4">
+                                                        <TextField
+                                                            select
+                                                            required
+                                                            fullWidth
+                                                            label="Chọn địa chỉ của bạn"
+                                                            className="user-input"
+                                                            id="adrress"
+                                                            size="small"
+                                                            SelectProps={{
+                                                                native: true
+                                                            }}
+                                                            onChange={(event) => {
+                                                                setOrderAddress(event.target.value)
+                                                            }}
+                                                            error={isOrderAddressEmpty(orderAddress)}
+                                                            helperText={isOrderAddressEmpty(orderAddress) ? 'Xin hãy chọn địa chỉ' : ''}
+                                                        >
+                                                            <option value="" selected></option>
+                                                            {addressList.map((adr) => (
+                                                                <option key={adr} value={adr.ID}>
+                                                                    {adr.SoNha + ', ' + adr.PhuongXa + ', ' + adr.QuanHuyen + ', ' + adr.TinhTP}
+                                                                </option>
+                                                            ))}
+                                                        </TextField>
+                                                    </div>
+                                                    <div>
+                                                        <Popup trigger={<Button variant="contained">Thêm</Button>} position="right center" modal>
+                                                            {(close) => (
+                                                                <div className="popup-address">
+                                                                    <h1>Thêm địa chỉ</h1>
+                                                                    <AddressPopup user={user} fetchAddresses={fetchAddresses} close={close} />
+                                                                </div>
+                                                            )}
+                                                        </Popup>
+                                                    </div>
+                                                </div>
+                                                <div className="phone-container w-3/4">
+                                                    <TextField
+                                                        type="number"
+                                                        required
+                                                        fullWidth
+                                                        label="Số điện thoại"
+                                                        className="user-input"
+                                                        id="phoneNumber"
+                                                        size="small"
+                                                        value={phoneNumber}
+                                                        onChange={handlePhoneChange}
+                                                        onKeyDown={handleKeyDown}
+                                                        error={!checkValidation}
+                                                        helperText={!checkValidation ? 'Số điện thoại không hợp lệ' : ''}
+                                                    ></TextField>
+                                                </div>
+                                                <hr className="border  border-slate-300 my-2 w-full" />
+                                                <h1>{tmpName}</h1>
+                                            </div>
+                                            <div>
+                                                <TableContainer className="overflow-y-scroll h-96" component={Paper}>
+                                                    <Table aria-label="simple table">
+                                                        <TableHead>
+                                                            <TableRow>
+                                                                <TableCell>
+                                                                    <div className="text-center  font-bold text-base">Ảnh</div>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <div className="text-center font-bold  text-base">Tên thành phần</div>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <div className="text-center font-bold  text-base">Thời gian chế tác</div>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <div className="text-center font-bold  text-base">Giá</div>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        </TableHead>
+                                                        <TableBody>
+                                                            {selectedComponents.map((selectedComponent, index) => (
+                                                                <TableRow key={`a${index}`}>
+                                                                    <TableCell>
+                                                                        <div>
+                                                                            {selectedComponent.data?.Picture ? (
+                                                                                <img className="w-20 h-20" src={selectedComponent.data?.Picture} />
+                                                                            ) : (
+                                                                                <div className="h-20"></div>
+                                                                            )}
+                                                                        </div>
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                        <div>{selectedComponent.data?.Description || ''}</div>
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                        <div>{selectedComponent.data?.ProductionTime || 'N/A'}</div>
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                        <div>
+                                                                            {selectedComponent.data?.Price.toLocaleString('vi', { style: 'currency', currency: 'VND' }) ||
+                                                                                ''}
+                                                                        </div>
+                                                                    </TableCell>
+                                                                </TableRow>
+                                                            ))}
+                                                        </TableBody>
+                                                    </Table>
+                                                </TableContainer>
+                                            </div>
+
+                                            <hr className="border  border-slate-300 my-2 w-full" />
+                                            <div>
+                                                <div className="font-bold flex place-content-end">
+                                                    <div className="mr-2">Tổng cộng:</div>
+                                                    <div>
+                                                        {total.toLocaleString('vi', {
+                                                            style: 'currency',
+                                                            currency: 'VND'
+                                                        })}{' '}
+                                                    </div>
+                                                </div>
+
+                                                <div className="font-bold flex place-content-end">
+                                                    <div className="mr-2">Số điểm bonus sẽ tích được:</div>
+                                                    <div>{total / 1000}</div>
+                                                </div>
+                                            </div>
+                                            <div className="flex place-content-between">
+                                                <div>
+                                                    <div className="flex mb-2">
+                                                        <label className="flex">
+                                                            <input
+                                                                type="radio"
+                                                                name="paymentMethod"
+                                                                value="COD"
+                                                                checked={paymentMethod === 'COD'}
+                                                                onChange={() => setPaymentMethod('COD')}
+                                                            />
+                                                            <div className="flex align-middle items-center text-lg">
+                                                                Thanh toán khi nhận hàng
+                                                                {/* <img className="w-1/12 mx-2" src={COD} alt="" /> */}
+                                                            </div>
+                                                        </label>
+                                                    </div>
+
+                                                    <div className="flex">
+                                                        <label className="flex">
+                                                            <input
+                                                                type="radio"
+                                                                name="paymentMethod"
+                                                                value="vnpay"
+                                                                checked={paymentMethod === 'vnpay'}
+                                                                onChange={() => setPaymentMethod('vnpay')}
+                                                            />
+                                                            <div className="flex items-center text-lg">
+                                                                Thanh toán nhanh cùng VNPay
+                                                                {/* <img className="w-2/12 m-2" src={VNPay} alt="" /> */}
+                                                            </div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex gap-4 items-center ">
+                                                    {/* <button className="decision" onClick={close}></button> */}
+                                                    <div>
+                                                        <Button
+                                                            variant="contained"
+                                                            onClick={() => {
+                                                                handlePayment()
+                                                            }}
+                                                        >
+                                                            Thanh toán
+                                                        </Button>
+                                                    </div>
+                                                    <div>
+                                                        <Button variant="contained" onClick={close}>
+                                                            Hủy
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </Popup>
+
                             </div>
                         </div>
                     </div>

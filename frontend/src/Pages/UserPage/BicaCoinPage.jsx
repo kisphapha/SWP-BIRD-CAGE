@@ -10,7 +10,6 @@ import CategoryNav from '../../components/features/CategoryNav'
 import Popup from 'reactjs-popup'
 import { useWindowSize } from 'usehooks-ts'
 import Confetti from 'react-confetti'
-import PropTypes from 'prop-types'
 import axios from 'axios'
 
 
@@ -23,28 +22,26 @@ const BicaCoinPage = () => {
     const point = 1000
 
     const handleClick = () => {
-        getAVoucher()
-        window.scrollTo(0, 0)
         if (user.Point >= point) {
             addVoucher(getAVoucher())
             window.scrollTo(0, 0)
             setOpenPopup(true)
         } else {
-            alert("Tài khoản của bạn hiện chưa đủ Bica Coin. Hãy tích thêm thật nhiều và quay lại nhé ^^!")
+            alert('Tài khoản của bạn hiện chưa đủ Bica Coin. Hãy tích thêm thật nhiều và quay lại nhé ^^!')
         }
         
     }
 
     const addVoucher = async (discount) => {
-         await axios.post('http://localhost:3000/users/addVoucher', {
+        await axios.post('http://localhost:3000/users/addVoucher', {
             UserID: user.Id,
-            discount : discount
-         })
+            discount: discount
+        })
         const response = await axios.post('http://localhost:3000/users/exchangePoint', {
             UserID: user.Id,
             point: point
         })
-        sessionStorage.setItem("loginedUser", JSON.stringify(response.data))
+        sessionStorage.setItem('loginedUser', JSON.stringify(response.data))
     }
 
     const handleClose = (value) => {

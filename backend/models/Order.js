@@ -358,6 +358,7 @@ const addCustomProduct = async (productName, Description, Price, Category, Size,
                 .input('ComponentID',sql.Int, parseInt(item));
             await itemRequest.query(itemQuery);
         }
+        return orderId;
 
     } catch (error) {
         console.log("error: ", error);
