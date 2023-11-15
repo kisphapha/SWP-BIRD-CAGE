@@ -39,7 +39,7 @@ const OrderListCustom = (props) => {
     async function fetchOrder() {
         const response = await axios.get(`http://localhost:3000/order/user2/${props.user.Id}`);
         if (response.data.length > 0) {
-            const order = response.data[0];
+            const order = response.data;
             const items = await fetchOrderItems(order.Id);
             const customComponents = await fetchCustomComponents(order.Id);
 
@@ -51,6 +51,7 @@ const OrderListCustom = (props) => {
     useEffect(() => {
         fetchOrder();
         fetchVouchers();
+        
     }, []);
 
     return (

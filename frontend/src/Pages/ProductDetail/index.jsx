@@ -139,7 +139,7 @@ export default function ProductDetails() {
     }
 
     const handleReply = async () => {
-        
+
     }
 
     const handleDecrement = () => {
@@ -245,7 +245,7 @@ export default function ProductDetails() {
             if (sessionStorage.loginedUser != null) {
                 if (orderAddress) {
                     if (phoneNumber) {
-                        if(checkValidation && checkNumChar){
+                        if (checkValidation && checkNumChar) {
                             const res = await axios.post('http://localhost:3000/order/addordertodb', {
                                 UserID: user.Id,
                                 OrderDate: new Date().toISOString().slice(0, 10),
@@ -256,7 +256,7 @@ export default function ProductDetails() {
                                 TotalAmount: calculateGrandTotal(),
                                 PaymentMethod: paymentMethod,
                                 Status: 'UNPAID',
-                                VoucherID : orderVoucher,
+                                VoucherID: orderVoucher,
                                 Items: [
                                     {
                                         id: product.Id,
@@ -270,6 +270,9 @@ export default function ProductDetails() {
                             const updatedUser = await axios.post('http://localhost:3000/users/updatePoint', {
                                 id: user.Id,
                                 point: ((product.Price * (100 - product.discount)) / 100) * quantity / 1000
+                            })
+                            await axios.post('http://localhost:3000/users/updateVoucher', {
+                                Id : orderVoucher
                             })
                             if (paymentMethod == 'vnpay') {
                                 const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
@@ -304,10 +307,10 @@ export default function ProductDetails() {
                                 setOrderAddress('')
                                 setPhoneNumber('')
                                 // sessionStorage.setItem('cart', '{"products":[]}')
-                                // window.location.reload(false)
+                                window.location.reload(false)
                             }
                             // sessionStorage.setItem('cart', '{"products":[]}')
-                        }else{
+                        } else {
                             // setThrowError('Xin hãy nhập đúng số điện thoại')
                             setCheckValidation(false)
                         }
@@ -444,13 +447,13 @@ export default function ProductDetails() {
                                         >
                                             {(close) => (
                                                 <div className="login-popup">
-                                                    <LoginCard/>
+                                                    <LoginCard />
                                                 </div>
                                             )}
                                         </Popup>
                                     ) : (
                                         <div>
-                                            <Button variant="contained" className="add-cart" onClick={()=>{addToCart(),close()}}>
+                                            <Button variant="contained" className="add-cart" onClick={() => { addToCart(), close() }}>
                                                 Thêm vào giỏ hàng
                                             </Button>
                                             <ToastContainer />
@@ -478,7 +481,7 @@ export default function ProductDetails() {
                             >
                                 {(close) => (
                                     <div className="login-popup" >
-                                        <LoginCard/>
+                                        <LoginCard />
                                     </div>
                                 )}
                             </Popup>
@@ -521,7 +524,7 @@ export default function ProductDetails() {
                                                         }}
                                                         onChange={handleAddressChange}
                                                         error={!checkAddress}
-                                                        helperText={!checkAddress ? "Xin hãy chọn địa chỉ của bạn": ""}
+                                                        helperText={!checkAddress ? "Xin hãy chọn địa chỉ của bạn" : ""}
                                                     >
                                                         <option value="" selected></option>
                                                         {addressList.map((adr) => (
@@ -631,8 +634,10 @@ export default function ProductDetails() {
                                                     id="voucher"
                                                     size="small"
                                                     SelectProps={{
-                                                        native: true
+                                                        native: true,
                                                     }}
+                                                    InputLabelProps={{ shrink: true }}
+
                                                     onChange={(event) => {
                                                         const selectedValue = event.target.value;
                                                         const [voucherId, voucherDiscount] = selectedValue.split(',');
@@ -640,14 +645,17 @@ export default function ProductDetails() {
                                                         setOrderVoucher(voucherId.trim());
                                                     }}
                                                 >
-                                                    <option value="" selected></option>
-                                                    {voucherList.map((voucher) => (
+                                                    <option value={["", 0]} selected>
+                                                        <em>Không sử dụng phiếu giảm giá</em>
+                                                    </option>
+
+                                                    {voucherList.map((voucher) =>
                                                         voucher.UsedAt == null && (
-                                                            <option key={voucher} value={[voucher.ID, voucher.discount]}>
-                                                                {voucher.discount + ' % , Hết hạn ' + voucher.ExpireAt.substr(0, 10)}
+                                                            <option key={voucher.ID} value={[voucher.ID, voucher.discount]}>
+                                                                {voucher.discount + '% , Hết hạn ' + voucher.ExpireAt.substr(0, 10)}
                                                             </option>
                                                         )
-                                                    ))}
+                                                    )}
                                                 </TextField>
                                             </div>
                                             <div className=" border-gray-300 rounded   ">
