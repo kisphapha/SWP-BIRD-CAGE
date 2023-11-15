@@ -400,7 +400,7 @@ const getCustomComponentImageByOrderID = async(Id) => {
         .input('Id', Id)
         .query(
             ` 
-            select cd.ID, cd.Picture from Orders o
+            select cd.* from Orders o
             join OrderItem ot 
             on o.Id = ot.OrdersId
             join Products p

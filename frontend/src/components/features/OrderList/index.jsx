@@ -80,7 +80,6 @@ const OrderList = (props) => {
                 ordersWithItems.push(orderWithItems);
             }
             setCards(ordersWithItems);
-            console.log(cards)
         }
     }
 
@@ -156,7 +155,7 @@ const OrderList = (props) => {
                                                     currency: 'VND'
                                                 })}
                                             </div>
-                                            <div className="mx-8 text-right  text-red-500 ">
+                                            <div className="mx-8 text-right text-red-500 ">
                                                 {' '}
                                                 {item.Price.toLocaleString('vi', { style: 'currency', currency: 'VND' })}
                                             </div>
@@ -211,11 +210,10 @@ const OrderList = (props) => {
                     </div>
                     <div className="flex place-content-between ">
                         <div>
-
                             <div className="text-left mx-8 my-4 text-xl">{card.Status_Paid}</div>
                             <div className='flex'>
                                 <div className='text-left ml-8 my-4'>Voucher áp dụng: </div>
-                                <div className='text-left mx-2 my-4 text-red-500 font-bold'>{vouchers.find(voucher => voucher.ID == card.VoucherID).discount}%</div>
+                                <div className='text-left mx-2 my-4 text-red-500 font-bold'>{vouchers.find(voucher => voucher.ID == card.VoucherID) ? vouchers.find(voucher => voucher.ID == card.VoucherID).discount + '%' : "Không áp dụng"}</div>
                             </div>
                         </div>
 
