@@ -26,6 +26,8 @@ export default function Cart() {
     const [addressList, setAddressList] = useState([])
     const [phoneNumber, setPhoneNumber] = useState('')
     const [checkValidation, setCheckValidation] = useState(true)
+    const [checkAddress, setCheckAddress] = useState(true)
+    const [checkNumChar, setCheckNumChar] = useState(true)
     const [voucherList, setVoucherList] = useState([])
     const navigate = useNavigate()
 
@@ -130,22 +132,28 @@ export default function Cart() {
                                         orderid: res.data.orderid
                                     })
 
-                                    console.log(response.data.url)
+                                    // console.log(response.data.url)
                                     window.location.href = response.data.url
+                                    setOrderAddress('')
                                 } else {
                                     alert('Đặt hàng thành công')
                                     sessionStorage.setItem('cart', '{"products":[]}')
                                     sessionStorage.setItem('loginedUser', JSON.stringify(response.data))
-                                    window.location.reload(false)
+                                    // window.location.reload(false)
+                                    close()
+                                    setOrderAddress('')
                                 }   
                             }else {
-                                alert('Please enter a valid number')
+                                setCheckValidation(false)
                             }
                         } else {
-                            alert('Please enter your phone number')
+                            setCheckValidation(false)
                         }
                     } else {
-                        alert('Please enter your address')
+                        setCheckAddress(false)
+                        if (!phoneNumber) {
+                            setCheckValidation(false)
+                        }
                     }
                 } else {
                     alert('Đăng nhập để tiến hành thanh toán')
@@ -223,8 +231,9 @@ export default function Cart() {
         })
     }
 
-    function isOrderAddressEmpty(orderAddress) {
-        return !orderAddress || orderAddress.trim() === ''
+    const handleAddressChange = (event) => {
+        setCheckAddress(true)
+        setOrderAddress(event.target.value)
     }
 
     async function fetchAddresses() {
@@ -246,28 +255,34 @@ export default function Cart() {
     const handlePhoneChange = (event) => {
         let inputPhoneNumber = event.target.value
 
-        // Remove unwanted characters "e", "+", and "-"
-        inputPhoneNumber = inputPhoneNumber.replace(/[e+-]/gi, '')
-
         // Regular expression pattern for a valid phone number. You can adjust it as needed.
         const phonePattern =
             '(032|033|034|035|036|037|038|039|096|097|098|086|083|084|085|081|082|088|091|094|070|079|077|076|078|090|093|089|056|058|092|059|099)[0-9]{7}'
 
-        if (inputPhoneNumber.length <= 11) {
-            if (checkPattern(inputPhoneNumber, phonePattern)) {
-                setCheckValidation(true)
-            } else {
-                setCheckValidation(false)
-            }
-        } else {
+        if (!checkPattern(inputPhoneNumber, phonePattern)) {
             setCheckValidation(false)
+        } else {
+            setCheckValidation(true)
+            if (inputPhoneNumber.length > 9 && inputPhoneNumber.length <= 11) {
+                setCheckNumChar(true)
+            } else {
+                setCheckNumChar(false)
+            }
         }
         setPhoneNumber(event.target.value)
     }
+
     const handleKeyDown = (event) => {
+        const forbiddenKeys = ['e', '+', '-', '.'];
+
         // Prevent the characters "e", "+", and "-" from being entered.
-        if (['e', '+', '-', '.'].includes(event.key)) {
-            event.preventDefault()
+        if (forbiddenKeys.includes(event.key)) {
+            event.preventDefault();
+        }
+
+        // Prevent input when the length is 11 and the key pressed is not delete, backspace, or arrow keys.
+        if (event.target.value.length >= 11 && !['Delete', 'Backspace', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+            event.preventDefault();
         }
     }
 
@@ -383,11 +398,9 @@ export default function Cart() {
                                                                     SelectProps={{
                                                                         native: true
                                                                     }}
-                                                                    onChange={(event) => {
-                                                                        setOrderAddress(event.target.value)
-                                                                    }}
-                                                                    error={isOrderAddressEmpty(orderAddress)}
-                                                                    helperText={isOrderAddressEmpty(orderAddress) ? 'Xin hãy chọn địa chỉ' : ''}
+                                                                    onChange={handleAddressChange}
+                                                                    error={!checkAddress}
+                                                                    helperText={!checkAddress ? "Xin hãy chọn địa chỉ của bạn": ""}
                                                                 >
                                                                     <option value="" selected></option>
                                                                     {addressList.map((adr) => (
@@ -420,8 +433,8 @@ export default function Cart() {
                                                                 value={phoneNumber}
                                                                 onChange={handlePhoneChange}
                                                                 onKeyDown={handleKeyDown}
-                                                                error={!checkValidation}
-                                                                helperText={!checkValidation ? 'Số điện thoại không hợp lệ' : ''}
+                                                                error={!checkValidation || !checkNumChar}
+                                                                helperText={(!checkValidation || !checkNumChar) ? (!phoneNumber ? 'Xin hãy nhập số điện thoại' : 'Số điện thoại không hợp lệ') : ('')}
                                                             ></TextField>
                                                         </div>
                                                         <hr className="border  border-slate-100 my-2 mx-10" />
