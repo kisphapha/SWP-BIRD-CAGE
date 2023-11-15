@@ -135,15 +135,30 @@ export default function Cart() {
 
                                     // console.log(response.data.url)
                                     window.location.href = response.data.url
-                                    setOrderAddress('')
+                                    
                                 } else {
                                     alert('Đặt hàng thành công')
                                     sessionStorage.setItem('cart', '{"products":[]}')
                                     sessionStorage.setItem('loginedUser', JSON.stringify(response.data))
+                                    toast.dismiss()
+                                    toast.success('Đặt hàng thành công', {
+                                        position: 'bottom-left',
+                                        autoClose: 1000,
+                                        hideProgressBar: false,
+                                        closeOnClick: true,
+                                        pauseOnHover: false,
+                                        draggable: true,
+                                        progress: undefined,
+                                        theme: 'colored'
+                                    })
                                     // window.location.reload(false)
                                     close()
-                                    setOrderAddress('')
                                 }   
+                                setOrderAddress('')
+                                setPhoneNumber('')
+                                const emptyCart = { products: [] }
+                                setCartData(emptyCart)
+                                sessionStorage.setItem('cart', JSON.stringify(emptyCart))
                             }else {
                                 setCheckValidation(false)
                             }
