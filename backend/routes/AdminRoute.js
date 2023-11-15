@@ -16,7 +16,7 @@ AdminRouter.get("/loadUnseen/:id", AdminController.loadUnSeen);
 
 AdminRouter.patch("/changeToSeen", AdminController.changetoSeen);
 
-AdminRouter.get("/getMonthLyIncome", AdminController.getMonthLyIncome);
+AdminRouter.post("/getMonthLyIncome", AdminController.getMonthLyIncome);
 
 AdminRouter.route("/statistic").post(AdminController.orderStatisticByMonth);
 

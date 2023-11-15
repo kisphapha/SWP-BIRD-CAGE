@@ -127,15 +127,31 @@ const changetoSeen = async() => {
     }
 }
 
-const getMonthLyIncome = async() => {
+const getMonthLyIncome = async(year) => {
     try {
        let poolConnection= await sql.connect(config);
-       const result = await poolConnection.request().query(`
-       SELECT DISTINCT DATEPART(MONTH, PaymentDate) AS Month, SUM(TotalAmount) AS TotalAmount
-       FROM dbo.Orders
-       WHERE Status_Paid = N'Đã Thanh Toán' 
-       GROUP BY  DATEPART(MONTH, PaymentDate)
-       `) 
+       const result = await poolConnection.request()
+       .input('Year', sql.Int, year)
+       .query(
+        `   
+        SELECT Months.MonthNumber AS Month,
+        ISNULL(SUM(o.TotalAmount), 0) AS TotalAmount
+        FROM (
+        SELECT 1 AS MonthNumber
+        UNION ALL
+        SELECT MonthNumber
+        FROM (
+        SELECT TOP 12 ROW_NUMBER() OVER (ORDER BY object_id) AS MonthNumber
+        FROM sys.objects
+        ) AS Months
+        ) AS Months
+        LEFT JOIN dbo.Orders o
+        ON Months.MonthNumber = MONTH(o.PaymentDate)
+        AND YEAR(o.PaymentDate) = @Year
+        GROUP BY Months.MonthNumber
+        ORDER BY Months.MonthNumber;
+       `
+       ) 
         return result.recordset;
     } catch (error) {
         console.log("error: ", error)

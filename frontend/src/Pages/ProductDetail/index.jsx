@@ -309,6 +309,7 @@ export default function ProductDetails() {
                                 }
                                 position="center"
                                 modal
+                                onClose ={addToCart}
                             >
                                 {(close) => (
                                     <div className="login-popup">
@@ -339,7 +340,7 @@ export default function ProductDetails() {
                                 modal
                             >
                                 {(close) => (
-                                    <div className="login-popup">
+                                    <div className="login-popup" >
                                         <LoginCard />
                                     </div>
                                 )}
