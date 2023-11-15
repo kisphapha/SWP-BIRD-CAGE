@@ -14,7 +14,7 @@ import axios from 'axios'
 
 export default function Navbar({getCardListFilter}) {
     const [cartData, setCartData] = useState({ products: [] })
-    const [loading, setLoading] = useState(true)
+    // const [loading, setLoading] = useState(true)
     const [category, setCategory] = useState([])
     const [cateId, setCateId] = useState('')
     const navigate = useNavigate()
@@ -29,8 +29,8 @@ export default function Navbar({getCardListFilter}) {
             setCategory(response.data)
         }
         fetchCategory()
-        setLoading(false)
-    }, [cartData, cateId])
+        // setLoading(false)
+    }, [])
     
 
     const totalProductQuantity = () => {

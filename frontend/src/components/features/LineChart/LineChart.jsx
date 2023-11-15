@@ -107,8 +107,8 @@ function LineChart() {
                         }}
                     />
                     <span class="slider">
-                        <div class="period">Month</div>
-                        <div class="period">Year</div>
+                        {/* <div class="period">Month</div>
+                        <div class="period">Year</div> */}
                     </span>
                 </label>
             </div>

@@ -171,80 +171,83 @@ export default function ProductDetails() {
         })
     }
 
-    const handlePayment = async () => {
+    const handlePayment = async (close) => {
         try {
             if (sessionStorage.loginedUser != null) {
                 if (orderAddress) {
                     if (phoneNumber) {
-                        const res = await axios.post('http://localhost:3000/order/addordertodb', {
-                            UserID: user.Id,
-                            OrderDate: new Date().toISOString().slice(0, 10),
-                            PaymentDate: null,
-                            AddressID: orderAddress,
-                            PhoneNumber: phoneNumber,
-                            Note: 'abcxyz',
-                            TotalAmount: ((product.Price * (100 - product.discount)) / 100) * quantity,
-                            PaymentMethod: paymentMethod,
-                            Status: 'UNPAID',
-                            Items: [
-                                {
-                                    id: product.Id,
-                                    name: product.Name,
-                                    quantity: quantity,
-                                    url: product.Url,
-                                    price: ((product.Price * (100 - product.discount)) / 100) * quantity
-                                }
-                            ]
-                        })
-                        const updatedUser = await axios.post('http://localhost:3000/users/updatePoint', {
-                            id: user.Id,
-                            point: (quantity * product.Price) / 1000
-                        })
-                        if (paymentMethod == 'vnpay') {
-                            const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
-                                amount: ((product.Price * (100 - product.discount)) / 100) * quantity,
-                                bankCode: '',
-                                language: 'vn',
-                                email: user.Email,
-                                phoneNumber: user.PhoneNumber,
-                                orderid: res.data.orderid
+                        if(checkValidation &&checkNumChar){
+                            const res = await axios.post('http://localhost:3000/order/addordertodb', {
+                                UserID: user.Id,
+                                OrderDate: new Date().toISOString().slice(0, 10),
+                                PaymentDate: null,
+                                AddressID: orderAddress,
+                                PhoneNumber: phoneNumber,
+                                Note: 'abcxyz',
+                                TotalAmount: ((product.Price * (100 - product.discount)) / 100) * quantity,
+                                PaymentMethod: paymentMethod,
+                                Status: 'UNPAID',
+                                Items: [
+                                    {
+                                        id: product.Id,
+                                        name: product.Name,
+                                        quantity: quantity,
+                                        url: product.Url,
+                                        price: ((product.Price * (100 - product.discount)) / 100) * quantity
+                                    }
+                                ]
                             })
-                            // setTimeout(() => {
-                            //     alert('Đang chuyển tiếp đến VNPay')
-                            // }, 2000)
-                            close()
-                            window.location.href = response.data.url
-                        } else {
-                            toast.dismiss()
-                            toast.success('Đặt hàng thành công', {
-                                position: 'bottom-left',
-                                autoClose: 1000,
-                                hideProgressBar: false,
-                                closeOnClick: true,
-                                pauseOnHover: false,
-                                draggable: true,
-                                progress: undefined,
-                                theme: 'colored'
+                            const updatedUser = await axios.post('http://localhost:3000/users/updatePoint', {
+                                id: user.Id,
+                                point: (quantity * product.Price) / 1000
                             })
-                            sessionStorage.setItem('loginedUser', JSON.stringify(updatedUser))
-                            close()
+                            if (paymentMethod == 'vnpay') {
+                                const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
+                                    amount: ((product.Price * (100 - product.discount)) / 100) * quantity,
+                                    bankCode: '',
+                                    language: 'vn',
+                                    email: user.Email,
+                                    phoneNumber: user.PhoneNumber,
+                                    orderid: res.data.orderid
+                                })
+                                // setTimeout(() => {
+                                //     alert('Đang chuyển tiếp đến VNPay')
+                                // }, 2000)
+                                close()
+                                window.location.href = response.data.url
+                            } else {
+                                toast.dismiss()
+                                toast.success('Đặt hàng thành công', {
+                                    position: 'bottom-left',
+                                    autoClose: 1000,
+                                    hideProgressBar: false,
+                                    closeOnClick: true,
+                                    pauseOnHover: false,
+                                    draggable: true,
+                                    progress: undefined,
+                                    theme: 'colored'
+                                })
+                                sessionStorage.setItem('loginedUser', JSON.stringify(updatedUser.data))
+                                close()
+                                // sessionStorage.setItem('cart', '{"products":[]}')
+                                // window.location.reload(false)
+                            }
                             // sessionStorage.setItem('cart', '{"products":[]}')
-                            // window.location.reload(false)
+                        }else{
+                            alert('Xin hãy nhập đúng số điện thoại')
                         }
-                        // sessionStorage.setItem('cart', '{"products":[]}')
                     } else {
                         alert('Please enter your phone number')
                     }
                 } else {
                     alert('Please enter your address')
                 }
-            } else {
-                alert('Đăng nhập để tiến hành thanh toán')
             }
         } catch (error) {
             console.error('Lỗi thanh toán:', error)
         }
     }
+
     const calculateBonus = () => {
         let bonus = 0
         bonus += (product.price * product.quantity) / 1000
@@ -333,13 +336,13 @@ export default function ProductDetails() {
                                         >
                                             {(close) => (
                                                 <div className="login-popup">
-                                                    <LoginCard />
+                                                    <LoginCard/>
                                                 </div>
                                             )}
                                         </Popup>
                                     ) : (
                                         <div>
-                                            <Button variant="contained" className="add-cart" onClick={addToCart}>
+                                            <Button variant="contained" className="add-cart" onClick={()=>{addToCart(),close()}}>
                                                 Thêm vào giỏ hàng
                                             </Button>
                                             <ToastContainer />
@@ -359,11 +362,15 @@ export default function ProductDetails() {
                                     </div>
                                 }
                                 position="center"
-                                modal
+                                onClose={() => {
+                                    setCheckNumChar(true);
+                                    setCheckValidation(true)
+                                }}
+                                modals
                             >
                                 {(close) => (
                                     <div className="login-popup" >
-                                        <LoginCard />
+                                        <LoginCard/>
                                     </div>
                                 )}
                             </Popup>
@@ -559,7 +566,7 @@ export default function ProductDetails() {
                                                     <Button
                                                         variant="contained"
                                                         onClick={() => {
-                                                            handlePayment()
+                                                            handlePayment(close)
                                                         }}
                                                     >
                                                         Đặt hàng

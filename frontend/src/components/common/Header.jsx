@@ -11,7 +11,6 @@ import './Header.css'
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import { Button } from '@mui/material'
 import IconButton from '@mui/material/IconButton'
 import { Badge } from '@mui/material'
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive'
@@ -35,28 +34,19 @@ function Header() {
         }
 
         fetchOrders()
-    }, [])
+    })
 
     const { user } = useContext(UserContext)
-    const [email, setEmail] = useState('')
+    // const [email, setEmail] = useState('')
     const [keyword, setKeyword] = useState('')
-    const [googleUser, setGoogleUser] = useState('')
-    const [isTriggerClicked, setIsTriggerClicked] = useState(false)
+    // const [googleUser, setGoogleUser] = useState('')
+    // const [isTriggerClicked, setIsTriggerClicked] = useState(false)
     const navigate = useNavigate()
 
     function handleSignOut(e) {
         sessionStorage.removeItem('loginedUser')
         navigate('/')
         window.location.reload()
-    }
-
-    function handlecallbackResponse(response) {
-        document.getElementById('google').hidden = true
-        // console.log('Encoded JWT ID Token: ' + response.credential)
-        var userObject = jwtDecode(response.credential)
-        setGoogleUser(userObject)
-        //console.log(userObject)
-        setEmail(userObject.email)
     }
 
     const handleLogin = () => {
@@ -122,7 +112,7 @@ function Header() {
                     >
                         {(close) => (
                             <div className="login-popup">
-                                <LoginCard />
+                                <LoginCard/>
                             </div>
                         )}
                     </Popup>
