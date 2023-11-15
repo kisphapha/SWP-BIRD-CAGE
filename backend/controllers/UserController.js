@@ -104,7 +104,7 @@ const exchangePoint = async (req, res) => {
         const point = req.body.point;
 
         const response = await User.exchangePoint(userID, point);
-        res.status(200).json({message: "success"})
+        res.status(200).json(response)
     } catch (error) {
         res.status(500).json({message: error.message});
     }

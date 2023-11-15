@@ -86,24 +86,22 @@ export default function Cart() {
 
             if (cartItems && cartItems.length > 0) {
                 if (sessionStorage.loginedUser != null) {
-                    if (orderAddress) {
-                        if (phoneNumber) {
-                            const res = await axios.post('http://localhost:3000/order/addordertodb', {
-                                UserID: user.Id,
-                                OrderDate: new Date().toISOString().slice(0, 10),
-                                PaymentDate: null,
-                                ShippingAddress: orderAddress,
-                                PhoneNumber: phoneNumber,
-                                Note: 'Cart',
-                                TotalAmount: calculateTotalPrice(),
-                                PaymentMethod: paymentMethod,
-                                Items: cartItems
-                            })
+                    const res = await axios.post('http://localhost:3000/order/addordertodb', {
+                        UserID: user.Id,
+                        OrderDate: new Date().toISOString().slice(0, 10),
+                        PaymentDate: null,
+                        AddressID: null,
+                        PhoneNumber: user.PhoneNumber,
+                        Note: '',
+                        TotalAmount: calculateTotalPrice(),
+                        PaymentMethod: paymentMethod,
+                        Items: cartItems
+                    })
 
-                            await axios.post('http://localhost:3000/users/updatePoint', {
-                                id: user.id,
-                                point: calculateBonus
-                            })
+                    await axios.post('http://localhost:3000/users/updatePoint', {
+                        id: user.Id,
+                        point: calculateTotalPrice()
+                    })
 
                             if (paymentMethod == 'vnpay') {
                                 const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
