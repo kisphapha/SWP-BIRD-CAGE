@@ -87,12 +87,25 @@ const addVoucher = async(req, res) => {
 
 }
 
+const updateVoucher = async (req, res) => {
+    try {
+        const Id = req.body.Id;
+
+        await User.addVoucher(Id);
+        res.status(200).json({ message: "success" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+
+}
+
+
 const getVoucherByUserID = async(req, res) => {
     try {
         const userID= req.params.UserID;
 
         const response = await User.getVoucherByUserID(userID);
-        res.status(200).json({response});
+        res.status(200).json(response);
     } catch (error) {
         res.status(500).json({message: error.message});
     }
@@ -104,7 +117,7 @@ const exchangePoint = async (req, res) => {
         const point = req.body.point;
 
         const response = await User.exchangePoint(userID, point);
-        res.status(200).json({message: "success"})
+        res.status(200).json(response)
     } catch (error) {
         res.status(500).json({message: error.message});
     }
@@ -124,6 +137,29 @@ const replyFeedBack = async (req, res) => {
 
 }
 
+const addNotifications = async (req, res) => {
+    try {
+        const content = req.body.content;
+        const userId = req.body.userId;
+
+        const response = await User.addNotifications(content, userId);
+        res.status(200).json({message: "success"});
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+}
+
+const loadNotifications = async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        const response = await User.loadNotifications(id);
+        res.status(200).json(response);
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+
+}
 module.exports = {
     getAllUser,
     getUserByEmail,
@@ -134,5 +170,8 @@ module.exports = {
     addVoucher,
     getVoucherByUserID,
     exchangePoint,
-    replyFeedBack
+    replyFeedBack,
+    addNotifications,
+    loadNotifications,
+    updateVoucher
 };

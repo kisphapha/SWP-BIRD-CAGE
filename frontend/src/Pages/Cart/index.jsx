@@ -21,9 +21,12 @@ export default function Cart() {
     const [loading, setLoading] = useState(true)
     const [paymentMethod, setPaymentMethod] = useState('COD') // Default to 'onDelivery'
     const [orderAddress, setOrderAddress] = useState('')
+    const [orderVoucher, setOrderVoucher] = useState('')
+    const [voucherValue, setVoucherValue] = useState(0)
     const [addressList, setAddressList] = useState([])
     const [phoneNumber, setPhoneNumber] = useState('')
     const [checkValidation, setCheckValidation] = useState(true)
+    const [voucherList, setVoucherList] = useState([])
     const navigate = useNavigate()
 
     const loadCartData = async () => {
@@ -57,7 +60,9 @@ export default function Cart() {
 
     useEffect(() => {
         loadCartData()
-    }, [])
+        fetchVouchers() 
+        fetchAddresses()
+    },[])
 
     const handleDecrement = (productId) => {
         const updatedCart = { ...cartData }
@@ -97,57 +102,50 @@ export default function Cart() {
                                     UserID: user.Id,
                                     OrderDate: new Date().toISOString().slice(0, 10),
                                     PaymentDate: null,
-                                    ShippingAddress: null,
-                                    PhoneNumber: user.PhoneNumber,
-                                    Note: '',
-                                    TotalAmount: calculateTotalPrice(),
+                                    AddressID: orderAddress,
+                                    PhoneNumber: phoneNumber,
+                                    Note: 'Cart',
+                                    TotalAmount: calculateGrandTotal(),
                                     PaymentMethod: paymentMethod,
+                                    VoucherID: orderVoucher,
                                     Items: cartItems
                                 })
-            
-                                await axios.post('http://localhost:3000/users/updatePoint', {
-                                    id: 17,
-                                    point: 1000
+
+                                const response = await axios.post('http://localhost:3000/users/updatePoint', {
+                                    id: user.Id,
+                                    point: calculateBonus
                                 })
-            
+
+                                await axios.post('https://localhost:3000/users/updateVoucher', {
+                                    Id : orderVoucher
+                                })
+
                                 if (paymentMethod == 'vnpay') {
                                     const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
-                                        amount: calculateTotalPrice(),
+                                        amount: calculateGrandTotal(),
                                         bankCode: '',
                                         language: 'vn',
                                         email: user.Email,
                                         phoneNumber: user.PhoneNumber,
                                         orderid: res.data.orderid
                                     })
-            
+
                                     console.log(response.data.url)
                                     window.location.href = response.data.url
                                 } else {
-                                    // alert('Đặt hàng thành công')
+                                    alert('Đặt hàng thành công')
                                     sessionStorage.setItem('cart', '{"products":[]}')
-                                    toast.dismiss()
-                                    toast.success('Đã đặt hàng thành công', {
-                                        position: 'bottom-left',
-                                        autoClose: 1000,
-                                        hideProgressBar: false,
-                                        closeOnClick: true,
-                                        pauseOnHover: false,
-                                        draggable: true,
-                                        progress: undefined,
-                                        theme: 'colored'
-                                    })
-                                    // 
-                                    // window.location.reload(false)
-                                    close()
-                                }
-                            }else{
-                                alert('Xin hãy nhập đúng số điện thoại')
+                                    sessionStorage.setItem('loginedUser', JSON.stringify(response.data))
+                                    window.location.reload(false)
+                                }   
+                            }else {
+                                alert('Please enter a valid number')
                             }
-                        }else{
-                            alert('Xin hãy nhập số điện thoại')
+                        } else {
+                            alert('Please enter your phone number')
                         }
-                    }else{
-                        alert('Xin hãy chọn địa chỉ')
+                    } else {
+                        alert('Please enter your address')
                     }
                 } else {
                     alert('Đăng nhập để tiến hành thanh toán')
@@ -168,6 +166,12 @@ export default function Cart() {
                 total += product.price * product.quantity
             }
         })
+        return total
+    }
+
+    const calculateGrandTotal = () => {
+        let total = calculateTotalPrice()
+        total = (total * (100 - voucherValue)) / 100
         return total
     }
 
@@ -228,9 +232,10 @@ export default function Cart() {
         setAddressList(response.data)
     }
 
-    async function fetchAddresses() {
-        const response = await axios.get(`http://localhost:3000/address/${user.Id}`)
-        setAddressList(response.data)
+    async function fetchVouchers() {
+        const response = await axios.get(`http://localhost:3000/users/getVoucher/${user.Id}`)
+        setVoucherList(response.data)
+        console.log(voucherList)
     }
 
     const checkPattern = (inputValue, pattern) => {

@@ -22,4 +22,6 @@ AdminRouter.route("/statistic").post(AdminController.orderStatisticByMonth);
 
 AdminRouter.get("/deleteJunkData", AdminController.deleteJunkData);
 
+AdminRouter.get("/deleteExpiresVoucher", AdminController.deleteExpiresVoucher);
+
 module.exports = AdminRouter;

@@ -80,7 +80,7 @@ const getPointForUser = async(id, point) => {
 
             SELECT *
             FROM [dbo].[User]
-            WHERE Id = @Id;
+            WHERE Id = @id;
         `)
         return response.recordset[0]
     } catch (error) {
@@ -157,12 +157,27 @@ const  addVoucher = async (UserID, discount) => {
     }
 }
 
-const getVoucherByUserID = async(userID) =>{
+const updateVoucher = async (Id) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        await poolConnection.request()
+            .input('Id', Id)
+            .query(`
+        update Voucher
+            set [UsedAt] = GETDATE()
+        WHERE Id = @Id
+        `)
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
+
+const getVoucherByUserID = async (Id) => {
     try {
         let poolConnection = await sql.connect(config);
         const result = await poolConnection.request()
-        .input('UserID', userID)
-        .query(`
+            .input('UserID', Id)
+            .query(`
         select * from Voucher
         where UserID = @UserID
         `)
@@ -171,6 +186,7 @@ const getVoucherByUserID = async(userID) =>{
         console.log("error: ", error);
     }
 }
+
 
 const exchangePoint = async(UserID, Point) => {
     try {
@@ -182,7 +198,12 @@ const exchangePoint = async(UserID, Point) => {
             UPDATE dbo.[User]
             SET Point = Point - @Point
             WHERE id = @UserID
+
+            SELECT *
+            FROM [dbo].[User]
+            WHERE Id = @UserID;
         `)
+        return result.recordset[0]
     } catch (error) {
         console.log("error: ", error);
     }
@@ -205,6 +226,43 @@ const replyFeedBack = async(id, ReplyContent, Replier) => {
     }
 }
 
+const addNotifications = async(content, userId) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('content', content)
+        .input('userId', userId)
+        .query(`
+        INSERT INTO dbo.Notification
+        (
+            content,
+            userId
+        )
+        VALUES
+        (   @content,
+            @userId
+            )
+        `)
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
+
+const loadNotifications = async (userId) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('userId', userId)
+        .query(`
+        SELECT * FROM dbo.Notification
+	    WHERE userId = @userId
+        `)
+        return result.recordset;
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
+
 module.exports = {
     getAllUser,
     getUserByEmail,
@@ -215,5 +273,8 @@ module.exports = {
     addVoucher,
     getVoucherByUserID,
     exchangePoint,
-    replyFeedBack
+    replyFeedBack,
+    addNotifications,
+    loadNotifications,
+    updateVoucher
 };

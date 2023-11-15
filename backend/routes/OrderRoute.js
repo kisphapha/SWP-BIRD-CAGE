@@ -16,6 +16,8 @@ OrderRouter.get("/list/:id", OrderController.getOrderItemByOrderID);
 
 OrderRouter.get("/user/:id", OrderController.getOrderByUserId);
 
+OrderRouter.get("/user2/:id", OrderController.getOrderByUserId2);
+
 OrderRouter.get("/paidstatus/:id", OrderController.changeStatus_Paid);
 
 OrderRouter.get("/loadUnseen/:id", OrderController.loadUnSeen);

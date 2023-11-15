@@ -30,7 +30,25 @@ const getOrderByUserId = async (id) => {
             .query(
             `select *
              from Orders
-             where Orders.UserID = @Id
+             where Orders.UserID = @ID
+             and Orders.haveCustomProduct=0
+             order by Id DESC`
+        );
+        return result.recordset;
+    } catch (error) {
+        console.log("error: ", error);
+    }
+};
+const getOrderByUserId2 = async (id) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+            .input("ID",sql.Int, id)
+            .query(
+            `select *
+             from Orders
+             where Orders.UserID = @ID
+             and Orders.haveCustomProduct=1
              order by Id DESC`
         );
         return result.recordset;
@@ -56,7 +74,7 @@ const getOrderById = async (id) => {
     }
 };
 
-const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentMethod, Items) => {
+const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentMethod, VoucherID, Items) => {
     try {
         let poolConnection = await sql.connect(config);
         const orderQuery = `
@@ -74,7 +92,8 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                 [UpdateAt],
                 [View_Status],
                 [Status_Shipping],
-                [Status_Paid]
+                [Status_Paid],
+                [VoucherID]
             )
             OUTPUT INSERTED.Id
             VALUES
@@ -91,7 +110,8 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                 GETDATE(),
                 0,
                 N'Chờ duyệt',
-                N'Chưa Thanh Toán'
+                N'Chưa Thanh Toán',
+                @VoucherID
             );
         `;
         const orderRequest = poolConnection.request()
@@ -103,6 +123,8 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
             .input('Note', sql.NVarChar, Note)
             .input('TotalAmount', sql.Int, TotalAmount)
             .input('PaymentMethod', sql.NVarChar, PaymentMethod)
+            .input('VoucherID', sql.Int, VoucherID)
+
         const orderResult = await orderRequest.query(orderQuery);
         const orderId = orderResult.recordset[0].Id;
         for (const item of Items) {
@@ -157,7 +179,7 @@ const getAllOrderItemByOrderID = async (id) => {
     try {
         let poolConnection = await sql.connect(config);
         const query = `
-            SELECT p.Id, p.Name, oi.CreatedAt, oi.Price, oi.Quantity, i.Url, c.name AS Shape, p.discount
+            SELECT p.Id, p.Name, oi.CreatedAt, oi.Price, oi.Quantity, i.Url, c.name AS Shape, p.discount, p.material
             FROM OrderItem oi
             INNER JOIN Orders o ON o.Id = oi.OrdersId
             INNER JOIN Products p ON oi.ProductId = p.id
@@ -310,7 +332,7 @@ const addCustomProduct = async (productName, Description, Price, Category, Size,
                     NULL,
                     GETDATE(),
                     0,
-                    N'Chờ Duyệt',
+                    N'Chờ duyệt',
                     N'Chưa Thanh Toán'
                 )
             `);
@@ -358,6 +380,7 @@ const addCustomProduct = async (productName, Description, Price, Category, Size,
                 .input('ComponentID',sql.Int, parseInt(item));
             await itemRequest.query(itemQuery);
         }
+        return orderId;
 
     } catch (error) {
         console.log("error: ", error);
@@ -372,6 +395,7 @@ module.exports = {
     changeStatus_Paid,
     getAllOrderItemByOrderID,
     getOrderByUserId,
+    getOrderByUserId2,
     loadUnSeen,
     changeToSeen,
     pieChartData,

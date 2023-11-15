@@ -30,7 +30,9 @@ export default function ProductDetails() {
     const [phoneNumber, setPhoneNumber] = useState('')
     const [checkValidation, setCheckValidation] = useState(true)
     const [checkNumChar, setCheckNumChar] = useState(true)
-
+    const [orderVoucher, setOrderVoucher] = useState('')
+    const [voucherValue, setVoucherValue] = useState(0)
+    const [voucherList, setVoucherList] = useState([])
     window.addEventListener('popstate', function () {
         // This function will be triggered when the window is unloaded, including when it's reloaded.
         sessionStorage.setItem('quantity', 1)
@@ -52,13 +54,35 @@ export default function ProductDetails() {
             setImgList(response.data)
             setFocusUrl(response.data[0].Url)
         }
-
         fetchProduct()
         fetchRatings()
         fetchImage()
         sesQuantity ? setQuantity(sesQuantity) : setQuantity(1)
     }, [productId])
 
+    const calculateTotalPrice = () => {
+        let total = 0
+         total += (100 - product.discount)/100   * product.Price * quantity
+        return total
+    }
+
+    const calculateGrandTotal = () => {
+        let total = calculateTotalPrice()
+        total = total * (100 - voucherValue) / 100
+        return total
+    }
+
+
+    const calculateBonus = () => {
+        let bonus = 0
+        bonus += product.Price * quantity / 1000
+        return bonus
+    }
+
+    async function fetchVouchers() {
+        const response = await axios.get(`http://localhost:3000/users/getVoucher/${user.Id}`)
+        setVoucherList(response.data)
+    }
     async function fetchAddresses() {
         const response = await axios.get(`http://localhost:3000/address/${user.Id}`)
         setAddressList(response.data)
@@ -184,9 +208,10 @@ export default function ProductDetails() {
                                 AddressID: orderAddress,
                                 PhoneNumber: phoneNumber,
                                 Note: 'abcxyz',
-                                TotalAmount: ((product.Price * (100 - product.discount)) / 100) * quantity,
+                                TotalAmount: calculateGrandTotal(),
                                 PaymentMethod: paymentMethod,
                                 Status: 'UNPAID',
+                                VoucherID : orderVoucher,
                                 Items: [
                                     {
                                         id: product.Id,
@@ -199,11 +224,11 @@ export default function ProductDetails() {
                             })
                             const updatedUser = await axios.post('http://localhost:3000/users/updatePoint', {
                                 id: user.Id,
-                                point: (quantity * product.Price) / 1000
+                                point: ((product.Price * (100 - product.discount)) / 100) * quantity / 1000
                             })
                             if (paymentMethod == 'vnpay') {
                                 const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
-                                    amount: ((product.Price * (100 - product.discount)) / 100) * quantity,
+                                    amount: calculateGrandTotal(),
                                     bankCode: '',
                                     language: 'vn',
                                     email: user.Email,
@@ -237,10 +262,10 @@ export default function ProductDetails() {
                             alert('Xin hãy nhập đúng số điện thoại')
                         }
                     } else {
-                        alert('Please enter your phone number')
+                        alert('Xin hãy nhập số điện thoại')
                     }
                 } else {
-                    alert('Please enter your address')
+                    alert('Xin hãy nhập địa chỉ')
                 }
             }
         } catch (error) {
@@ -248,10 +273,39 @@ export default function ProductDetails() {
         }
     }
 
-    const calculateBonus = () => {
-        let bonus = 0
-        bonus += (product.price * product.quantity) / 1000
-        return bonus
+    const handleCompare = () => {
+        let compareList = sessionStorage.getItem('compareList')
+
+        if (!compareList) {
+            compareList = []
+        } else {
+            compareList = JSON.parse(compareList)
+        }
+        const duplicate = compareList.some(compareItem => compareItem.productId === productId);
+        if (compareList.length < 3) {
+            if (!duplicate) {
+                compareList.push({
+                    productId
+                })
+                // Store the updated cart in sessionStorage
+                sessionStorage.setItem('compareList', JSON.stringify(compareList))
+                toast.dismiss()
+                toast.success('Đã thêm vào danh sách so sánh', {
+                    position: 'bottom-left',
+                    autoClose: 1000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggable: true,
+                    progress: undefined,
+                    theme: 'colored'
+                })
+            } else {
+                alert("Đã thêm sản này vào danh sách so sánh")
+            }
+        } else {
+            alert("Không thể so sánh quá 3 sản phẩm")
+        }
     }
 
     return (
@@ -325,7 +379,7 @@ export default function ProductDetails() {
                                 </button>
                             </div>
                             <div className="flex gap-2">
-                                <Button variant="outlined">So sánh</Button>
+                                <Button variant="outlined" onClick={handleCompare }>So sánh</Button>
                                 <div>
                                     {user == null ? (
                                         <Popup
@@ -382,7 +436,10 @@ export default function ProductDetails() {
                                         <p className="t2">Gọi điện xác nhận và giao hàng tận nơi</p>
                                     </div>
                                 }
-                                onOpen={fetchAddresses}
+                                onOpen={() => {
+                                    fetchAddresses()
+                                    fetchVouchers()
+                                }}
                                 position="right center"
                                 modal
                                 closeOnDocumentClick={false}
@@ -446,6 +503,7 @@ export default function ProductDetails() {
                                                     helperText={(!checkValidation || !checkNumChar) ? 'Số điện thoại không hợp lệ' : ''}
                                                 ></TextField>
                                             </div>
+                                           
                                             <hr className="border  border-slate-300 my-2 w-full" />
                                             <h1>Sản phẩm</h1>
                                         </div>
@@ -509,21 +567,54 @@ export default function ProductDetails() {
                                         </div>
 
                                         <hr className="border  border-slate-300 my-2 w-full" />
-                                        <div>
-                                            <div className="font-bold flex place-content-end">
-                                                <div className="mr-2">Tổng cộng:</div>
+                                            <div className="flex place-content-between">
                                                 <div>
-                                                    {parseInt(((product.Price * (100 - product.discount)) / 100) * quantity).toLocaleString('vi', {
-                                                        style: 'currency',
-                                                        currency: 'VND'
-                                                    })}{' '}
+                                                <TextField
+                                                    select
+                                                    label="Chọn phiếu giảm giá"
+                                                    className="user-input"
+                                                    id="voucher"
+                                                    size="small"
+                                                    SelectProps={{
+                                                        native: true
+                                                    }}
+                                                    onChange={(event) => {
+                                                        const selectedValue = event.target.value;
+                                                        const [voucherId, voucherDiscount] = selectedValue.split(',');
+                                                        setVoucherValue(voucherDiscount.trim());
+                                                        setOrderVoucher(voucherId.trim());
+                                                    }}
+                                                >
+                                                    <option value="" selected></option>
+                                                    {voucherList.map((voucher) => (
+                                                        voucher.UsedAt == null && (
+                                                        <option key={voucher} value={[voucher.ID, voucher.discount]}>
+                                                            {voucher.discount + ' % , Hết hạn ' + voucher.ExpireAt.substr(0, 10)}
+                                                            </option>
+                                                        )
+                                                    ))}
+                                                </TextField>
                                                 </div>
-                                            </div>
-
-                                            <div className="font-bold flex place-content-end">
-                                                <div className="mr-2">Số điểm bonus sẽ tích được:</div>
-                                                <div>{calculateBonus}</div>
-                                            </div>
+                                                <div className=" border-gray-300 rounded   ">
+                                                    
+                                                    <div className="font-bold flex place-content-end">
+                                                        <div className="mr-4">Được giảm giá:</div>
+                                                        <div className="text-xl">
+                                                            {(calculateTotalPrice() * voucherValue / 100).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+                                                        </div>
+                                                    </div>
+                                                    <div className="font-bold flex place-content-end">
+                                                        <div className="mr-4">Số điểm bonus sẽ tích được:</div>
+                                                        <div className="text-xl">{calculateBonus()}</div>
+                                                    </div>
+                                                    <hr></hr>
+                                                    <div className="font-bold flex place-content-end ">
+                                                        <div className="text-xl font-bold mr-4">THANH TOÁN:</div>
+                                                        <div className="text-4xl font-bold mr-4 text-red-400">
+                                                            {calculateGrandTotal().toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+                                                        </div>
+                                                    </div>
+                                                </div>
                                         </div>
                                         <div className="flex place-content-between">
                                             <div>
