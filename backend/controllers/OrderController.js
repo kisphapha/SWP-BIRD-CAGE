@@ -25,6 +25,14 @@ const getOrderByUserId = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 }
+const getOrderByUserId2 = async (req, res) => {
+    try {
+        const products = await Order.getOrderByUserId2(req.params.id);
+        res.json(products);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
 
 const addOrderToDB = async (req, res) => {
     try {
@@ -127,6 +135,7 @@ module.exports = {
     addOrderToDB,
     getOrderItemByOrderID,
     getOrderByUserId,
+    getOrderByUserId2,
     changeStatus_Paid,
     loadUnSeen,
     changeToSeen,

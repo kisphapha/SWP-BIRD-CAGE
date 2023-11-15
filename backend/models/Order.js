@@ -30,7 +30,25 @@ const getOrderByUserId = async (id) => {
             .query(
             `select *
              from Orders
-             where Orders.UserID = @Id
+             where Orders.UserID = @ID
+             and Orders.haveCustomProduct=0
+             order by Id DESC`
+        );
+        return result.recordset;
+    } catch (error) {
+        console.log("error: ", error);
+    }
+};
+const getOrderByUserId2 = async (id) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+            .input("ID",sql.Int, id)
+            .query(
+            `select *
+             from Orders
+             where Orders.UserID = @ID
+             and Orders.haveCustomProduct=1
              order by Id DESC`
         );
         return result.recordset;
@@ -157,7 +175,7 @@ const getAllOrderItemByOrderID = async (id) => {
     try {
         let poolConnection = await sql.connect(config);
         const query = `
-            SELECT p.Id, p.Name, oi.CreatedAt, oi.Price, oi.Quantity, i.Url, c.name AS Shape, p.discount
+            SELECT p.Id, p.Name, oi.CreatedAt, oi.Price, oi.Quantity, i.Url, c.name AS Shape, p.discount, p.material
             FROM OrderItem oi
             INNER JOIN Orders o ON o.Id = oi.OrdersId
             INNER JOIN Products p ON oi.ProductId = p.id
@@ -310,7 +328,7 @@ const addCustomProduct = async (productName, Description, Price, Category, Size,
                     NULL,
                     GETDATE(),
                     0,
-                    N'Chờ Duyệt',
+                    N'Chờ duyệt',
                     N'Chưa Thanh Toán'
                 )
             `);
@@ -373,6 +391,7 @@ module.exports = {
     changeStatus_Paid,
     getAllOrderItemByOrderID,
     getOrderByUserId,
+    getOrderByUserId2,
     loadUnSeen,
     changeToSeen,
     pieChartData,

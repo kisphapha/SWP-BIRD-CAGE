@@ -52,6 +52,7 @@ export default function Cart() {
 
     useEffect(() => {
         loadCartData()
+        fetchAddresses
     }, [])
 
     const handleDecrement = (productId) => {
@@ -119,7 +120,7 @@ export default function Cart() {
                             } else {
                                 alert('Đặt hàng thành công')
                                 sessionStorage.setItem('cart', '{"products":[]}')
-                                sessionStorage.setItem("loginedUser",JSON.stringify(response.data))
+                                sessionStorage.setItem('loginedUser', JSON.stringify(response.data))
                                 window.location.reload(false)
                             }
                         } else {
