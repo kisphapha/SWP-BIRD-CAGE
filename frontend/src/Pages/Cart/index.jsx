@@ -89,7 +89,7 @@ export default function Cart() {
                         UserID: user.Id,
                         OrderDate: new Date().toISOString().slice(0, 10),
                         PaymentDate: null,
-                        ShippingAddress: null,
+                        AddressID: null,
                         PhoneNumber: user.PhoneNumber,
                         Note: '',
                         TotalAmount: calculateTotalPrice(),
@@ -98,8 +98,8 @@ export default function Cart() {
                     })
 
                     await axios.post('http://localhost:3000/users/updatePoint', {
-                        id: 17,
-                        point: 1000
+                        id: user.Id,
+                        point: calculateTotalPrice()
                     })
 
                     if (paymentMethod == 'vnpay') {
