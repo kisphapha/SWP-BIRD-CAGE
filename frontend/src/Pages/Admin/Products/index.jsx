@@ -324,6 +324,9 @@ export default function Products() {
                                     </div>
                                 </div>
                             </TableCell>
+                            <TableCell>
+                                <div className="text-right">Sửa/xóa</div>
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>

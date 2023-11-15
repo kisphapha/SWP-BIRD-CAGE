@@ -16,7 +16,7 @@ import VNPay from '../../image/icons/VNPay.svg'
 import COD from '../../image/icons/COD.svg'
 
 export default function Cart() {
-    const {user } = useContext(UserContext)
+    const { user } = useContext(UserContext)
     const [cartData, setCartData] = useState({ products: [] })
     const [loading, setLoading] = useState(true)
     const [paymentMethod, setPaymentMethod] = useState('COD') // Default to 'onDelivery'
@@ -372,17 +372,45 @@ export default function Cart() {
                                                     {/* <h1>Sản phẩm</h1>
                                                      */}
                                                 </div>
-                                                <div className=" border-gray-300 rounded   ">
-                                                    <div className="font-bold flex place-content-end ">
-                                                        <div className=" mr-4">Tổng cộng:</div>
-                                                        <div>
-                                                            {calculateTotalPrice().toLocaleString('vi', { style: 'currency', currency: 'VND' })}
-                                                        </div>
+                                                <div className="flex place-content-between">
+                                                    <div className="w-1/3">
+                                                        <TextField
+                                                            select
+                                                            label="Chọn mã giảm giá"
+                                                            fullWidth
+                                                            className=""
+                                                            id=""
+                                                            size="small"
+                                                            SelectProps={{
+                                                                native: true
+                                                            }}
+                                                            onChange={(event) => {
+                                                                ////fetch voucher
+                                                            }}
+                                                            // error={isOrderAddressEmpty(orderAddress)}
+                                                            // helperText={isOrderAddressEmpty(orderAddress) ? 'Xin hãy chọn địa chỉ' : ''}
+                                                        >
+                                                            <option value="" selected></option>
+                                                            {/* {addressList.map((adr) => (
+                                                                <option key={adr} value={adr.ID}>
+                                                                    {adr.SoNha + ', ' + adr.PhuongXa + ', ' + adr.QuanHuyen + ', ' + adr.TinhTP}
+                                                                </option>
+                                                            ))} */}
+                                                            /fetch voucher
+                                                        </TextField>
                                                     </div>
+                                                    <div>
+                                                        <div className="font-bold flex place-content-end ">
+                                                            <div className=" mr-4">Tổng cộng:</div>
+                                                            <div>
+                                                                {calculateTotalPrice().toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+                                                            </div>
+                                                        </div>
 
-                                                    <div className="font-bold flex place-content-end">
-                                                        <div className=" mr-4">Số điểm bonus sẽ tích được:</div>
-                                                        <div>{calculateBonus()}</div>
+                                                        <div className="font-bold flex place-content-end">
+                                                            <div className=" mr-4">Số điểm bonus sẽ tích được:</div>
+                                                            <div>{calculateBonus()}</div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div className="flex place-content-between mt-4">
