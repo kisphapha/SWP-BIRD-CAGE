@@ -12,7 +12,6 @@ userRouter.post("/updatePoint", UserController.getPointForUser);
 userRouter.post("/addVoucher", UserController.addVoucher);
 userRouter.get("/getVoucher/:UserID", UserController.getVoucherByUserID);
 userRouter.post("/exchangePoint", UserController.exchangePoint);
-
-
+userRouter.post("/replyFeedback", UserController.replyFeedBack);
 
 module.exports = userRouter;
