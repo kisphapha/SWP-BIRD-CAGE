@@ -30,14 +30,19 @@ export default function ProductDetails() {
     const [phoneNumber, setPhoneNumber] = useState('')
     const [checkValidation, setCheckValidation] = useState(true)
     const [checkNumChar, setCheckNumChar] = useState(true)
+    const [checkAddress, setCheckAddress] = useState(true)
     const [orderVoucher, setOrderVoucher] = useState('')
     const [voucherValue, setVoucherValue] = useState(0)
     const [voucherList, setVoucherList] = useState([])
+    const [replyContent, setReplyContent] = useState('')
+
     window.addEventListener('popstate', function () {
         // This function will be triggered when the window is unloaded, including when it's reloaded.
         sessionStorage.setItem('quantity', 1)
     })
-
+    const handleReplyContent = (event) => {
+        setReplyContent(event.target.value)
+    }
     useEffect(() => {
         window.scrollTo(0, 0)
         const sesQuantity = parseInt(sessionStorage.getItem('quantity'))
@@ -54,6 +59,7 @@ export default function ProductDetails() {
             setImgList(response.data)
             setFocusUrl(response.data[0].Url)
         }
+
         fetchProduct()
         fetchRatings()
         fetchImage()
@@ -62,7 +68,7 @@ export default function ProductDetails() {
 
     const calculateTotalPrice = () => {
         let total = 0
-         total += (100 - product.discount)/100   * product.Price * quantity
+        total += (100 - product.discount) / 100 * product.Price * quantity
         return total
     }
 
@@ -71,7 +77,6 @@ export default function ProductDetails() {
         total = total * (100 - voucherValue) / 100
         return total
     }
-
 
     const calculateBonus = () => {
         let bonus = 0
@@ -88,19 +93,53 @@ export default function ProductDetails() {
         setAddressList(response.data)
     }
 
-    const getFeedback = () => {
+    const getFeedback = (rating) => {
         if (sessionStorage.loginedUser != null) {
             if (user.Role === 'Admin' || user.Role === 'Staff') {
-                return (
-                    <div className="flex ml-8 my-2 pl-8">
-                        <TextField variant="standard" label="Reply to comment" />
-                        <div>
-                            <Button variant="contained">Save</Button>
+                if (rating.replyContent != null) {
+                    return (
+                        <div className="my-4 ml-12 flex">
+                            <div>
+                                <Avatar className="rounded-2xl h-24 w-24 m-2" src={rating.ReplierPicture} />
+                            </div>
+                            <div className="">
+                                <div className="">
+                                    <div className="flex">
+                                        <h4 className="font-bold ">{rating.ReplierName}</h4>
+                                    </div>
+
+                                    <div className="text-sm flex">
+                                        <div className="text-sm text-center flex align-middle">
+                                            {new Date(rating.replyDate).toLocaleDateString()}
+                                        </div>
+                                    </div>
+                                </div>
+                                <p className="mt-4">{rating.replyContent}</p>
+                            </div>
                         </div>
-                    </div>
-                )
+                    )
+                } else {
+                    return (
+                        <div className="flex ml-8 my-2 pl-8">
+                            <TextField className="text-left"
+                                fullWidth
+                                variant="standard"
+                                label="Trả lời nhận xét"
+                                multiline
+                                rows={3}
+                                onChange={handleReplyContent} />
+                            <div>
+                                <Button variant="contained" onClick={handleReply}>Save</Button>
+                            </div>
+                        </div>
+                    )
+                }
             }
         }
+    }
+
+    const handleReply = async () => {
+        
     }
 
     const handleDecrement = () => {
@@ -117,42 +156,48 @@ export default function ProductDetails() {
         sessionStorage.setItem('quantity', quantity + 1)
     }
 
-    function isOrderAddressEmpty(orderAddress) {
-        return !orderAddress || orderAddress.trim() === ''
-    }
-
     const checkPattern = (inputValue, pattern) => {
         const regex = new RegExp(pattern)
         return regex.test(inputValue)
     }
 
+    const handleAddressChange = (event) => {
+        setCheckAddress(true)
+        setOrderAddress(event.target.value)
+    }
+
     const handlePhoneChange = (event) => {
         let inputPhoneNumber = event.target.value
 
-        // Remove unwanted characters "e", "+", and "-"
-        inputPhoneNumber = inputPhoneNumber.replace(/[e+-]/gi, '')
 
         // Regular expression pattern for a valid phone number. You can adjust it as needed.
         const phonePattern =
             '(032|033|034|035|036|037|038|039|096|097|098|086|083|084|085|081|082|088|091|094|070|079|077|076|078|090|093|089|056|058|092|059|099)[0-9]{7}'
 
-        if (inputPhoneNumber.length <= 11 ) {
-            if (checkPattern(inputPhoneNumber, phonePattern)) {
-                setCheckValidation(true)
+        if (!checkPattern(inputPhoneNumber, phonePattern)) {
+            setCheckValidation(false)
+        } else {
+            setCheckValidation(true)
+            if (inputPhoneNumber.length > 9 && inputPhoneNumber.length <= 11) {
                 setCheckNumChar(true)
             } else {
-                setCheckValidation(false)
+                setCheckNumChar(false)
             }
-        } else {
-            setCheckNumChar(false)
         }
         setPhoneNumber(event.target.value)
     }
 
     const handleKeyDown = (event) => {
+        const forbiddenKeys = ['e', '+', '-', '.'];
+
         // Prevent the characters "e", "+", and "-" from being entered.
-        if (['e', '+', '-', '.'].includes(event.key)) {
-            event.preventDefault()
+        if (forbiddenKeys.includes(event.key)) {
+            event.preventDefault();
+        }
+
+        // Prevent input when the length is 11 and the key pressed is not delete, backspace, or arrow keys.
+        if (event.target.value.length >= 11 && !['Delete', 'Backspace', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+            event.preventDefault();
         }
     }
 
@@ -195,75 +240,87 @@ export default function ProductDetails() {
         })
     }
 
-    const handlePayment = async () => {
+    const handlePayment = async (close) => {
         try {
             if (sessionStorage.loginedUser != null) {
                 if (orderAddress) {
                     if (phoneNumber) {
-                        const res = await axios.post('http://localhost:3000/order/addordertodb', {
-                            UserID: user.Id,
-                            OrderDate: new Date().toISOString().slice(0, 10),
-                            PaymentDate: null,
-                            AddressID: orderAddress,
-                            PhoneNumber: phoneNumber,
-                            Note: 'abcxyz',
-                            TotalAmount: calculateGrandTotal(),
-                            PaymentMethod: paymentMethod,
-                            Status: 'UNPAID',
-                            VoucherID : orderVoucher,
-                            Items: [
-                                {
-                                    id: product.Id,
-                                    name: product.Name,
-                                    quantity: quantity,
-                                    url: product.Url,
-                                    price: ((product.Price * (100 - product.discount)) / 100) * quantity
-                                }
-                            ]
-                        })
-                        const updatedUser = await axios.post('http://localhost:3000/users/updatePoint', {
-                            id: user.Id,
-                            point: ((product.Price * (100 - product.discount)) / 100) * quantity / 1000
-                        })
-                        if (paymentMethod == 'vnpay') {
-                            const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
-                                amount: calculateGrandTotal(),
-                                bankCode: '',
-                                language: 'vn',
-                                email: user.Email,
-                                phoneNumber: user.PhoneNumber,
-                                orderid: res.data.orderid
+                        if(checkValidation && checkNumChar){
+                            const res = await axios.post('http://localhost:3000/order/addordertodb', {
+                                UserID: user.Id,
+                                OrderDate: new Date().toISOString().slice(0, 10),
+                                PaymentDate: null,
+                                AddressID: orderAddress,
+                                PhoneNumber: phoneNumber,
+                                Note: 'abcxyz',
+                                TotalAmount: calculateGrandTotal(),
+                                PaymentMethod: paymentMethod,
+                                Status: 'UNPAID',
+                                VoucherID : orderVoucher,
+                                Items: [
+                                    {
+                                        id: product.Id,
+                                        name: product.Name,
+                                        quantity: quantity,
+                                        url: product.Url,
+                                        price: ((product.Price * (100 - product.discount)) / 100) * quantity
+                                    }
+                                ]
                             })
-                            // setTimeout(() => {
-                            //     alert('Đang chuyển tiếp đến VNPay')
-                            // }, 2000)
-                            close()
-                            window.location.href = response.data.url
-                        } else {
-                            toast.dismiss()
-                            toast.success('Đặt hàng thành công', {
-                                position: 'bottom-left',
-                                autoClose: 1000,
-                                hideProgressBar: false,
-                                closeOnClick: true,
-                                pauseOnHover: false,
-                                draggable: true,
-                                progress: undefined,
-                                theme: 'colored'
+                            const updatedUser = await axios.post('http://localhost:3000/users/updatePoint', {
+                                id: user.Id,
+                                point: ((product.Price * (100 - product.discount)) / 100) * quantity / 1000
                             })
-                            sessionStorage.setItem('loginedUser', JSON.stringify(updatedUser.data))
+                            if (paymentMethod == 'vnpay') {
+                                const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
+                                    amount: calculateGrandTotal(),
+                                    bankCode: '',
+                                    language: 'vn',
+                                    email: user.Email,
+                                    phoneNumber: user.PhoneNumber,
+                                    orderid: res.data.orderid
+                                })
+                                // setTimeout(() => {
+                                //     alert('Đang chuyển tiếp đến VNPay')
+                                // }, 2000)
+                                close()
+                                setOrderAddress('')
+                                setPhoneNumber('')
+                                window.location.href = response.data.url
+                            } else {
+                                toast.dismiss()
+                                toast.success('Đặt hàng thành công', {
+                                    position: 'bottom-left',
+                                    autoClose: 1000,
+                                    hideProgressBar: false,
+                                    closeOnClick: true,
+                                    pauseOnHover: false,
+                                    draggable: true,
+                                    progress: undefined,
+                                    theme: 'colored'
+                                })
+                                sessionStorage.setItem('loginedUser', JSON.stringify(updatedUser.data))
+                                close()
+                                setOrderAddress('')
+                                setPhoneNumber('')
+                                // sessionStorage.setItem('cart', '{"products":[]}')
+                                // window.location.reload(false)
+                            }
                             // sessionStorage.setItem('cart', '{"products":[]}')
-                            window.location.reload()
+                        }else{
+                            // setThrowError('Xin hãy nhập đúng số điện thoại')
+                            setCheckValidation(false)
                         }
-                        // sessionStorage.setItem('cart', '{"products":[]}')
                     } else {
-                        alert('Please enter your phone number')
+                        // setThrowError("Xin hãy nhập số điện thoại")
+                        setCheckValidation(false)
                     }
                 } else {
-                    alert('Please enter your address')
+                    setCheckAddress(false)
+                    if (!phoneNumber) {
+                        setCheckValidation(false)
+                    }
                 }
-            } else {
-                alert('Đăng nhập để tiến hành thanh toán')
             }
         } catch (error) {
             console.error('Lỗi thanh toán:', error)
@@ -376,7 +433,7 @@ export default function ProductDetails() {
                                 </button>
                             </div>
                             <div className="flex gap-2">
-                                <Button variant="outlined" onClick={handleCompare }>So sánh</Button>
+                                <Button variant="outlined" onClick={handleCompare}>So sánh</Button>
                                 <div>
                                     {user == null ? (
                                         <Popup
@@ -387,13 +444,13 @@ export default function ProductDetails() {
                                         >
                                             {(close) => (
                                                 <div className="login-popup">
-                                                    <LoginCard />
+                                                    <LoginCard/>
                                                 </div>
                                             )}
                                         </Popup>
                                     ) : (
                                         <div>
-                                            <Button variant="contained" className="add-cart" onClick={addToCart}>
+                                            <Button variant="contained" className="add-cart" onClick={()=>{addToCart(),close()}}>
                                                 Thêm vào giỏ hàng
                                             </Button>
                                             <ToastContainer />
@@ -413,11 +470,15 @@ export default function ProductDetails() {
                                     </div>
                                 }
                                 position="center"
-                                modal
+                                onClose={() => {
+                                    setCheckNumChar(true);
+                                    setCheckValidation(true)
+                                }}
+                                modals
                             >
                                 {(close) => (
-                                    <div className="login-popup">
-                                        <LoginCard />
+                                    <div className="login-popup" >
+                                        <LoginCard/>
                                     </div>
                                 )}
                             </Popup>
@@ -432,11 +493,14 @@ export default function ProductDetails() {
                                 onOpen={() => {
                                     fetchAddresses()
                                     fetchVouchers()
+                                    setPhoneNumber(user.PhoneNumber)
+                                    setCheckValidation(true)
+                                    setCheckNumChar(true)
                                 }}
                                 position="right center"
                                 modal
                                 closeOnDocumentClick={false}
-                                // closeOnEscape={false}
+                            // closeOnEscape={false}
                             >
                                 {(close) => (
                                     <div className="popup-order">
@@ -455,11 +519,9 @@ export default function ProductDetails() {
                                                         SelectProps={{
                                                             native: true
                                                         }}
-                                                        onChange={(event) => {
-                                                            setOrderAddress(event.target.value)
-                                                        }}
-                                                        error={isOrderAddressEmpty(orderAddress)}
-                                                        helperText={isOrderAddressEmpty(orderAddress) ? 'Xin hãy chọn địa chỉ' : ''}
+                                                        onChange={handleAddressChange}
+                                                        error={!checkAddress}
+                                                        helperText={!checkAddress ? "Xin hãy chọn địa chỉ của bạn": ""}
                                                     >
                                                         <option value="" selected></option>
                                                         {addressList.map((adr) => (
@@ -489,14 +551,14 @@ export default function ProductDetails() {
                                                     className="user-input"
                                                     id="phoneNumber"
                                                     size="small"
-                                                    value={phoneNumber}
+                                                    value={user.PhoneNumber}
                                                     onChange={handlePhoneChange}
                                                     onKeyDown={handleKeyDown}
                                                     error={!checkValidation || !checkNumChar}
-                                                    helperText={(!checkValidation || !checkNumChar) ? 'Số điện thoại không hợp lệ' : ''}
-                                                ></TextField>
+                                                    helperText={(!checkValidation || !checkNumChar) ? (!phoneNumber ? 'Xin hãy nhập số điện thoại' : 'Số điện thoại không hợp lệ') : ('')}
+                                                >{user.PhoneNumber}</TextField>
                                             </div>
-                                           
+
                                             <hr className="border  border-slate-300 my-2 w-full" />
                                             <h1>Sản phẩm</h1>
                                         </div>
@@ -560,8 +622,8 @@ export default function ProductDetails() {
                                         </div>
 
                                         <hr className="border  border-slate-300 my-2 w-full" />
-                                            <div className="flex place-content-between">
-                                                <div>
+                                        <div className="flex place-content-between">
+                                            <div>
                                                 <TextField
                                                     select
                                                     label="Chọn phiếu giảm giá"
@@ -581,33 +643,33 @@ export default function ProductDetails() {
                                                     <option value="" selected></option>
                                                     {voucherList.map((voucher) => (
                                                         voucher.UsedAt == null && (
-                                                        <option key={voucher} value={[voucher.ID, voucher.discount]}>
-                                                            {voucher.discount + ' % , Hết hạn ' + voucher.ExpireAt.substr(0, 10)}
+                                                            <option key={voucher} value={[voucher.ID, voucher.discount]}>
+                                                                {voucher.discount + ' % , Hết hạn ' + voucher.ExpireAt.substr(0, 10)}
                                                             </option>
                                                         )
                                                     ))}
                                                 </TextField>
-                                                </div>
-                                                <div className=" border-gray-300 rounded   ">
-                                                    
-                                                    <div className="font-bold flex place-content-end">
-                                                        <div className="mr-4">Được giảm giá:</div>
-                                                        <div className="text-xl">
-                                                            {(calculateTotalPrice() * voucherValue / 100).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
-                                                        </div>
-                                                    </div>
-                                                    <div className="font-bold flex place-content-end">
-                                                        <div className="mr-4">Số điểm bonus sẽ tích được:</div>
-                                                        <div className="text-xl">{calculateBonus()}</div>
-                                                    </div>
-                                                    <hr></hr>
-                                                    <div className="font-bold flex place-content-end ">
-                                                        <div className="text-xl font-bold mr-4">THANH TOÁN:</div>
-                                                        <div className="text-4xl font-bold mr-4 text-red-400">
-                                                            {calculateGrandTotal().toLocaleString('vi', { style: 'currency', currency: 'VND' })}
-                                                        </div>
+                                            </div>
+                                            <div className=" border-gray-300 rounded   ">
+
+                                                <div className="font-bold flex place-content-end">
+                                                    <div className="mr-4">Được giảm giá:</div>
+                                                    <div className="text-xl">
+                                                        {(calculateTotalPrice() * voucherValue / 100).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
                                                     </div>
                                                 </div>
+                                                <div className="font-bold flex place-content-end">
+                                                    <div className="mr-4">Số điểm bonus sẽ tích được:</div>
+                                                    <div className="text-xl">{calculateBonus()}</div>
+                                                </div>
+                                                <hr></hr>
+                                                <div className="font-bold flex place-content-end ">
+                                                    <div className="text-xl font-bold mr-4">THANH TOÁN:</div>
+                                                    <div className="text-4xl font-bold mr-4 text-red-400">
+                                                        {calculateGrandTotal().toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div className="flex place-content-between">
                                             <div>
@@ -650,7 +712,7 @@ export default function ProductDetails() {
                                                     <Button
                                                         variant="contained"
                                                         onClick={() => {
-                                                            handlePayment()
+                                                            handlePayment(close)
                                                         }}
                                                     >
                                                         Đặt hàng
@@ -738,7 +800,7 @@ export default function ProductDetails() {
                                             <p className="mt-4">{rating.Content}</p>
                                         </div>
                                     </div>
-                                    <div className="mx-8">{getFeedback()}</div>
+                                    <div className="mx-8">{getFeedback(rating)}</div>
                                     <hr className="border border-slate-300 mt-4 mx-4" />
                                 </div>
                             </div>

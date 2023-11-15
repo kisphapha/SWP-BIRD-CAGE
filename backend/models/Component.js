@@ -242,6 +242,9 @@ const deleteComponent = async (Id) => {
     }
 }
 
+
+
+
 module.exports  = {
     getAllComponent,
     getByComponentCate,

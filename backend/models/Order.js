@@ -163,6 +163,8 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
         console.log("error: ", error);
     }
 };
+
+
 const changeStatus_Paid = async (id) => {
     try {
         let poolConnection = await sql.connect(config);
@@ -393,6 +395,30 @@ const addCustomProduct = async (productName, Description, Price, Category, Size,
     }
 }
 
+const getCustomComponentImageByOrderID = async(Id) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('Id', Id)
+        .query(
+            ` 
+            select cd.* from Orders o
+            join OrderItem ot 
+            on o.Id = ot.OrdersId
+            join Products p
+            on ot.ProductId  = p.Id
+            join CustomComponent cp 
+            on cp.ProductID = p.Id
+            join ComponentDetail cd 
+            on cd.ID = cp.ComponentID
+            where o.Id = @Id
+            `
+        )
+        return result.recordset;
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
 
 module.exports = {
     getAllOrder,
@@ -405,5 +431,6 @@ module.exports = {
     loadUnSeen,
     changeToSeen,
     pieChartData,
-    addCustomProduct
+    addCustomProduct,
+    getCustomComponentImageByOrderID
 }

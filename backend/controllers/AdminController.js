@@ -73,7 +73,8 @@ const changetoSeen = async(req, res) => {
 
 const getMonthLyIncome = async (req, res) => {
     try {
-        const admin = await Admin.getMonthLyIncome();
+        const year = req.body.year
+        const admin = await Admin.getMonthLyIncome(year);
         res.json(admin);
     } catch (error) {
         res.status(500).json({message: error.message})
