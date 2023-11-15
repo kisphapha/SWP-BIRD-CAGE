@@ -124,6 +124,8 @@ const filterComponent = async (req, res) => {
 
 
 
+
+
 module.exports = {
     getAllComponent,
     getComponentByCate,

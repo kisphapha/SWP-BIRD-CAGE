@@ -88,17 +88,6 @@ export default function Cart() {
                 if (sessionStorage.loginedUser != null) {
                     if (orderAddress) {
                         if (phoneNumber) {
-                            const res = await axios.post('http://localhost:3000/order/addordertodb', {
-                                UserID: user.Id,
-                                OrderDate: new Date().toISOString().slice(0, 10),
-                                PaymentDate: null,
-                                ShippingAddress: orderAddress,
-                                PhoneNumber: phoneNumber,
-                                Note: 'Cart',
-                                TotalAmount: calculateTotalPrice(),
-                                PaymentMethod: paymentMethod,
-                                Items: cartItems
-                            })
                     const res = await axios.post('http://localhost:3000/order/addordertodb', {
                         UserID: user.Id,
                         OrderDate: new Date().toISOString().slice(0, 10),
