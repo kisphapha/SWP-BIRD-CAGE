@@ -29,6 +29,7 @@ export default function ProductDetails() {
     const [orderAddress, setOrderAddress] = useState('')
     const [phoneNumber, setPhoneNumber] = useState('')
     const [checkValidation, setCheckValidation] = useState(true)
+    const [checkNumChar, setCheckNumChar] = useState(true)
 
     window.addEventListener('popstate', function () {
         // This function will be triggered when the window is unloaded, including when it's reloaded.
@@ -110,14 +111,15 @@ export default function ProductDetails() {
         const phonePattern =
             '(032|033|034|035|036|037|038|039|096|097|098|086|083|084|085|081|082|088|091|094|070|079|077|076|078|090|093|089|056|058|092|059|099)[0-9]{7}'
 
-        if (inputPhoneNumber.length <= 11) {
+        if (inputPhoneNumber.length <= 11 ) {
             if (checkPattern(inputPhoneNumber, phonePattern)) {
                 setCheckValidation(true)
+                setCheckNumChar(true)
             } else {
                 setCheckValidation(false)
             }
         } else {
-            setValid(false)
+            setCheckNumChar(false)
         }
         setPhoneNumber(event.target.value)
     }
@@ -410,8 +412,8 @@ export default function ProductDetails() {
                                                     value={phoneNumber}
                                                     onChange={handlePhoneChange}
                                                     onKeyDown={handleKeyDown}
-                                                    error={!checkValidation}
-                                                    helperText={!checkValidation ? 'Số điện thoại không hợp lệ' : ''}
+                                                    error={!checkValidation || !checkNumChar}
+                                                    helperText={(!checkValidation || !checkNumChar) ? 'Số điện thoại không hợp lệ' : ''}
                                                 ></TextField>
                                             </div>
                                             <hr className="border  border-slate-300 my-2 w-full" />
