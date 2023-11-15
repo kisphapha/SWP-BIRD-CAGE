@@ -16,7 +16,7 @@ import VNPay from '../../image/icons/VNPay.svg'
 import COD from '../../image/icons/COD.svg'
 
 export default function Cart() {
-    const {user } = useContext(UserContext)
+    const { user } = useContext(UserContext)
     const [cartData, setCartData] = useState({ products: [] })
     const [loading, setLoading] = useState(true)
     const [paymentMethod, setPaymentMethod] = useState('COD') // Default to 'onDelivery'
@@ -52,6 +52,7 @@ export default function Cart() {
 
     useEffect(() => {
         loadCartData()
+        fetchAddresses()
     }, [])
 
     const handleDecrement = (productId) => {
@@ -85,39 +86,48 @@ export default function Cart() {
 
             if (cartItems && cartItems.length > 0) {
                 if (sessionStorage.loginedUser != null) {
-                    const res = await axios.post('http://localhost:3000/order/addordertodb', {
-                        UserID: user.Id,
-                        OrderDate: new Date().toISOString().slice(0, 10),
-                        PaymentDate: null,
-                        AddressID: null,
-                        PhoneNumber: user.PhoneNumber,
-                        Note: '',
-                        TotalAmount: calculateTotalPrice(),
-                        PaymentMethod: paymentMethod,
-                        Items: cartItems
-                    })
+                    if (orderAddress) {
+                        if (phoneNumber) {
+                            const res = await axios.post('http://localhost:3000/order/addordertodb', {
+                                UserID: user.Id,
+                                OrderDate: new Date().toISOString().slice(0, 10),
+                                PaymentDate: null,
+                                AddressID: orderAddress,
+                                PhoneNumber: phoneNumber,
+                                Note: 'Cart',
+                                TotalAmount: calculateTotalPrice(),
+                                PaymentMethod: paymentMethod,
+                                Items: cartItems
+                            })
 
-                    await axios.post('http://localhost:3000/users/updatePoint', {
-                        id: user.Id,
-                        point: calculateTotalPrice()
-                    })
+                            const response = await axios.post('http://localhost:3000/users/updatePoint', {
+                                id: user.Id,
+                                point: calculateBonus
+                            })
 
-                    if (paymentMethod == 'vnpay') {
-                        const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
-                            amount: calculateTotalPrice(),
-                            bankCode: '',
-                            language: 'vn',
-                            email: user.Email,
-                            phoneNumber: user.PhoneNumber,
-                            orderid: res.data.orderid
-                        })
+                            if (paymentMethod == 'vnpay') {
+                                const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
+                                    amount: calculateTotalPrice(),
+                                    bankCode: '',
+                                    language: 'vn',
+                                    email: user.Email,
+                                    phoneNumber: user.PhoneNumber,
+                                    orderid: res.data.orderid
+                                })
 
-                        console.log(response.data.url)
-                        window.location.href = response.data.url
+                                console.log(response.data.url)
+                                window.location.href = response.data.url
+                            } else {
+                                alert('Đặt hàng thành công')
+                                sessionStorage.setItem('cart', '{"products":[]}')
+                                sessionStorage.setItem("loginedUser",JSON.stringify(response.data))
+                                window.location.reload(false)
+                            }
+                        } else {
+                            alert('Please enter your phone number')
+                        }
                     } else {
-                        alert('Đặt hàng thành công')
-                        sessionStorage.setItem('cart', '{"products":[]}')
-                        window.location.reload(false)
+                        alert('Please enter your address')
                     }
                 } else {
                     alert('Đăng nhập để tiến hành thanh toán')
@@ -372,17 +382,45 @@ export default function Cart() {
                                                     {/* <h1>Sản phẩm</h1>
                                                      */}
                                                 </div>
-                                                <div className=" border-gray-300 rounded   ">
-                                                    <div className="font-bold flex place-content-end ">
-                                                        <div className=" mr-4">Tổng cộng:</div>
-                                                        <div>
-                                                            {calculateTotalPrice().toLocaleString('vi', { style: 'currency', currency: 'VND' })}
-                                                        </div>
+                                                <div className="flex place-content-between">
+                                                    <div className="w-1/3">
+                                                        <TextField
+                                                            select
+                                                            label="Chọn mã giảm giá"
+                                                            fullWidth
+                                                            className=""
+                                                            id=""
+                                                            size="small"
+                                                            SelectProps={{
+                                                                native: true
+                                                            }}
+                                                            onChange={(event) => {
+                                                                ////fetch voucher
+                                                            }}
+                                                            // error={isOrderAddressEmpty(orderAddress)}
+                                                            // helperText={isOrderAddressEmpty(orderAddress) ? 'Xin hãy chọn địa chỉ' : ''}
+                                                        >
+                                                            <option value="" selected></option>
+                                                            {/* {addressList.map((adr) => (
+                                                                <option key={adr} value={adr.ID}>
+                                                                    {adr.SoNha + ', ' + adr.PhuongXa + ', ' + adr.QuanHuyen + ', ' + adr.TinhTP}
+                                                                </option>
+                                                            ))} */}
+                                                            /fetch voucher
+                                                        </TextField>
                                                     </div>
+                                                    <div>
+                                                        <div className="font-bold flex place-content-end ">
+                                                            <div className=" mr-4">Tổng cộng:</div>
+                                                            <div>
+                                                                {calculateTotalPrice().toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+                                                            </div>
+                                                        </div>
 
-                                                    <div className="font-bold flex place-content-end">
-                                                        <div className=" mr-4">Số điểm bonus sẽ tích được:</div>
-                                                        <div>{calculateBonus()}</div>
+                                                        <div className="font-bold flex place-content-end">
+                                                            <div className=" mr-4">Số điểm bonus sẽ tích được:</div>
+                                                            <div>{calculateBonus()}</div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div className="flex place-content-between mt-4">

@@ -226,13 +226,13 @@ export default function Components() {
                             </TableCell>
                             <TableCell>
                                 <div>
-                                    <div>Image</div>
+                                    <div className="font-bold text-base">Image</div>
                                     {/* <div>Hình ảnh</div> */}
                                 </div>
                             </TableCell>
                             <TableCell>
                                 <div>
-                                    <div>Name</div>
+                                    <div className="font-bold text-base">Name</div>
                                     <div>
                                         <TextField
                                             className="w-64"
@@ -246,7 +246,7 @@ export default function Components() {
                             </TableCell>
                             <TableCell>
                                 <div>
-                                    <div>Giá</div>
+                                    <div className="font-bold text-base">Giá</div>
                                     <div className="flex">
                                         <div className="w-16">
                                             <TextField
@@ -271,7 +271,7 @@ export default function Components() {
                             </TableCell>
                             <TableCell>
                                 <div>
-                                    <div>Số lượng</div>
+                                    <div className="font-bold text-base">Số lượng</div>
                                     <div className="flex">
                                         <div className="w-16">
                                             <TextField
@@ -296,7 +296,7 @@ export default function Components() {
                             </TableCell>
                             <TableCell>
                                 <div>
-                                    <div>Phân loại</div>
+                                    <div className="font-bold text-base">Phân loại</div>
                                     <div>
                                         <TextField
                                             className="w-64"
@@ -318,7 +318,7 @@ export default function Components() {
                             </TableCell>
                             <TableCell>
                                 <div>
-                                    <div> Trạng thái</div>
+                                    <div className="font-bold text-base"> Trạng thái</div>
                                     <div>
                                         <TextField
                                             className="w-32 text-left"
@@ -336,6 +336,9 @@ export default function Components() {
                                         </TextField>
                                     </div>
                                 </div>
+                            </TableCell>
+                            <TableCell>
+                                <div className="font-bold text-sm text-right">Sửa/xóa</div>
                             </TableCell>
                         </TableRow>
                     </TableHead>

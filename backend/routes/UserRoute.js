@@ -13,5 +13,8 @@ userRouter.post("/addVoucher", UserController.addVoucher);
 userRouter.get("/getVoucher/:UserID", UserController.getVoucherByUserID);
 userRouter.post("/exchangePoint", UserController.exchangePoint);
 userRouter.post("/replyFeedback", UserController.replyFeedBack);
+userRouter.post("/addNotifications", UserController.addNotifications);
+userRouter.get("/loadNotifications/:id", UserController.loadNotifications);
+
 
 module.exports = userRouter;

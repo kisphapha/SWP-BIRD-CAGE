@@ -190,6 +190,21 @@ const orderStatisticByMonth = async (month,year) => {
     }
 }
 
+const deleteExpiresVoucher = async() => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+            .query(`
+                DELETE FROM dbo.Voucher
+                WHERE ExpireAt < GETDATE()
+            `)
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
+
+
+
 module.exports = {
     getOrderBy5Month,
     getBestSellingProducts,
@@ -200,6 +215,7 @@ module.exports = {
     deleteJunkData,
     orderStatisticByMonth,
     getMonthLyIncome,
-    changetoSeen
+    changetoSeen,
+    deleteExpiresVoucher
 };
 

@@ -80,7 +80,7 @@ const getPointForUser = async(id, point) => {
 
             SELECT *
             FROM [dbo].[User]
-            WHERE Id = @Id;
+            WHERE Id = @id;
         `)
         return response.recordset[0]
     } catch (error) {
@@ -210,6 +210,43 @@ const replyFeedBack = async(id, ReplyContent, Replier) => {
     }
 }
 
+const addNotifications = async(content, userId) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('content', content)
+        .input('userId', userId)
+        .query(`
+        INSERT INTO dbo.Notification
+        (
+            content,
+            userId
+        )
+        VALUES
+        (   @content,
+            @userId
+            )
+        `)
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
+
+const loadNotifications = async (userId) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('userId', userId)
+        .query(`
+        SELECT * FROM dbo.Notification
+	    WHERE userId = @userId
+        `)
+        return result.recordset;
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
+
 module.exports = {
     getAllUser,
     getUserByEmail,
@@ -220,5 +257,7 @@ module.exports = {
     addVoucher,
     getVoucherByUserID,
     exchangePoint,
-    replyFeedBack
+    replyFeedBack,
+    addNotifications,
+    loadNotifications
 };
