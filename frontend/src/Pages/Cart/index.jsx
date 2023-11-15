@@ -21,15 +21,16 @@ export default function Cart() {
     const [cartData, setCartData] = useState({ products: [] })
     const [loading, setLoading] = useState(true)
     const [paymentMethod, setPaymentMethod] = useState('COD') // Default to 'onDelivery'
-    const navigate = useNavigate()
     const [orderAddress, setOrderAddress] = useState('')
     const [orderVoucher, setOrderVoucher] = useState('')
     const [voucherValue, setVoucherValue] = useState(0)
     const [addressList, setAddressList] = useState([])
     const [phoneNumber, setPhoneNumber] = useState('')
     const [checkValidation, setCheckValidation] = useState(true)
+    const [checkAddress, setCheckAddress] = useState(true)
+    const [checkNumChar, setCheckNumChar] = useState(true)
     const [voucherList, setVoucherList] = useState([])
-
+    const navigate = useNavigate()
 
     const loadCartData = async () => {
         const cartDataFromSession = sessionStorage.getItem('cart')
@@ -38,21 +39,26 @@ export default function Cart() {
         }
         setLoading(false)
     }
+    
     const clearCart = () => {
         const emptyCart = { products: [] }
-        setCartData(emptyCart)
-        sessionStorage.setItem('cart', JSON.stringify(emptyCart))
-        toast.dismiss()
-        toast.error('Đã xoá toàn bộ sản phẩm', {
-            position: 'bottom-left',
-            autoClose: 1000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: true,
-            progress: undefined,
-            theme: 'colored'
-        })
+        if(cartData.products.length != 0) {
+            setCartData(emptyCart)
+            sessionStorage.setItem('cart', JSON.stringify(emptyCart))
+            toast.dismiss()
+            toast.error('Đã xoá toàn bộ sản phẩm', {
+                position: 'bottom-left',
+                autoClose: 1000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                progress: undefined,
+                theme: 'colored'
+            })
+        }else{
+            nothingInCart()
+        }
     }
 
     useEffect(() => {
@@ -86,7 +92,7 @@ export default function Cart() {
         }
     }
 
-    const handlePayment = async () => {
+    const handlePayment = async (close) => {
         try {
             const cartItems = JSON.parse(sessionStorage.getItem('cart')).products
 
@@ -94,18 +100,19 @@ export default function Cart() {
                 if (sessionStorage.loginedUser != null) {
                     if (orderAddress) {
                         if (phoneNumber) {
-                            const res = await axios.post('http://localhost:3000/order/addordertodb', {
-                                UserID: user.Id,
-                                OrderDate: new Date().toISOString().slice(0, 10),
-                                PaymentDate: null,
-                                AddressID: orderAddress,
-                                PhoneNumber: phoneNumber,
-                                Note: 'Cart',
-                                TotalAmount: calculateGrandTotal(),
-                                PaymentMethod: paymentMethod,
-                                VoucherID: orderVoucher,
-                                Items: cartItems
-                            })
+                            if(checkValidation){
+                                const res = await axios.post('http://localhost:3000/order/addordertodb', {
+                                    UserID: user.Id,
+                                    OrderDate: new Date().toISOString().slice(0, 10),
+                                    PaymentDate: null,
+                                    AddressID: orderAddress,
+                                    PhoneNumber: phoneNumber,
+                                    Note: 'Cart',
+                                    TotalAmount: calculateGrandTotal(),
+                                    PaymentMethod: paymentMethod,
+                                    VoucherID: orderVoucher,
+                                    Items: cartItems
+                                })
 
                             const response = await axios.post('http://localhost:3000/users/updatePoint', {
                                 id: user.Id,
@@ -116,29 +123,53 @@ export default function Cart() {
                                 Id: orderVoucher
                             })
 
-                            if (paymentMethod == 'vnpay') {
-                                const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
-                                    amount: calculateGrandTotal(),
-                                    bankCode: '',
-                                    language: 'vn',
-                                    email: user.Email,
-                                    phoneNumber: user.PhoneNumber,
-                                    orderid: res.data.orderid
-                                })
+                                if (paymentMethod == 'vnpay') {
+                                    const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
+                                        amount: calculateGrandTotal(),
+                                        bankCode: '',
+                                        language: 'vn',
+                                        email: user.Email,
+                                        phoneNumber: user.PhoneNumber,
+                                        orderid: res.data.orderid
+                                    })
 
-                                console.log(response.data.url)
-                                window.location.href = response.data.url
-                            } else {
-                                alert('Đặt hàng thành công')
-                                sessionStorage.setItem('cart', '{"products":[]}')
-                                sessionStorage.setItem('loginedUser', JSON.stringify(response.data))
-                                window.location.reload(false)
+                                    // console.log(response.data.url)
+                                    window.location.href = response.data.url
+                                    
+                                } else {
+                                    alert('Đặt hàng thành công')
+                                    sessionStorage.setItem('cart', '{"products":[]}')
+                                    sessionStorage.setItem('loginedUser', JSON.stringify(response.data))
+                                    toast.dismiss()
+                                    toast.success('Đặt hàng thành công', {
+                                        position: 'bottom-left',
+                                        autoClose: 1000,
+                                        hideProgressBar: false,
+                                        closeOnClick: true,
+                                        pauseOnHover: false,
+                                        draggable: true,
+                                        progress: undefined,
+                                        theme: 'colored'
+                                    })
+                                    // window.location.reload(false)
+                                    close()
+                                }   
+                                setOrderAddress('')
+                                setPhoneNumber('')
+                                const emptyCart = { products: [] }
+                                setCartData(emptyCart)
+                                sessionStorage.setItem('cart', JSON.stringify(emptyCart))
+                            }else {
+                                setCheckValidation(false)
                             }
                         } else {
-                            alert('Please enter your phone number')
+                            setCheckValidation(false)
                         }
                     } else {
-                        alert('Please enter your address')
+                        setCheckAddress(false)
+                        if (!phoneNumber) {
+                            setCheckValidation(false)
+                        }
                     }
                 } else {
                     alert('Đăng nhập để tiến hành thanh toán')
@@ -181,7 +212,7 @@ export default function Cart() {
 
     const removeProductFromCart = (productId) => {
         const updatedCart = { ...cartData }
-
+        
         const productIndex = updatedCart.products.findIndex((product) => product.id === productId)
         if (productIndex != -1) {
             updatedCart.products.splice(productIndex, 1)
@@ -199,11 +230,26 @@ export default function Cart() {
             draggable: true,
             progress: undefined,
             theme: 'colored'
+        })  
+    }
+
+    const nothingInCart = () => {
+        toast.dismiss()
+        toast.error('Không có gì trong giỏ hàng', {
+            position: 'bottom-left',
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: 'colored'
         })
     }
 
-    function isOrderAddressEmpty(orderAddress) {
-        return !orderAddress || orderAddress.trim() === ''
+    const handleAddressChange = (event) => {
+        setCheckAddress(true)
+        setOrderAddress(event.target.value)
     }
 
     async function fetchAddresses() {
@@ -225,28 +271,34 @@ export default function Cart() {
     const handlePhoneChange = (event) => {
         let inputPhoneNumber = event.target.value
 
-        // Remove unwanted characters "e", "+", and "-"
-        inputPhoneNumber = inputPhoneNumber.replace(/[e+-]/gi, '')
-
         // Regular expression pattern for a valid phone number. You can adjust it as needed.
         const phonePattern =
             '(032|033|034|035|036|037|038|039|096|097|098|086|083|084|085|081|082|088|091|094|070|079|077|076|078|090|093|089|056|058|092|059|099)[0-9]{7}'
 
-        if (inputPhoneNumber.length <= 11) {
-            if (checkPattern(inputPhoneNumber, phonePattern)) {
-                setCheckValidation(true)
-            } else {
-                setCheckValidation(false)
-            }
-        } else {
+        if (!checkPattern(inputPhoneNumber, phonePattern)) {
             setCheckValidation(false)
+        } else {
+            setCheckValidation(true)
+            if (inputPhoneNumber.length > 9 && inputPhoneNumber.length <= 11) {
+                setCheckNumChar(true)
+            } else {
+                setCheckNumChar(false)
+            }
         }
         setPhoneNumber(event.target.value)
     }
+
     const handleKeyDown = (event) => {
+        const forbiddenKeys = ['e', '+', '-', '.'];
+
         // Prevent the characters "e", "+", and "-" from being entered.
-        if (['e', '+', '-', '.'].includes(event.key)) {
-            event.preventDefault()
+        if (forbiddenKeys.includes(event.key)) {
+            event.preventDefault();
+        }
+
+        // Prevent input when the length is 11 and the key pressed is not delete, backspace, or arrow keys.
+        if (event.target.value.length >= 11 && !['Delete', 'Backspace', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+            event.preventDefault();
         }
     }
 
@@ -337,69 +389,73 @@ export default function Cart() {
 
                             <div className=" font-bold ">
                                 <div className="flex justify-end gap-4 my-2 ">
-                                    <Popup
-                                        trigger={<Button variant="contained">Thanh toán</Button>}
-                                        closeOnDocumentClick={false}
-                                        position="right center"
-                                        modal
-                                    >
-                                        {(close) => (
-                                            <div>
-                                                <h1>Thông tin người nhận</h1>
-                                                <div className="container">
-                                                    <div className="adr-container">
-                                                        <div className="w-3/4">
+                                    {cartData.products.length != 0 ? (
+                                        <Popup
+                                            trigger={<Button variant="contained">Thanh toán</Button>}
+                                            onOpen={fetchAddresses}
+                                            closeOnDocumentClick={false}
+                                            position="right center"
+                                            modal
+                                        >
+                                            {(close) => (
+                                                <div>
+                                                    <h1>Thông tin người nhận</h1>
+                                                    <div className="container">
+                                                        <div className="adr-container">
+                                                            <div className="w-3/4">
+                                                                <TextField
+                                                                    select
+                                                                    required
+                                                                    fullWidth
+                                                                    label="Chọn địa chỉ của bạn"
+                                                                    className="user-input"
+                                                                    id="adrress"
+                                                                    size="small"
+                                                                    SelectProps={{
+                                                                        native: true
+                                                                    }}
+                                                                    onChange={handleAddressChange}
+                                                                    error={!checkAddress}
+                                                                    helperText={!checkAddress ? "Xin hãy chọn địa chỉ của bạn": ""}
+                                                                >
+                                                                    <option value="" selected></option>
+                                                                    {addressList.map((adr) => (
+                                                                        <option key={adr} value={adr.ID}>
+                                                                            {adr.SoNha + ', ' + adr.PhuongXa + ', ' + adr.QuanHuyen + ', ' + adr.TinhTP}
+                                                                        </option>
+                                                                    ))}
+                                                                </TextField>
+                                                            </div>
+                                                            <div>
+                                                                <Popup trigger={<Button variant="contained">Thêm</Button>} position="right center" modal>
+                                                                    {(close) => (
+                                                                        <div className="popup-address">
+                                                                            <h1>Thêm địa chỉ</h1>
+                                                                            <AddressPopup user={user} fetchAddresses={fetchAddresses} close={close} />
+                                                                        </div>
+                                                                    )}
+                                                                </Popup>
+                                                            </div>
+                                                        </div>
+                                                        <div className="phone-container w-3/4">
                                                             <TextField
-                                                                select
+                                                                type="number"
                                                                 required
                                                                 fullWidth
-                                                                label="Chọn địa chỉ của bạn"
+                                                                label="Số điện thoại"
                                                                 className="user-input"
-                                                                id="adrress"
+                                                                id="phoneNumber"
                                                                 size="small"
-                                                                SelectProps={{
-                                                                    native: true
-                                                                }}
-                                                                onChange={(event) => {
-                                                                    setOrderAddress(event.target.value)
-                                                                }}
-                                                                error={isOrderAddressEmpty(orderAddress)}
-                                                                helperText={isOrderAddressEmpty(orderAddress) ? 'Xin hãy chọn địa chỉ' : ''}
-                                                            >
-                                                                <option value="" selected></option>
-                                                                {addressList.map((adr) => (
-                                                                    <option key={adr} value={adr.ID}>
-                                                                        {adr.SoNha + ', ' + adr.PhuongXa + ', ' + adr.QuanHuyen + ', ' + adr.TinhTP}
-                                                                    </option>
-                                                                ))}
-                                                            </TextField>
-                                                        </div>
-                                                        <div>
-                                                            <Popup trigger={<Button variant="contained">Thêm</Button>} position="right center" modal>
-                                                                {(close) => (
-                                                                    <div className="popup-address">
-                                                                        <h1>Thêm địa chỉ</h1>
-                                                                        <AddressPopup user={user} fetchAddresses={fetchAddresses} close={close} />
-                                                                    </div>
-                                                                )}
-                                                            </Popup>
-                                                        </div>
-                                                    </div>
-                                                    <div className="phone-container w-3/4">
-                                                        <TextField
-                                                            type="number"
-                                                            required
-                                                            fullWidth
-                                                            label="Số điện thoại"
-                                                            className="user-input"
-                                                            id="phoneNumber"
-                                                            size="small"
-                                                            value={phoneNumber}
-                                                            onChange={handlePhoneChange}
-                                                            onKeyDown={handleKeyDown}
-                                                            error={!checkValidation}
-                                                            helperText={!checkValidation ? 'Số điện thoại không hợp lệ' : ''}
-                                                        ></TextField>
+                                                                value={phoneNumber}
+                                                                onChange={handlePhoneChange}
+                                                                onKeyDown={handleKeyDown}
+                                                                error={!checkValidation || !checkNumChar}
+                                                                helperText={(!checkValidation || !checkNumChar) ? (!phoneNumber ? 'Xin hãy nhập số điện thoại' : 'Số điện thoại không hợp lệ') : ('')}
+                                                            ></TextField>
+                                                        {/* </div>
+                                                        <hr className="border  border-slate-100 my-2 mx-10" /> */}
+                                                        {/* <h1>Sản phẩm</h1>
+                                                        */}
                                                     </div>
                                                 </div>
                                                 <div className=" border-gray-300 rounded   ">
@@ -477,45 +533,51 @@ export default function Cart() {
                                                             </label>
                                                         </div>
 
-                                                        <div className="flex">
-                                                            <label className="flex">
-                                                                <input
-                                                                    type="radio"
-                                                                    name="paymentMethod"
-                                                                    value="vnpay"
-                                                                    checked={paymentMethod === 'vnpay'}
-                                                                    onChange={() => setPaymentMethod('vnpay')}
-                                                                />
-                                                                <div className="flex items-center text-lg">
-                                                                    Thanh toán nhanh cùng VNPay
-                                                                    <img className="w-2/12 m-2" src={VNPay} alt="" />
-                                                                </div>
-                                                            </label>
+                                                            <div className="flex">
+                                                                <label className="flex">
+                                                                    <input
+                                                                        type="radio"
+                                                                        name="paymentMethod"
+                                                                        value="vnpay"
+                                                                        checked={paymentMethod === 'vnpay'}
+                                                                        onChange={() => setPaymentMethod('vnpay')}
+                                                                    />
+                                                                    <div className="flex items-center text-lg">
+                                                                        Thanh toán nhanh cùng VNPay
+                                                                        <img className="w-2/12 m-2" src={VNPay} alt="" />
+                                                                    </div>
+                                                                </label>
+                                                            </div>
                                                         </div>
-                                                    </div>
 
-                                                    <div className="flex gap-4 items-center ">
-                                                        {/* <button className="decision" onClick={close}></button> */}
-                                                        <div>
-                                                            <Button
-                                                                variant="contained"
-                                                                onClick={() => {
-                                                                    handlePayment()
-                                                                }}
-                                                            >
-                                                                Đặt hàng
-                                                            </Button>
-                                                        </div>
-                                                        <div>
-                                                            <Button variant="contained" onClick={close}>
-                                                                Hủy
-                                                            </Button>
+                                                        <div className="flex gap-4 items-center ">
+                                                            {/* <button className="decision" onClick={close}></button> */}
+                                                            <div>
+                                                                <Button
+                                                                    variant="contained"
+                                                                    onClick={() => {
+                                                                        handlePayment(close)
+                                                                    }}
+                                                                >
+                                                                    Đặt hàng
+                                                                </Button>
+                                                                <ToastContainer />
+                                                            </div>
+                                                            <div>
+                                                                <Button variant="contained" onClick={close}>
+                                                                    Hủy
+                                                                </Button>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        )}
-                                    </Popup>
+                                            )}
+                                        </Popup>
+                                    ):(
+                                        <Button variant="contained" onClick={nothingInCart}>Thanh toán
+                                            <ToastContainer />
+                                        </Button>
+                                    )}
                                     <Button variant="contained" onClick={clearCart} disableRipple>
                                         Xóa tất cả
                                         <ToastContainer />

@@ -36,7 +36,7 @@ export default function FilteredPage() {
     }
 
     const getCardListFilter = async (filter, keyword) => {
-        window.scrollTo(0, 96)
+        window.scrollTo(0, 0)
         if (filter == 1) {
             const response = await axios.post('http://localhost:3000/products/paging/category/', {
                 page: page,
@@ -60,7 +60,7 @@ export default function FilteredPage() {
         <div id="page_filter">
             <UserProvider>
                 <Header />
-                <Navbar />
+                <Navbar getCardListFilter={getCardListFilter} />
             </UserProvider>
 
             <main id="body">
