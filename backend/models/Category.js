@@ -38,7 +38,7 @@ const updateCategory = async (name, imageUrl, Allow_Customize, id) => {
             .input('Name', sql.NVarChar, name)
             .input('ImageUrl', sql.NVarChar, imageUrl)
             .input('AllowCustomize', sql.Bit, Allow_Customize)
-            .input('Id', sql.Int, id);
+            .input('Id', sql.VarChar, id);
 
         await request.query(`
             UPDATE dbo.Category
