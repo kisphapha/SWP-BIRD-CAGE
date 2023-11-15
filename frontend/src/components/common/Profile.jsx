@@ -35,7 +35,7 @@ const Profile = (props) => {
     }, [props.user])
 
     const handleNameChange = (event) => {
-        setTempName(event.target.value)
+        setName(event.target.value)
     }
 
     const checkPattern = (inputValue, pattern) => {
@@ -46,7 +46,6 @@ const Profile = (props) => {
     const handleKeyDown = (event) => {
         const forbiddenKeys = ['e', '+', '-', '.'];
 
-        // Prevent the characters "e", "+", and "-" from being entered.
         if (forbiddenKeys.includes(event.key)) {
             event.preventDefault();
         }
@@ -56,6 +55,16 @@ const Profile = (props) => {
             event.preventDefault();
         }
     }
+
+    const handleNameKeyDown = (event) => {
+        const forbiddenKeys = ['@', '+', '-', '.', '!', '#', '$', '%', '&', '^', '*', ',', '\'', '\"', '`','~'];
+    
+        // Prevent the characters "e", "+", and "-" from being entered.
+        if (forbiddenKeys.includes(event.key) && !['Delete', 'Backspace', 'ArrowLeft', 'ArrowRight'].includes(event.key) || /\d/.test(event.key)) {
+          event.preventDefault();
+        }
+    
+      };
 
     const handlePhoneNumberChange = (event) => {
         let inputPhoneNumber = event.target.value
@@ -89,13 +98,22 @@ const Profile = (props) => {
         const _phone = tempPhone ? tempPhone : phoneNumber
         const _dob = tempDob ? tempDob : dob
 
-        const response = await axios.get(
-            'http://localhost:3000/users/update/?name=' + _name + '&email=' + props.user.Email + '&phone=' + _phone + '&dob=' + _dob
-        )
-        if (response.data) {
-            sessionStorage.setItem('loginedUser', JSON.stringify(response.data))
-            alert('Đã cập nhật hồ sơ')
-            window.location.reload()
+        if(checkValidation && checkNumChar){
+            if(_name){
+                const response = await axios.get(
+                    'http://localhost:3000/users/update/?name=' + _name + '&email=' + props.user.Email + '&phone=' + _phone + '&dob=' + _dob
+                )
+                if (response.data) {
+                    sessionStorage.setItem('loginedUser', JSON.stringify(response.data))
+                    alert('Đã cập nhật hồ sơ')
+                    window.location.reload()
+                }
+            }else{
+                alert('Xin hãy nhập họ và tên của bạn')
+                setCheckName(false)
+            }
+        }else{
+            alert('Xin hãy nhập số hợp lệ')
         }
     }
 
@@ -117,7 +135,9 @@ const Profile = (props) => {
                                     label={'Họ tên'}
                                     variant="standard"
                                     onChange={handleNameChange}
-                                    value={tempName ? tempName : name}
+                                    onKeyDown={handleNameKeyDown}
+                                    value={name}
+                                    helperText={!name ? 'Xin hãy nhập tên của bạn': ''}
                                 />
                             </td>
                         </tr>
@@ -136,7 +156,7 @@ const Profile = (props) => {
                                     variant="standard"
                                     onChange={handlePhoneNumberChange}
                                     onKeyDown={handleKeyDown}
-                                    error={!checkValidation || !checkNumChar}
+                                    value={phoneNumber}
                                     helperText={(!checkValidation || !checkNumChar) ? (!phoneNumber ? 'Xin hãy nhập số điện thoại' : 'Số điện thoại không hợp lệ') : ('')}
                                 />
                             </td>
