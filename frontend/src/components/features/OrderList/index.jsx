@@ -13,9 +13,11 @@ import Popup from 'reactjs-popup'
 const steps = ['Chờ duyệt', 'Đang chuẩn bị', 'Đang giao', 'Đã giao']
 const OrderList = (props) => {
     const [cards, setCards] = useState([])
-    const [orders, setOrders] = useState([])
+    const [vouchers, setVouchers] = useState([])
     const [rating, setRating] = useState(0)
     const [feedbackContent, setFeedbackContent] = useState('')
+    const [openPopup, setOpenPopup] = useState(false)
+
     const navigate = useNavigate()
 
     const handleStarPoint = (event) => {
@@ -28,12 +30,19 @@ const OrderList = (props) => {
         navigate('/products/' + productId)
     }
     //step
-
     const getActiveStep = (status) => {
         return steps.indexOf(status)
     }
     async function fetchOrderItems(id) {
         const response = await axios.get(`http://localhost:3000/order/list/${id}`)
+        return response.data
+    }
+    async function fetchVouchers() {
+        const response = await axios.get(`http://localhost:3000/users/getVoucher/${props.user.Id}`)
+        setVouchers(response.data)
+    }
+    const fetchRatings = async (id) => {
+        const response = await axios.get(`http://localhost:3000/products/rating/${id}`)
         return response.data
     }
     async function submitFeedback(productId, close) {
@@ -54,21 +63,40 @@ const OrderList = (props) => {
     async function fetchOrder() {
         const response = await axios.get(`http://localhost:3000/order/user/${props.user.Id}`)
         if (response.data) {
-            const jsonData = response.data
-            const ordersWithItems = []
+            const jsonData = response.data;
+            const ordersWithItems = [];
 
             for (const order of jsonData) {
-                const items = await fetchOrderItems(order.Id)
-                const orderWithItems = { ...order, items }
-                ordersWithItems.push(orderWithItems)
+                const items = await fetchOrderItems(order.Id);
+                const itemWithRatings = [];
+
+                for (const item of items) {
+                    const ratings = await fetchRatings(item.Id);
+                    const itemWithRating = { ...item, ratings };
+                    itemWithRatings.push(itemWithRating);
+                }
+
+                const orderWithItems = { ...order, items: itemWithRatings };
+                ordersWithItems.push(orderWithItems);
             }
-            setCards(ordersWithItems)
+            setCards(ordersWithItems);
+            console.log(cards)
         }
     }
 
+    const handleFeedbackButtonClick = (card, item) => {
+        if (card.items.find(item => item.ratings.some(rating => rating.userid === props.user.Id))) {
+            handleRebuy(item.Id)
+        } else {
+            setOpenPopup(true)
+        }
+    };
+
     useEffect(() => {
-        fetchOrder()
-    }, [])
+        fetchOrder();
+        fetchVouchers();
+    }, []);
+
 
     return (
         <>
@@ -135,16 +163,16 @@ const OrderList = (props) => {
                                         </div>
                                     </div>
                                     <div className="text-end">
+                                        <Button className="" variant="contained" onClick={() => handleFeedbackButtonClick(card, item)}>
+                                            {card.items.find(item => item.ratings.some(rating => rating.userid === props.user.Id)) ? 'Xem đánh giá' : 'Đánh giá'}
+                                        </Button>
                                         <Popup
-                                            trigger={
-                                                <Button className="" variant="contained" onClick={() => handleRebuy(card.Id)}>
-                                                    Đánh giá
-                                                </Button>
-                                            }
+                                            open={openPopup}
                                             position="right center"
                                             closeOnDocumentClick={false}
                                             closeOnEscape={false}
                                             modal
+                                            onClose={() => setOpenPopup(false)}
                                         >
                                             {(close) => (
                                                 <div className="p-4">
@@ -177,15 +205,25 @@ const OrderList = (props) => {
                                         <hr className="border  border-slate-300 my-2 mx-8" />
                                     </div>
                                 </div>
+
                             </div>
                         ))}
                     </div>
-                    <div className="flex-col ">
-                        {/* <hr className="border  border-slate-950 " /> */}
-                        <div className="text-left mx-8 my-4  text-500 text-2xl">{card.Status_Paid}</div>
+                    <div className="flex place-content-between ">
+                        <div>
 
-                        <div className="text-right mx-8 my-4  text-red-500 text-2xl">
-                            {parseInt(card.TotalAmount).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+                            <div className="text-left mx-8 my-4 text-xl">{card.Status_Paid}</div>
+                            <div className='flex'>
+                                <div className='text-left ml-8 my-4'>Voucher áp dụng: </div>
+                                <div className='text-left mx-2 my-4 text-red-500 font-bold'>{vouchers.find(voucher => voucher.ID == card.VoucherID).discount}%</div>
+                            </div>
+                        </div>
+
+                        <div className='flex m-6'>
+                            <div className='text-right text-xl mr-2'>Tổng cộng: </div>
+                            <div className="text-right text-red-500 text-xl">
+                                {parseInt(card.TotalAmount).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+                            </div>
                         </div>
                     </div>
                 </div>

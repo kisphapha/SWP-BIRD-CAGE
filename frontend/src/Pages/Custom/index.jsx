@@ -19,6 +19,7 @@ export default function Custom() {
     const [components, setComponents] = useState([])
     const [tmpName, setTempName] = useState('')
     const [tmpDescription, setTempDescription] = useState('')
+    const [tmpCount, setTempCount] = useState('')
     const [selectedImage, setSelectedImage] = useState(null)
     const [orderAddress, setOrderAddress] = useState('')
     const [addressList, setAddressList] = useState([])
@@ -53,6 +54,16 @@ export default function Custom() {
         }
         setPhoneNumber(event.target.value)
     }
+     
+    const handleCountChangeOnlyNumber = (event) => {
+        // Allow only numbers and an empty string
+        const input = event.target.value;
+        const regex = /^[0-9]*$/;
+
+        if (regex.test(input) || input === '') {
+            setTempCount(input);
+        }
+    };
 
     const handleKeyDown = (event) => {
         // Prevent the characters "e", "+", and "-" from being entered.
@@ -69,13 +80,17 @@ export default function Custom() {
         setTempDescription(event.target.value)
     }
 
-    function isOrderAddressEmpty(orderAddress) {
-        return !orderAddress || orderAddress.trim() === ''
+    
+    const handleCountChange = (event) => {
+        setTempCount(event.target.value)
     }
+
 
     function isOrderAddressEmpty(orderAddress) {
         return !orderAddress || orderAddress.trim() === ''
     }
+
+ 
 
     const componentType = ['Móc', 'Khung', 'Nan', 'Nắp', 'Đáy', 'Bình nước']
 
@@ -121,7 +136,7 @@ export default function Custom() {
             setComponents(response.data)
         }
     }
-
+    
     const checkPattern = (inputValue, pattern) => {
         const regex = new RegExp(pattern)
         return regex.test(inputValue)
@@ -204,9 +219,25 @@ export default function Custom() {
         selectedComponents.forEach((selectedComponent) => {
             total += selectedComponent.data?.Price
         })
+        if(tmpCount > 1){
+            total = total*tmpCount
+        }
         return total
     }
     const total = calculateTotalPrice(selectedComponents)
+
+    function calculateTotalTime(selectedComponents) {
+        let total = 0
+        selectedComponents.forEach((selectedComponent) => {
+            total += selectedComponent.data?.CraftTime
+            
+        })
+        if(tmpCount > 1){
+            total = total*tmpCount
+        }
+        return total
+    }
+    const totalTime = calculateTotalTime(selectedComponents)
 
     useEffect(() => {
         fetchCategories()
@@ -347,7 +378,7 @@ export default function Custom() {
                                             <TableCell>Thành phần </TableCell>
                                             <TableCell>Hình ảnh </TableCell>
                                             <TableCell>Mô tả </TableCell>
-                                            <TableCell>Thời Gian chế tạo</TableCell>
+                                            <TableCell>Thời Gian chế tạo (giờ)  </TableCell>
                                             <TableCell>Giá tiền </TableCell>
                                         </TableRow>
                                     </TableHead>
@@ -370,7 +401,7 @@ export default function Custom() {
                                                     <div>{selectedComponent.data?.Description || ''}</div>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <div>{selectedComponent.data?.ProductionTime || 'N/A'}</div>
+                                                    <div>{selectedComponent.data?.CraftTime  || 'N/A'}</div>
                                                 </TableCell>
                                                 <TableCell>
                                                     <div>
@@ -387,7 +418,7 @@ export default function Custom() {
                                 <div className="w-2/4 ">
                                     <TextField
                                         fullWidth
-                                        label={'Ghi chú thêm cho cửa hàng'}
+                                        placeholder={'Ghi chú thêm cho cửa hàng'}
                                         variant="standard"
                                         onChange={handleDescriptionChange}
                                         value={tmpDescription}
@@ -398,10 +429,10 @@ export default function Custom() {
                                 <div className="w-1/6 mt-6 ">
                                     <TextField
                                         fullWidth
-                                        label={'Số lượng'}
+                                        placeholder={'Số lượng'}
                                         variant="standard"
-                                        onChange={handleDescriptionChange}
-                                        value={tmpDescription}
+                                        onChange={handleCountChange, handleCountChangeOnlyNumber}
+                                        value={tmpCount}
                                         multiline
                                         rows={1}
                                     />
@@ -416,7 +447,7 @@ export default function Custom() {
                                 </div>
                                 <div className="mt-8 w-1/8">
                                     <div className="flex place-content-between">
-                                        <div className=" font-bold">N/A</div>
+                                        <div className=" font-bold">{totalTime}</div>
                                     </div>
                                     <div className="flex place-content-between">
                                         <div className=" font-bold">{total.toLocaleString('vi', { style: 'currency', currency: 'VND' })}</div>
@@ -544,7 +575,8 @@ export default function Custom() {
                                                                         <div>{selectedComponent.data?.Description || ''}</div>
                                                                     </TableCell>
                                                                     <TableCell>
-                                                                        <div>{selectedComponent.data?.ProductionTime || 'N/A'}</div>
+                                                                        <div>{selectedComponent.data?.ProductionTime || 'N/A'}
+                                                                        </div>
                                                                     </TableCell>
                                                                     <TableCell>
                                                                         <div>

@@ -232,19 +232,24 @@ const getRatingByProductId = async (ProductId) => {
         const result = await poolConnection.request()
         .input('ProductId', ProductId)
         .query(
-            `select 
-                u.Picture, 
-                u.Name, 
-                f.StarPoint, 
-                f.Content ,
-                f.createAt
-            from 
-                Feedback f, 
-                [User] u 
-            where 
-                ProductId = @ProductId
-                and f.UserId = u.id
-                
+            `SELECT 
+            f.userid,
+            f.productID,
+            u.Picture, 
+            u.Name AS Name, 
+            f.StarPoint, 
+            f.Content,
+            f.createAt,
+            f.replyContent,
+            f.replyDate,
+            r.Name AS ReplierName,
+            r.Picture AS ReplierPicture
+        FROM 
+            Feedback f
+            INNER JOIN [User] u ON f.UserId = u.id
+            LEFT JOIN [User] r ON f.Replier = r.id
+        WHERE 
+            f.ProductId = @ProductId;
 `
         )
         return result.recordset;
@@ -280,6 +285,39 @@ const addRating = async (UserId, ProductId, StarPoint, Content) => {
         .input('Content', Content)
         .query(
             `INSERT INTO dbo.Feedback
+                (
+                    UserId,
+                    ProductId,
+                    StarPoint,
+                    Content,
+                    CreateAt
+                )
+                VALUES
+                (   @UserId,    
+                    @ProductId, 
+                    @StarPoint, 
+                    @Content, 
+                    GETDATE() 
+                    )
+                    `
+        )
+        return result.recordset;
+    } catch (error) {
+        console.log("error: ", error)
+
+    }
+}
+
+const addReply = async (UserId, ProductId, StarPoint, Content) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('UserId', UserId)
+        .input('ProductId', ProductId)
+        .input('StarPoint', StarPoint)
+        .input('Content', Content)
+        .query(
+            `UPDATE INTO dbo.Feedback
                 (
                     UserId,
                     ProductId,

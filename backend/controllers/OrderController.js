@@ -130,6 +130,17 @@ const addCustomProduct = async (req, res) => {
     }
 }
 
+const getCustomComponentImageByOrderID  = async(req, res) => {
+    try {
+        const orderId = req.query.orderId;
+            
+        const result =  await Order.getCustomComponentImageByOrderID(orderId);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+
+}
 module.exports = {
     getAllOrder,
     getOrderById,
@@ -141,5 +152,6 @@ module.exports = {
     loadUnSeen,
     changeToSeen,
     pieChartData,
-    addCustomProduct
+    addCustomProduct,
+    getCustomComponentImageByOrderID
 }

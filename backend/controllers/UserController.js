@@ -91,7 +91,7 @@ const updateVoucher = async (req, res) => {
     try {
         const Id = req.body.Id;
 
-        await User.addVoucher(Id);
+        await User.updateVoucher(Id);
         res.status(200).json({ message: "success" });
     } catch (error) {
         res.status(500).json({ message: error.message });

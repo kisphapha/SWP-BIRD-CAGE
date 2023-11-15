@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 import DeleteIcon from '@mui/icons-material/Delete'
-import { Button, TextField } from '@mui/material'
+import { Button, TextField, MenuItem } from '@mui/material'
 import { UserContext, UserProvider } from '../../UserContext'
 import Header from '../../components/common/Header'
 import Navbar from '../../components/common/Navbar'
@@ -14,6 +14,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import AddressPopup from '../../components/features/AddressPopup/AddressPopup'
 import VNPay from '../../image/icons/VNPay.svg'
 import COD from '../../image/icons/COD.svg'
+import voucherImage from '../../image/icons/voucher.png'
 
 export default function Cart() {
     const { user } = useContext(UserContext)
@@ -62,9 +63,9 @@ export default function Cart() {
 
     useEffect(() => {
         loadCartData()
-        fetchVouchers() 
+        fetchVouchers()
         fetchAddresses()
-    },[])
+    }, [])
 
     const handleDecrement = (productId) => {
         const updatedCart = { ...cartData }
@@ -113,14 +114,14 @@ export default function Cart() {
                                     Items: cartItems
                                 })
 
-                                const response = await axios.post('http://localhost:3000/users/updatePoint', {
-                                    id: user.Id,
-                                    point: calculateBonus
-                                })
+                            const response = await axios.post('http://localhost:3000/users/updatePoint', {
+                                id: user.Id,
+                                point: calculateBonus()
+                            })
 
-                                await axios.post('https://localhost:3000/users/updateVoucher', {
-                                    Id : orderVoucher
-                                })
+                            await axios.post('http://localhost:3000/users/updateVoucher', {
+                                Id: orderVoucher
+                            })
 
                                 if (paymentMethod == 'vnpay') {
                                     const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
@@ -436,69 +437,86 @@ export default function Cart() {
                                                                 error={!checkValidation || !checkNumChar}
                                                                 helperText={(!checkValidation || !checkNumChar) ? (!phoneNumber ? 'Xin hãy nhập số điện thoại' : 'Số điện thoại không hợp lệ') : ('')}
                                                             ></TextField>
-                                                        </div>
-                                                        <hr className="border  border-slate-100 my-2 mx-10" />
+                                                        {/* </div>
+                                                        <hr className="border  border-slate-100 my-2 mx-10" /> */}
                                                         {/* <h1>Sản phẩm</h1>
                                                         */}
                                                     </div>
-                                                    <div className="flex place-content-between">
-                                                        <div className="w-1/3">
-                                                            <TextField
-                                                                select
-                                                                label="Chọn mã giảm giá"
-                                                                fullWidth
-                                                                className=""
-                                                                id=""
-                                                                size="small"
-                                                                SelectProps={{
-                                                                    native: true
-                                                                }}
-                                                                onChange={(event) => {
-                                                                    ////fetch voucher
-                                                                }}
-                                                                // error={isOrderAddressEmpty(orderAddress)}
-                                                                // helperText={isOrderAddressEmpty(orderAddress) ? 'Xin hãy chọn địa chỉ' : ''}
-                                                            >
-                                                                <option value="" selected></option>
-                                                                {/* {addressList.map((adr) => (
-                                                                    <option key={adr} value={adr.ID}>
-                                                                        {adr.SoNha + ', ' + adr.PhuongXa + ', ' + adr.QuanHuyen + ', ' + adr.TinhTP}
-                                                                    </option>
-                                                                ))} */}
-                                                                /fetch voucher
-                                                            </TextField>
-                                                        </div>
-                                                        <div>
-                                                            <div className="font-bold flex place-content-end ">
-                                                                <div className=" mr-4">Tổng cộng:</div>
-                                                                <div>
-                                                                    {calculateTotalPrice().toLocaleString('vi', { style: 'currency', currency: 'VND' })}
-                                                                </div>
-                                                            </div>
+                                                </div>
+                                                <div className=" border-gray-300 rounded   ">
 
-                                                            <div className="font-bold flex place-content-end">
-                                                                <div className=" mr-4">Số điểm bonus sẽ tích được:</div>
-                                                                <div>{calculateBonus()}</div>
-                                                            </div>
+                                                    <div className="flex place-content-between">
+
+                                                        <TextField
+                                                            select
+                                                            label="Chọn phiếu giảm giá"
+                                                            className="user-input"
+                                                            id="voucher"
+                                                            size="small"
+                                                            SelectProps={{
+                                                                native: true,
+                                                            }}
+                                                            InputLabelProps={{ shrink: true }}
+
+                                                            onChange={(event) => {
+                                                                const selectedValue = event.target.value;
+                                                                const [voucherId, voucherDiscount] = selectedValue.split(',');
+                                                                setVoucherValue(voucherDiscount.trim());
+                                                                setOrderVoucher(voucherId.trim());
+                                                            }}
+                                                        >
+                                                            <option value={["",0]} selected>
+                                                                <em>Không sử dụng phiếu giảm giá</em>
+                                                            </option>
+
+                                                            {voucherList.map((voucher) =>
+                                                                voucher.UsedAt == null && (
+                                                                    <option key={voucher.ID} value={[voucher.ID, voucher.discount]}>
+                                                                        {voucher.discount + '% , Hết hạn ' + voucher.ExpireAt.substr(0, 10)}
+                                                                    </option>
+                                                                )
+                                                            )}
+                                                        </TextField>
+                                                        
+                                                    </div>
+                                                    <div className="font-bold flex place-content-end">
+                                                        <div className="mr-4">Được giảm giá:</div>
+                                                        <div className="text-xl">
+                                                            {((calculateTotalPrice() * voucherValue) / 100).toLocaleString('vi', {
+                                                                style: 'currency',
+                                                                currency: 'VND'
+                                                            })}
                                                         </div>
                                                     </div>
-                                                    <div className="flex place-content-between mt-4">
-                                                        <div>
-                                                            <div className="flex mb-2">
-                                                                <label className="flex">
-                                                                    <input
-                                                                        type="radio"
-                                                                        name="paymentMethod"
-                                                                        value="COD"
-                                                                        checked={paymentMethod === 'COD'}
-                                                                        onChange={() => setPaymentMethod('COD')}
-                                                                    />
-                                                                    <div className="flex align-middle items-center text-lg">
-                                                                        Thanh toán khi nhận hàng
-                                                                        <img className="w-1/12 mx-2" src={COD} alt="" />
-                                                                    </div>
-                                                                </label>
-                                                            </div>
+                                                    <div className="font-bold flex place-content-end">
+                                                        <div className="mr-4">Số điểm bonus sẽ tích được:</div>
+                                                        <div className="text-xl">{calculateBonus()}</div>
+                                                    </div>
+                                                    <hr></hr>
+                                                    <div className="font-bold flex place-content-end ">
+                                                        <div className="text-xl font-bold mr-4">THANH TOÁN:</div>
+                                                        <div className="text-4xl font-bold mr-4 text-red-400">
+                                                            {calculateGrandTotal().toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex place-content-between mt-4">
+                                                    <div>
+                                                        <div className="flex mb-2">
+                                                            <label className="flex">
+                                                                <input
+                                                                    type="radio"
+                                                                    name="paymentMethod"
+                                                                    value="COD"
+                                                                    checked={paymentMethod === 'COD'}
+                                                                    onChange={() => setPaymentMethod('COD')}
+                                                                />
+                                                                <div className="flex align-middle items-center text-lg">
+                                                                    Thanh toán khi nhận hàng
+                                                                    <img className="w-1/12 mx-2" src={COD} alt="" />
+                                                                </div>
+                                                            </label>
+                                                        </div>
 
                                                             <div className="flex">
                                                                 <label className="flex">

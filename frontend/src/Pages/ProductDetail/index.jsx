@@ -34,12 +34,15 @@ export default function ProductDetails() {
     const [orderVoucher, setOrderVoucher] = useState('')
     const [voucherValue, setVoucherValue] = useState(0)
     const [voucherList, setVoucherList] = useState([])
+    const [replyContent, setReplyContent] = useState('')
 
     window.addEventListener('popstate', function () {
         // This function will be triggered when the window is unloaded, including when it's reloaded.
         sessionStorage.setItem('quantity', 1)
     })
-
+    const handleReplyContent = (event) => {
+        setReplyContent(event.target.value)
+    }
     useEffect(() => {
         window.scrollTo(0, 0)
         const sesQuantity = parseInt(sessionStorage.getItem('quantity'))
@@ -56,6 +59,7 @@ export default function ProductDetails() {
             setImgList(response.data)
             setFocusUrl(response.data[0].Url)
         }
+
         fetchProduct()
         fetchRatings()
         fetchImage()
@@ -64,7 +68,7 @@ export default function ProductDetails() {
 
     const calculateTotalPrice = () => {
         let total = 0
-         total += (100 - product.discount)/100   * product.Price * quantity
+        total += (100 - product.discount) / 100 * product.Price * quantity
         return total
     }
 
@@ -89,19 +93,53 @@ export default function ProductDetails() {
         setAddressList(response.data)
     }
 
-    const getFeedback = () => {
+    const getFeedback = (rating) => {
         if (sessionStorage.loginedUser != null) {
             if (user.Role === 'Admin' || user.Role === 'Staff') {
-                return (
-                    <div className="flex ml-8 my-2 pl-8">
-                        <TextField variant="standard" label="Reply to comment" />
-                        <div>
-                            <Button variant="contained">Save</Button>
+                if (rating.replyContent != null) {
+                    return (
+                        <div className="my-4 ml-12 flex">
+                            <div>
+                                <Avatar className="rounded-2xl h-24 w-24 m-2" src={rating.ReplierPicture} />
+                            </div>
+                            <div className="">
+                                <div className="">
+                                    <div className="flex">
+                                        <h4 className="font-bold ">{rating.ReplierName}</h4>
+                                    </div>
+
+                                    <div className="text-sm flex">
+                                        <div className="text-sm text-center flex align-middle">
+                                            {new Date(rating.replyDate).toLocaleDateString()}
+                                        </div>
+                                    </div>
+                                </div>
+                                <p className="mt-4">{rating.replyContent}</p>
+                            </div>
                         </div>
-                    </div>
-                )
+                    )
+                } else {
+                    return (
+                        <div className="flex ml-8 my-2 pl-8">
+                            <TextField className="text-left"
+                                fullWidth
+                                variant="standard"
+                                label="Trả lời nhận xét"
+                                multiline
+                                rows={3}
+                                onChange={handleReplyContent} />
+                            <div>
+                                <Button variant="contained" onClick={handleReply}>Save</Button>
+                            </div>
+                        </div>
+                    )
+                }
             }
         }
+    }
+
+    const handleReply = async () => {
+        
     }
 
     const handleDecrement = () => {
@@ -395,7 +433,7 @@ export default function ProductDetails() {
                                 </button>
                             </div>
                             <div className="flex gap-2">
-                                <Button variant="outlined" onClick={handleCompare }>So sánh</Button>
+                                <Button variant="outlined" onClick={handleCompare}>So sánh</Button>
                                 <div>
                                     {user == null ? (
                                         <Popup
@@ -462,7 +500,7 @@ export default function ProductDetails() {
                                 position="right center"
                                 modal
                                 closeOnDocumentClick={false}
-                                // closeOnEscape={false}
+                            // closeOnEscape={false}
                             >
                                 {(close) => (
                                     <div className="popup-order">
@@ -520,7 +558,7 @@ export default function ProductDetails() {
                                                     helperText={(!checkValidation || !checkNumChar) ? (!phoneNumber ? 'Xin hãy nhập số điện thoại' : 'Số điện thoại không hợp lệ') : ('')}
                                                 >{user.PhoneNumber}</TextField>
                                             </div>
-                                           
+
                                             <hr className="border  border-slate-300 my-2 w-full" />
                                             <h1>Sản phẩm</h1>
                                         </div>
@@ -584,8 +622,8 @@ export default function ProductDetails() {
                                         </div>
 
                                         <hr className="border  border-slate-300 my-2 w-full" />
-                                            <div className="flex place-content-between">
-                                                <div>
+                                        <div className="flex place-content-between">
+                                            <div>
                                                 <TextField
                                                     select
                                                     label="Chọn phiếu giảm giá"
@@ -605,33 +643,33 @@ export default function ProductDetails() {
                                                     <option value="" selected></option>
                                                     {voucherList.map((voucher) => (
                                                         voucher.UsedAt == null && (
-                                                        <option key={voucher} value={[voucher.ID, voucher.discount]}>
-                                                            {voucher.discount + ' % , Hết hạn ' + voucher.ExpireAt.substr(0, 10)}
+                                                            <option key={voucher} value={[voucher.ID, voucher.discount]}>
+                                                                {voucher.discount + ' % , Hết hạn ' + voucher.ExpireAt.substr(0, 10)}
                                                             </option>
                                                         )
                                                     ))}
                                                 </TextField>
-                                                </div>
-                                                <div className=" border-gray-300 rounded   ">
-                                                    
-                                                    <div className="font-bold flex place-content-end">
-                                                        <div className="mr-4">Được giảm giá:</div>
-                                                        <div className="text-xl">
-                                                            {(calculateTotalPrice() * voucherValue / 100).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
-                                                        </div>
-                                                    </div>
-                                                    <div className="font-bold flex place-content-end">
-                                                        <div className="mr-4">Số điểm bonus sẽ tích được:</div>
-                                                        <div className="text-xl">{calculateBonus()}</div>
-                                                    </div>
-                                                    <hr></hr>
-                                                    <div className="font-bold flex place-content-end ">
-                                                        <div className="text-xl font-bold mr-4">THANH TOÁN:</div>
-                                                        <div className="text-4xl font-bold mr-4 text-red-400">
-                                                            {calculateGrandTotal().toLocaleString('vi', { style: 'currency', currency: 'VND' })}
-                                                        </div>
+                                            </div>
+                                            <div className=" border-gray-300 rounded   ">
+
+                                                <div className="font-bold flex place-content-end">
+                                                    <div className="mr-4">Được giảm giá:</div>
+                                                    <div className="text-xl">
+                                                        {(calculateTotalPrice() * voucherValue / 100).toLocaleString('vi', { style: 'currency', currency: 'VND' })}
                                                     </div>
                                                 </div>
+                                                <div className="font-bold flex place-content-end">
+                                                    <div className="mr-4">Số điểm bonus sẽ tích được:</div>
+                                                    <div className="text-xl">{calculateBonus()}</div>
+                                                </div>
+                                                <hr></hr>
+                                                <div className="font-bold flex place-content-end ">
+                                                    <div className="text-xl font-bold mr-4">THANH TOÁN:</div>
+                                                    <div className="text-4xl font-bold mr-4 text-red-400">
+                                                        {calculateGrandTotal().toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div className="flex place-content-between">
                                             <div>
@@ -762,7 +800,7 @@ export default function ProductDetails() {
                                             <p className="mt-4">{rating.Content}</p>
                                         </div>
                                     </div>
-                                    <div className="mx-8">{getFeedback()}</div>
+                                    <div className="mx-8">{getFeedback(rating)}</div>
                                     <hr className="border border-slate-300 mt-4 mx-4" />
                                 </div>
                             </div>
