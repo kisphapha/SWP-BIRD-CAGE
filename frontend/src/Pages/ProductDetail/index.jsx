@@ -19,11 +19,11 @@ import COD from '../../image/icons/COD.svg'
 export default function ProductDetails() {
     const { user } = useContext(UserContext)
     const [imgList, setImgList] = useState([])
+    const [focusUrl, setFocusUrl] = useState('')
     const { productId } = useParams()
     const [quantity, setQuantity] = useState(1)
     const [product, setProduct] = useState([])
     const [ratingsData, setRatingsData] = useState([])
-    const [focusUrl, setFocusUrl] = useState('')
     const [paymentMethod, setPaymentMethod] = useState('COD')
     const [addressList, setAddressList] = useState([])
     const [orderAddress, setOrderAddress] = useState('')
@@ -287,7 +287,7 @@ export default function ProductDetails() {
                             </div>
                             <hr className="border border-slate-300 " />
                         </div>
-                        <div className="option">
+                        <div className="option flex place-content-between">
                             <div className="quantity">
                                 <button type="button" onClick={handleDecrement} className="button">
                                     -
@@ -297,31 +297,32 @@ export default function ProductDetails() {
                                     +
                                 </button>
                             </div>
-                            {user == null ? (
-                            <Popup
-                                contentStyle={{ width: '500px', height: '250px', borderRadius: '10px' }}
-                                trigger={
-                                    <Button variant="contained">
-                                        Thêm vào giỏ hàng
-                                    </Button>
-                                }
-                                position="center"
-                                modal
-                            >
-                                {(close) => (
-                                    <div className="login-popup">
-                                        <LoginCard />
-                                    </div>
-                                )}
-                            </Popup>
-                        ) : (
-                            <div>
-                                <Button variant="contained" className="add-cart" onClick={addToCart}>
-                                    Thêm vào giỏ hàng
-                                </Button>
-                                <ToastContainer />
+                            <div className="flex gap-2">
+                                <Button variant="outlined">So sánh</Button>
+                                <div>
+                                    {user == null ? (
+                                        <Popup
+                                            contentStyle={{ width: '500px', height: '250px', borderRadius: '10px' }}
+                                            trigger={<Button variant="contained">Thêm vào giỏ hàng</Button>}
+                                            position="center"
+                                            modal
+                                        >
+                                            {(close) => (
+                                                <div className="login-popup">
+                                                    <LoginCard />
+                                                </div>
+                                            )}
+                                        </Popup>
+                                    ) : (
+                                        <div>
+                                            <Button variant="contained" className="add-cart" onClick={addToCart}>
+                                                Thêm vào giỏ hàng
+                                            </Button>
+                                            <ToastContainer />
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                        )}
                         </div>
 
                         {user == null ? (
