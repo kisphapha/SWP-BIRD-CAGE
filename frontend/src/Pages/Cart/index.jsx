@@ -137,7 +137,6 @@ export default function Cart() {
                                     window.location.href = response.data.url
                                     
                                 } else {
-                                    alert('Đặt hàng thành công')
                                     sessionStorage.setItem('cart', '{"products":[]}')
                                     sessionStorage.setItem('loginedUser', JSON.stringify(response.data))
                                     toast.dismiss()
