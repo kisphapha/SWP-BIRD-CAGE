@@ -123,6 +123,7 @@ export default function Cart() {
                                 Id : orderVoucher
                             })
 
+
                                 if (paymentMethod == 'vnpay') {
                                     const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
                                         amount: calculateGrandTotal(),
@@ -151,7 +152,6 @@ export default function Cart() {
                                         progress: undefined,
                                         theme: 'colored'
                                     })
-                                    // window.location.reload(false)
                                     close()
                                 }   
                                 setOrderAddress('')
@@ -159,6 +159,8 @@ export default function Cart() {
                                 const emptyCart = { products: [] }
                                 setCartData(emptyCart)
                                 sessionStorage.setItem('cart', JSON.stringify(emptyCart))
+                                window.location.reload(false)
+
                             }else {
                                 setCheckValidation(false)
                             }

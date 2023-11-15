@@ -92,7 +92,10 @@ export default function Order() {
             orderId: orderId,
             status: status
         })
-        await axios.get(`http://localhost:3000/order/paidstatus/`+orderId)
+        if (status == "Đã giao"){
+            await axios.get(`http://localhost:3000/order/paidstatus/`+orderId)
+
+        }
 
         alert('Order is updated')
         fetchOrder()

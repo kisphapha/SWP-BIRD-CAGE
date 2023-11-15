@@ -27,11 +27,28 @@ export default function Custom() {
     const [paymentMethod, setPaymentMethod] = useState('COD')
     const [checkValidation, setCheckValidation] = useState(true)
     const [openPopup, setOpenPopup] = useState(false)
+    const [voucherList, setVoucherList] = useState([])
+    const [orderVoucher, setOrderVoucher] = useState('')
+    const [voucherValue, setVoucherValue] = useState(0)
+
 
     async function fetchAddresses() {
         const response = await axios.get(`http://localhost:3000/address/${user.Id}`)
         setAddressList(response.data)
     }
+    async function fetchVouchers() {
+        const response = await axios.get(`http://localhost:3000/users/getVoucher/${user.Id}`)
+        setVoucherList(response.data)
+        console.log(voucherList)
+    }
+
+
+    const calculateGrandTotal = () => {
+        // let total = calculateTotalPrice()
+        total = (total * (100 - voucherValue)) / 100
+        return total
+    }
+
 
     const handlePhoneChange = (event) => {
         let inputPhoneNumber = event.target.value
@@ -54,7 +71,7 @@ export default function Custom() {
         }
         setPhoneNumber(event.target.value)
     }
-     
+
     const handleCountChangeOnlyNumber = (event) => {
         // Allow only numbers and an empty string
         const input = event.target.value;
@@ -80,7 +97,7 @@ export default function Custom() {
         setTempDescription(event.target.value)
     }
 
-    
+
     const handleCountChange = (event) => {
         setTempCount(event.target.value)
     }
@@ -90,7 +107,7 @@ export default function Custom() {
         return !orderAddress || orderAddress.trim() === ''
     }
 
- 
+
 
     const componentType = ['Móc', 'Khung', 'Nan', 'Nắp', 'Đáy', 'Bình nước']
 
@@ -136,7 +153,7 @@ export default function Custom() {
             setComponents(response.data)
         }
     }
-    
+
     const checkPattern = (inputValue, pattern) => {
         const regex = new RegExp(pattern)
         return regex.test(inputValue)
@@ -148,7 +165,7 @@ export default function Custom() {
                 if (phoneNumber) {
                     console.log("payment")
                     var components1 = []
-                    selectedComponents.map(selectedComponents=>{
+                    selectedComponents.map(selectedComponents => {
                         components1.push(selectedComponents.data.ID)
                     })
                     const res = await axios.post('http://localhost:3000/order/addCustomProduct', {
@@ -172,7 +189,11 @@ export default function Custom() {
                     })
                     const updatedUser = await axios.post('http://localhost:3000/users/updatePoint', {
                         id: user.Id,
-                        point: (1 * total) / 1000
+                        point: Math.floor(total / 1000)
+                    })
+
+                    await axios.post('http://localhost:3000/users/updateVoucher', {
+                        Id: orderVoucher
                     })
                     if (paymentMethod == 'vnpay') {
                         const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
@@ -197,7 +218,7 @@ export default function Custom() {
                             progress: undefined,
                             theme: 'colored'
                         })
-                        sessionStorage.setItem('loginedUser', JSON.stringify(updatedUser))
+                        sessionStorage.setItem('loginedUser', JSON.stringify(updatedUser.data))
                         close()
                         // sessionStorage.setItem('cart', '{"products":[]}')
                         // window.location.reload(false)
@@ -219,21 +240,21 @@ export default function Custom() {
         selectedComponents.forEach((selectedComponent) => {
             total += selectedComponent.data?.Price
         })
-        if(tmpCount > 1){
-            total = total*tmpCount
+        if (tmpCount > 1) {
+            total = total * tmpCount
         }
         return total
     }
-    const total = calculateTotalPrice(selectedComponents)
+    var total = calculateTotalPrice(selectedComponents)
 
     function calculateTotalTime(selectedComponents) {
         let total = 0
         selectedComponents.forEach((selectedComponent) => {
             total += selectedComponent.data?.CraftTime
-            
+
         })
-        if(tmpCount > 1){
-            total = total*tmpCount
+        if (tmpCount > 1) {
+            total = total * tmpCount
         }
         return total
     }
@@ -351,22 +372,7 @@ export default function Custom() {
                                         </div>
                                     )
                                 })}
-                                <div className="w-full flex place-content-between">
-                                    <div className="w-72 pl-4">
-                                        <TextField fullWidth select label="Size" helperText="Kích thước" variant="filled" disabled>
-                                            {categories.map((option) => (
-                                                <MenuItem key={option.id} value={option.id}>
-                                                    {option.name}
-                                                </MenuItem>
-                                            ))}
-                                        </TextField>
-                                    </div>
-                                    <div className="py-2">
-                                        <IconButton>
-                                            <ClearIcon />
-                                        </IconButton>
-                                    </div>
-                                </div>
+
                             </div>
                         </div>
                         <div className="w-full m-4 px-2">
@@ -401,7 +407,7 @@ export default function Custom() {
                                                     <div>{selectedComponent.data?.Description || ''}</div>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <div>{selectedComponent.data?.CraftTime  || 'N/A'}</div>
+                                                    <div>{selectedComponent.data?.CraftTime || 'N/A'}</div>
                                                 </TableCell>
                                                 <TableCell>
                                                     <div>
@@ -424,7 +430,7 @@ export default function Custom() {
                                         value={tmpDescription}
                                         multiline
                                         rows={6}
-                                    />  
+                                    />
                                 </div>
                                 <div className="w-1/6 mt-6 ">
                                     <TextField
@@ -477,6 +483,7 @@ export default function Custom() {
                                     closeOnDocumentClick={false}
                                     position="right center"
                                     modal
+                                    onOpen={() => { fetchAddresses(); fetchVouchers(); }}
                                     onClose={() => setOpenPopup(false)}
                                 >
                                     {(close) => (
@@ -593,20 +600,60 @@ export default function Custom() {
 
                                             <hr className="border  border-slate-300 my-2 w-full" />
                                             <div>
-                                                <div className="font-bold flex place-content-end">
-                                                    <div className="mr-2">Tổng cộng:</div>
-                                                    <div>
-                                                        {total.toLocaleString('vi', {
-                                                            style: 'currency',
-                                                            currency: 'VND'
-                                                        })}{' '}
-                                                    </div>
-                                                </div>
+                                                <TextField
+                                                    select
+                                                    label="Chọn phiếu giảm giá"
+                                                    className="user-input"
+                                                    id="voucher"
+                                                    size="small"
+                                                    SelectProps={{
+                                                        native: true,
+                                                    }}
+                                                    InputLabelProps={{ shrink: true }}
 
-                                                <div className="font-bold flex place-content-end">
-                                                    <div className="mr-2">Số điểm bonus sẽ tích được:</div>
-                                                    <div>{total / 1000}</div>
-                                                </div>
+                                                    onChange={(event) => {
+                                                        const selectedValue = event.target.value;
+                                                        const [voucherId, voucherDiscount] = selectedValue.split(',');
+                                                        setVoucherValue(voucherDiscount.trim());
+                                                        setOrderVoucher(voucherId.trim());
+                                                    }}
+                                                >
+                                                    <option value={["", 0]} selected>
+                                                        <em>Không sử dụng phiếu giảm giá</em>
+                                                    </option>
+
+                                                    {voucherList.map((voucher) =>
+                                                        voucher.UsedAt == null && (
+                                                            <option key={voucher.ID} value={[voucher.ID, voucher.discount]}>
+                                                                {voucher.discount + '% , Hết hạn ' + voucher.ExpireAt.substr(0, 10)}
+                                                            </option>
+                                                        )
+                                                    )}
+                                                </TextField>
+                                                {selectedComponents.length == 6 && (
+                                                    <div>
+                                                        <div className="font-bold flex place-content-end">
+                                                            <div className="mr-4">Được giảm giá:</div>
+                                                            <div className="text-xl">
+                                                                {((total * voucherValue) / 100).toLocaleString('vi', {
+                                                                    style: 'currency',
+                                                                    currency: 'VND'
+                                                                })}
+                                                            </div>
+                                                        </div>
+                                                        <div className="font-bold flex place-content-end">
+                                                            <div className="mr-4">Số điểm bonus sẽ tích được:</div>
+                                                            <div className="text-xl">{Math.floor(total / 1000)}</div>
+                                                        </div>
+                                                        <hr></hr>
+                                                        <div className="font-bold flex place-content-end ">
+                                                            <div className="text-xl font-bold mr-4">THANH TOÁN:</div>
+                                                            <div className="text-4xl font-bold mr-4 text-red-400">
+                                                                {calculateGrandTotal().toLocaleString('vi', { style: 'currency', currency: 'VND' })}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
                                             <div className="flex place-content-between">
                                                 <div>
@@ -649,6 +696,7 @@ export default function Custom() {
                                                         <Button
                                                             variant="contained"
                                                             onClick={() => {
+                                                                close()
                                                                 handlePayment()
                                                             }}
                                                         >
