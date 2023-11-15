@@ -22,6 +22,7 @@ import Coupons from './Pages/Admin/Coupons'
 import ProfilePage from './Pages/UserPage/ProfilePage'
 import AddressPage from './Pages/UserPage/AddressPage'
 import PurchasePage from './Pages/UserPage/PurchasePage'
+import BicaCoinPage from './Pages/UserPage/BicaCoinPage'
 import LoginCard from './components/features/LoginCard'
 import VNPaySuccess from './Pages/VNPay/Success'
 
@@ -79,7 +80,21 @@ function App() {
                         }
                         path="/user/purchase"
                     />
-                    <Route element={<Cart />} path="cart" />
+                    <Route
+                        element={
+                            <UserProvider>
+                                <BicaCoinPage />
+                            </UserProvider>
+                        }
+                        path="/user/bicacoin"
+                    />
+                    <Route
+                        element={
+                        <UserProvider>
+                            <Cart />
+                        </UserProvider>
+                        }
+                        path="cart" />
                     <Route element={<FilteredPage />} path="/filter/:filter/:keyword" />
                     <Route element={<Custom />} path="/Custom" />
                     <Route element={<VNPaySuccess />} path="/test" />

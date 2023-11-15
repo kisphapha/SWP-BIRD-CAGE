@@ -65,7 +65,6 @@ export default function ProductDetails() {
 
     const getFeedback = () => {
         if (sessionStorage.loginedUser != null) {
-            const user = JSON.parse(sessionStorage.loginedUser)
             if (user.Role === 'Admin' || user.Role === 'Staff') {
                 return (
                     <div className="flex ml-8 my-2 pl-8">
@@ -163,7 +162,7 @@ export default function ProductDetails() {
                 if (orderAddress) {
                     if (phoneNumber) {
                         const res = await axios.post('http://localhost:3000/order/addordertodb', {
-                            UserID: JSON.parse(sessionStorage.loginedUser).Id,
+                            UserID: user.Id,
                             OrderDate: new Date().toISOString().slice(0, 10),
                             PaymentDate: null,
                             AddressID: orderAddress,
@@ -182,13 +181,17 @@ export default function ProductDetails() {
                                 }
                             ]
                         })
+                        const updatedUser = await axios.post('http://localhost:3000/users/updatePoint', {
+                            id: user.Id,
+                            point: (quantity * product.Price) / 1000
+                        })
                         if (paymentMethod == 'vnpay') {
                             const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
                                 amount: ((product.Price * (100 - product.discount)) / 100) * quantity,
                                 bankCode: '',
                                 language: 'vn',
-                                email: JSON.parse(sessionStorage.loginedUser).Email,
-                                phoneNumber: JSON.parse(sessionStorage.loginedUser).PhoneNumber,
+                                email: user.Email,
+                                phoneNumber: user.PhoneNumber,
                                 orderid: res.data.orderid
                             })
                             // setTimeout(() => {
@@ -208,6 +211,7 @@ export default function ProductDetails() {
                                 progress: undefined,
                                 theme: 'colored'
                             })
+                            sessionStorage.setItem('loginedUser', JSON.stringify(updatedUser))
                             close()
                             // sessionStorage.setItem('cart', '{"products":[]}')
                             // window.location.reload(false)

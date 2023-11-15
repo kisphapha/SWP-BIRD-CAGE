@@ -48,8 +48,8 @@ const getPointForUser = async (req, res) =>{
         const id = req.body.id;
         const point = req.body.point;
 
-        await User.getPointForUser(id, point);
-        res.json({message: "success"});
+        const updatedUser = await User.getPointForUser(id, point);
+        res.json(updatedUser);
     } catch (error) {
         res.status(500).json({message: error.message})
     }

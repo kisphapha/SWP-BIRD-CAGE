@@ -56,7 +56,8 @@ const Profile = (props) => {
         )
         if (response.data) {
             sessionStorage.setItem('loginedUser', JSON.stringify(response.data))
-            alert('User is updated')
+            alert('Đã cập nhật hồ sơ')
+            window.location.reload()
         }
     }
 

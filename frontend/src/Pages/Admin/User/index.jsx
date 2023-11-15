@@ -58,7 +58,7 @@ export default function Users() {
         
     }
     useEffect(() => {
-        handleButtonClick("Người dùng","User")
+        handleButtonClick("Người dùng", "User")
     },[])
 
     useEffect(() => {
@@ -290,37 +290,37 @@ export default function Users() {
                         </TableRow>
                     </TableHead>
                 <TableBody>
-                {users.map((user) => (
+                {users.map((_user) => (
                     <>
                     <TableRow >
                             <TableCell>
                                 <div className="">
                                     <img
                                         className="w-16 h-16"
-                                        src={user.Picture}
+                                        src={_user.Picture}
                                     />
-                                    <div className="text-lg">{user.Name}</div>
+                                    <div className="text-lg">{_user.Name}</div>
                                 </div>
                             </TableCell>
                             <TableCell>
-                                <div className="truncate text-lg">{user.Email}</div>
+                                <div className="truncate text-lg">{_user.Email}</div>
                             </TableCell>
                             <TableCell>
-                                <div className="text-lg">{ user.PhoneNumber}</div>
+                                <div className="text-lg">{_user.PhoneNumber}</div>
                             </TableCell>
                             <TableCell>
-                                <div className="text-lg">{ user.DateOfBirth ? user.DateOfBirth.substr(0,10) : ""}</div>
+                                <div className="text-lg">{_user.DateOfBirth ? _user.DateOfBirth.substr(0,10) : ""}</div>
                             </TableCell>
                             <TableCell>
-                                    <div className="text-lg">{user.Point}</div>
+                                <div className="text-lg">{_user.Point}</div>
                             </TableCell>
                             <TableCell>
-                                <div className="text-lg">{user.CreatedAt ? user.CreatedAt.substr(0, 10) : ""} </div>
+                                <div className="text-lg">{_user.CreatedAt ? _user.CreatedAt.substr(0, 10) : ""} </div>
                             </TableCell>
                             <TableCell>
-                                <div className="text-lg">{user.Status}</div>
+                                <div className="text-lg">{_user.Status}</div>
                             </TableCell>            
-                            {user && user.Role == "Admin" && (
+                            {user && user.Role == "Admin" &&(
 
                                 <TableCell>
                                     <Popup
@@ -331,7 +331,7 @@ export default function Users() {
                                         closeOnDocumentClick={false}
                                         closeOnEscape={false}
                                         modal
-                                        onOpen={() => handleChange(user.Status, user.ReasonBlocked, user.Role)}
+                                        onOpen={() => handleChange(_user.Status, _user.ReasonBlocked, _user.Role)}
                                     >
                                         {(close) => (
                                             <div className="p-4">
@@ -366,7 +366,7 @@ export default function Users() {
 
                                                 <div className="flex justify-end">
                                                     <Button variant="outlined" onClick={close}>Cancel</Button>
-                                                    <Button variant="outlined" onClick={() => handleOk(user.Id, close)}>OK</Button>
+                                                    <Button variant="outlined" onClick={() => handleOk(_user.Id, close)}>OK</Button>
                                                 </div>
                                             </div>
                                         )}

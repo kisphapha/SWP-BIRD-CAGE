@@ -120,6 +120,10 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                     @Price,
                     GETDATE()
                 );
+
+                UPDATE Products
+                SET Stock = Stock - @Quantity
+                WHERE Id = @ProductId
             `;
             const itemRequest = poolConnection.request()
                 .input('ProductId', sql.Int, item.id)

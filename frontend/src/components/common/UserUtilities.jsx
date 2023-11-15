@@ -27,7 +27,7 @@ const UserUtilities = (props) => {
                         <LocationOn /> Địa chỉ
                     </div>
                 </NavLink>
-                <NavLink to="/" activeClassName="active">
+                <NavLink to="/user/bicacoin" activeClassName="active">
                     <div className="ult-txt">
                         <CurrencyBitcoin /> BiCaCoin
                     </div>

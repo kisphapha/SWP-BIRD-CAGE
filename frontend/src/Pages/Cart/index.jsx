@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { Button } from '@mui/material'
-import { UserProvider } from '../../UserContext'
+import { UserProvider, UserContext } from '../../UserContext'
 import Header from '../../components/common/Header'
 import Navbar from '../../components/common/Navbar'
 import CategoryNav from '../../components/features/CategoryNav'
@@ -13,6 +13,7 @@ import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 export default function Cart() {
+    const {user } = useContext(UserContext)
     const [cartData, setCartData] = useState({ products: [] })
     const [loading, setLoading] = useState(true)
     const [paymentMethod, setPaymentMethod] = useState('COD') // Default to 'onDelivery'
@@ -72,29 +73,31 @@ export default function Cart() {
 
     const handlePayment = async () => {
         try {
-            if (sessionStorage.loginedUser != null) {
+            if (user) {
                 const res = await axios.post('http://localhost:3000/order/addordertodb', {
-                    UserID: JSON.parse(sessionStorage.loginedUser).Id,
+                    UserID: user.Id,
                     OrderDate: new Date().toISOString().slice(0, 10),
                     PaymentDate: null,
                     ShippingAddress: null,
-                    PhoneNumber: JSON.parse(sessionStorage.loginedUser).PhoneNumber,
+                    PhoneNumber: user.PhoneNumber,
                     Note: '',
                     TotalAmount: calculateTotalPrice(),
                     PaymentMethod: paymentMethod,
                     Items: JSON.parse(sessionStorage.getItem('cart')).products
                 })
-                await axios.post('http://localhost:3000/users/updatePoint', {
-                    id: 17,
-                    point: 1000
+                const updatedUser = await axios.post('http://localhost:3000/users/updatePoint', {
+                    id: user.Id,
+                    point: calculateBonus()
                 })
+
+                
                 if (paymentMethod == 'vnpay') {
                     const response = await axios.post('http://localhost:3000/payment/create_payment_url', {
                         amount: calculateTotalPrice(),
                         bankCode: '',
                         language: 'vn',
-                        email: JSON.parse(sessionStorage.loginedUser).Email,
-                        phoneNumber: JSON.parse(sessionStorage.loginedUser).PhoneNumber,
+                        email: user.Email,
+                        phoneNumber: user.PhoneNumber,
                         orderid: res.data.orderid
                     })
 
@@ -103,6 +106,7 @@ export default function Cart() {
                 } else {
                     alert('Đặt hàng thành công')
                     sessionStorage.setItem('cart', '{"products":[]}')
+                    sessionStorage.setItem('loginedUser', JSON.stringify(updatedUser))
                     window.location.reload(false)
                 }
                 sessionStorage.setItem('cart', '{"products":[]}')

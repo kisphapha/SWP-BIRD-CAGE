@@ -70,14 +70,19 @@ const updateUser = async (name, email, phone, dateOfBirth) => {
 const getPointForUser = async(id, point) => {
     try {
         let poolConnection = await sql.connect(config);
-        await poolConnection.request()
+        const response = await poolConnection.request()
         .input('id', id)
         .input('point', point)
         .query(`
             UPDATE dbo.[User]
             SET Point = Point + @point 
             WHERE Id = @id
+
+            SELECT *
+            FROM [dbo].[User]
+            WHERE Id = @Id;
         `)
+        return response.recordset[0]
     } catch (error) {
         console.log("error: ", error);
     }

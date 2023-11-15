@@ -1,16 +1,16 @@
 {
   "ExpandedNodes": [
     "",
+    "\\backend",
+    "\\backend\\controllers",
     "\\frontend",
     "\\frontend\\src",
     "\\frontend\\src\\Pages",
-    "\\frontend\\src\\Pages\\Admin",
-    "\\frontend\\src\\Pages\\Admin\\Categories",
-    "\\frontend\\src\\Pages\\Admin\\NewComponent",
-    "\\frontend\\src\\Pages\\Admin\\NewCoupon",
-    "\\frontend\\src\\Pages\\Admin\\NewProduct",
-    "\\frontend\\src\\Pages\\Admin\\Order"
+    "\\frontend\\src\\Pages\\ProductDetail",
+    "\\frontend\\src\\Pages\\UserPage",
+    "\\frontend\\src\\Pages\\VNPay",
+    "\\frontend\\src\\Pages\\VNPay\\Success"
   ],
-  "SelectedNode": "\\frontend\\src\\Pages\\Admin\\NewComponent\\index.jsx",
+  "SelectedNode": "\\frontend\\src\\Pages\\UserPage\\BicaCoinPage.jsx",
   "PreviewInSolutionExplorer": false
 }
