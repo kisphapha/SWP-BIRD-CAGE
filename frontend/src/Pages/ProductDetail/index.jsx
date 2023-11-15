@@ -70,7 +70,9 @@ export default function ProductDetails() {
                 return (
                     <div className="flex ml-8 my-2 pl-8">
                         <TextField variant="standard" label="Reply to comment" />
-                        <Button variant="text">Save</Button>
+                        <div>
+                            <Button variant="contained">Save</Button>
+                        </div>
                     </div>
                 )
             }
@@ -155,6 +157,17 @@ export default function ProductDetails() {
         }
         // Store the updated cart in sessionStorage
         sessionStorage.setItem('cart', JSON.stringify(cart))
+        toast.dismiss()
+        toast.success('Thêm vào giỏ hàng thành công', {
+            position: 'bottom-left',
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: 'colored'
+        })
     }
 
     const handlePayment = async () => {
@@ -226,6 +239,11 @@ export default function ProductDetails() {
             console.error('Lỗi thanh toán:', error)
         }
     }
+    const calculateBonus = () => {
+        let bonus = 0
+        bonus += (product.price * product.quantity) / 1000
+        return bonus
+    }
 
     return (
         <div id="page-product">
@@ -242,7 +260,7 @@ export default function ProductDetails() {
             ></CategoryNav>
 
             <div className="product-container">
-                <div className="product">
+                <div className="product rounded-lg">
                     <div className="img-container">
                         <div className="img-main">
                             <img className="big-img" src={focusUrl} />
@@ -478,7 +496,22 @@ export default function ProductDetails() {
                                         </div>
 
                                         <hr className="border  border-slate-300 my-2 w-full" />
+                                        <div>
+                                            <div className="font-bold flex place-content-end">
+                                                <div className="mr-2">Tổng cộng:</div>
+                                                <div>
+                                                    {parseInt(((product.Price * (100 - product.discount)) / 100) * quantity).toLocaleString('vi', {
+                                                        style: 'currency',
+                                                        currency: 'VND'
+                                                    })}{' '}
+                                                </div>
+                                            </div>
 
+                                            <div className="font-bold flex place-content-end">
+                                                <div className="mr-2">Số điểm bonus sẽ tích được:</div>
+                                                <div>{calculateBonus}</div>
+                                            </div>
+                                        </div>
                                         <div className="flex place-content-between">
                                             <div>
                                                 <div className="flex mb-2">
@@ -539,7 +572,7 @@ export default function ProductDetails() {
                         )}
                     </div>
                 </div>
-                <div className="description">
+                <div className="description rounded-lg">
                     <div>
                         <div className="font-bold text-xl my-4">Mô tả</div>
                         <div className="mb-4">{product.Description}</div>
@@ -579,7 +612,7 @@ export default function ProductDetails() {
                         </table>
                     </div>
                 </div>
-                <div className="feedback">
+                <div className="feedback rounded-lg">
                     <div className="font-bold my-4 text-xl ">Đánh giá sản phẩm </div>
 
                     <hr className="border border-slate-300  mt-1" />
@@ -593,13 +626,19 @@ export default function ProductDetails() {
                                         </div>
                                         <div className="mx-4">
                                             <div className="">
-                                                <h4 className=" ">{rating.Name}</h4>
+                                                <div className="flex">
+                                                    <h4 className="font-bold ">{rating.Name}</h4>
+                                                </div>
 
-                                                <div className="text-sm">
+                                                <div className="text-sm flex">
                                                     <Rating name="hover-feedback " size="small" value={rating.StarPoint} precision={1} readOnly />
+                                                    <div className="mx-4"></div>
+                                                    <div className="text-sm text-center flex align-middle">
+                                                        {new Date(rating.createAt).toLocaleDateString()}
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <p>{rating.Content}</p>
+                                            <p className="mt-4">{rating.Content}</p>
                                         </div>
                                     </div>
                                     <div className="mx-8">{getFeedback()}</div>

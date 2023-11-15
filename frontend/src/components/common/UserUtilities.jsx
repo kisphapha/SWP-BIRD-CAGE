@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { NavLink } from 'react-router-dom'
 import './UserUtilities.css'
 import { Assignment, CurrencyBitcoin, LocationOn, Person } from '@mui/icons-material'
-
+import LocalActivityIcon from '@mui/icons-material/LocalActivity'
 const UserUtilities = (props) => {
     return (
         <div className="user-utilities  ">
@@ -30,6 +30,12 @@ const UserUtilities = (props) => {
                 <NavLink to="/" activeClassName="active">
                     <div className="ult-txt">
                         <CurrencyBitcoin /> BiCaCoin
+                    </div>
+                </NavLink>
+
+                <NavLink to="/user/voucher" activeClassName="active">
+                    <div className="ult-txt">
+                        <LocalActivityIcon /> Mã giảm giá
                     </div>
                 </NavLink>
             </div>

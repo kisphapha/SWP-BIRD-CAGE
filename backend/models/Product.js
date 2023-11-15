@@ -236,7 +236,8 @@ const getRatingByProductId = async (ProductId) => {
                 u.Picture, 
                 u.Name, 
                 f.StarPoint, 
-                f.Content 
+                f.Content ,
+                f.createAt
             from 
                 Feedback f, 
                 [User] u 

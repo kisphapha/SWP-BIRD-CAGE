@@ -34,6 +34,7 @@ import Contact from './Pages/NaviFooter/Information/Contact'
 import Components from './Pages/Admin/Component'
 import Shipper from './Pages/ShipperPage'
 import Compare from './Pages/Compare'
+import VoucherPage from './Pages/UserPage/VoucherPage'
 function App() {
     return (
         <div>
@@ -80,7 +81,23 @@ function App() {
                         }
                         path="/user/purchase"
                     />
-                    <Route element={<Cart />} path="cart" />
+                    <Route
+                        element={
+                            <UserProvider>
+                                <VoucherPage />
+                            </UserProvider>
+                        }
+                        path="/user/voucher"
+                    />
+                    <Route
+                        element={
+                            <UserProvider>
+                                <Cart />
+                            </UserProvider>
+                        }
+                        path="cart"
+                    />
+
                     <Route element={<FilteredPage />} path="/filter/:filter/:keyword" />
                     <Route element={<Custom />} path="/Custom" />
                     <Route element={<VNPaySuccess />} path="/test" />
