@@ -74,7 +74,7 @@ const getOrderById = async (id) => {
     }
 };
 
-const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentMethod, Items) => {
+const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentMethod, VoucherID, Items) => {
     try {
         let poolConnection = await sql.connect(config);
         const orderQuery = `
@@ -92,7 +92,8 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                 [UpdateAt],
                 [View_Status],
                 [Status_Shipping],
-                [Status_Paid]
+                [Status_Paid],
+                [VoucherID]
             )
             OUTPUT INSERTED.Id
             VALUES
@@ -109,7 +110,8 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                 GETDATE(),
                 0,
                 N'Chờ duyệt',
-                N'Chưa Thanh Toán'
+                N'Chưa Thanh Toán',
+                @VoucherID
             );
         `;
         const orderRequest = poolConnection.request()
@@ -121,6 +123,8 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
             .input('Note', sql.NVarChar, Note)
             .input('TotalAmount', sql.Int, TotalAmount)
             .input('PaymentMethod', sql.NVarChar, PaymentMethod)
+            .input('VoucherID', sql.Int, VoucherID)
+
         const orderResult = await orderRequest.query(orderQuery);
         const orderId = orderResult.recordset[0].Id;
         for (const item of Items) {
