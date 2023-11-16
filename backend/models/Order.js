@@ -77,6 +77,8 @@ const getOrderById = async (id) => {
 const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, PhoneNumber, Note, TotalAmount, PaymentMethod, VoucherID, Items) => {
     try {
         let poolConnection = await sql.connect(config);
+        const voucherIDValue = VoucherID !== "" ? VoucherID : null;
+
         const orderQuery = `
             INSERT INTO dbo.Orders
             (
@@ -93,8 +95,8 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                 [View_Status],
                 [Status_Shipping],
                 [Status_Paid],
-                [VoucherID]
-                [has]
+                [VoucherID],
+                [haveCustomProduct]
             )
             OUTPUT INSERTED.Id
             VALUES
@@ -112,7 +114,8 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
                 0,
                 N'Chờ duyệt',
                 N'Chưa Thanh Toán',
-                @VoucherID
+                @VoucherID,
+                0
             );
         `;
         const orderRequest = poolConnection.request()
@@ -124,7 +127,7 @@ const addOrderToDB = async (UserID, OrderDate, PaymentDate, ShippingAddress, Pho
             .input('Note', sql.NVarChar, Note)
             .input('TotalAmount', sql.Int, TotalAmount)
             .input('PaymentMethod', sql.NVarChar, PaymentMethod)
-            .input('VoucherID', sql.Int, VoucherID)
+            .input('VoucherID', sql.Int, voucherIDValue)
 
         const orderResult = await orderRequest.query(orderQuery);
         const orderId = orderResult.recordset[0].Id;
@@ -169,7 +172,7 @@ const changeStatus_Paid = async (id) => {
         .input('id', id)
         .query(
             ` UPDATE dbo.Orders
-              SET Status_Paid = 'Paid', View_Status = 0
+              SET Status_Paid = N'Đã thanh toán', View_Status = 0, PaymentDate = GETDATE() 
               WHERE id = @id
               `
         )
@@ -320,7 +323,8 @@ const addCustomProduct = async (productName, Description, Price, Category, Size,
                     UpdateAt,
                     View_Status,
                     Status_Shipping,
-                    Status_Paid
+                    Status_Paid,
+                    [haveCustomProduct]
                 )
                 OUTPUT Inserted.Id
                 VALUES
@@ -336,7 +340,8 @@ const addCustomProduct = async (productName, Description, Price, Category, Size,
                     GETDATE(),
                     0,
                     N'Chờ duyệt',
-                    N'Chưa Thanh Toán'
+                    N'Chưa Thanh Toán',
+                    1
                 )
             `);
         const orderId = orderQuery.recordset[0].Id;
@@ -390,6 +395,30 @@ const addCustomProduct = async (productName, Description, Price, Category, Size,
     }
 }
 
+const getCustomComponentImageByOrderID = async(Id) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const result = await poolConnection.request()
+        .input('Id', Id)
+        .query(
+            ` 
+            select cd.* from Orders o
+            join OrderItem ot 
+            on o.Id = ot.OrdersId
+            join Products p
+            on ot.ProductId  = p.Id
+            join CustomComponent cp 
+            on cp.ProductID = p.Id
+            join ComponentDetail cd 
+            on cd.ID = cp.ComponentID
+            where o.Id = @Id
+            `
+        )
+        return result.recordset;
+    } catch (error) {
+        console.log("error: ", error);
+    }
+}
 
 module.exports = {
     getAllOrder,
@@ -402,5 +431,6 @@ module.exports = {
     loadUnSeen,
     changeToSeen,
     pieChartData,
-    addCustomProduct
+    addCustomProduct,
+    getCustomComponentImageByOrderID
 }

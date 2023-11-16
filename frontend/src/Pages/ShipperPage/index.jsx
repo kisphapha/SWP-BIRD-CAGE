@@ -97,7 +97,10 @@ export default function Shipper() {
             orderId: orderId,
             status: status
         })
-        alert('Order is updated')
+        if (status == "Đã giao"){
+            await axios.get(`http://localhost:3000/order/paidstatus/`+orderId)
+
+        }        alert('Order is updated')
         fetchOrder()
     }
 
@@ -140,7 +143,7 @@ export default function Shipper() {
     }, [])
 
     ///active button
-    const [activeButton, setActiveButton] = useState(null)
+    const [activeButton, setActiveButton] = useState("dangGiao")
 
     const handleButtonClick = (buttonName) => {
         setActiveButton(buttonName)
@@ -277,8 +280,6 @@ export default function Shipper() {
                                                             ))}
                                                         </div>
                                                     </div>
-                                                </div>
-                                            )}
                                             <div className="text-right mx-8 my-4  flex justify-end ">
                                                 <div className="text-xl font-bold   ">Tổng cộng:</div>
                                                 <div className="mx-2"></div>
@@ -286,6 +287,8 @@ export default function Shipper() {
                                                     {order.TotalAmount.toLocaleString('vi', { style: 'currency', currency: 'VND' })}
                                                 </div>
                                             </div>
+                                            </div>
+                                        )}
                                         </div>
                                         <div className="flex mx-2 place-content-between">
                                             <div className="flex gap-4">

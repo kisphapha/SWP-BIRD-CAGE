@@ -20,10 +20,10 @@ const getACategory = async (req, res) => {
 
 const updateCategory = async (req, res) => {
     try {
-        const name  = req.query.name;
-        const imageUrl = req.query.imageUrl;
-        const Allow_Customize = req.query.Allow_Customize;
-        const Id = req.query.Id;
+        const name  = req.body.name;
+        const imageUrl = req.body.imageUrl;
+        const Allow_Customize = req.body.Allow_Customize;
+        const Id = req.body.Id;
         const categories = await Category.updateCategory(name, imageUrl, Allow_Customize, Id);
         res.json(categories);
     }catch (error) {
@@ -33,7 +33,7 @@ const updateCategory = async (req, res) => {
 
 const deleteCategory = async (req, res) => {
     try {
-        const category = await Category.deteleCategory(req.query.id);
+        const category = await Category.deleteCategory(req.params.id);
         res.json("delete success");
     }catch (error){
         res.status(500).json({message: error.message})
@@ -42,12 +42,12 @@ const deleteCategory = async (req, res) => {
 
 const addCategory = async (req, res) => {
     try {
-        const category = await Category.addCategory(req.query.id, req.query.name, req.query.imageU, req.query.Allow_Customize, req.query.isHide);
+        const category = await Category.addCategory(req.body.id, req.body.name, req.body.imageUrl, req.body.Allow_Customize, req.body.isHide);
     }catch (error){
         res.status(500).json({message: error.message})
     }
 }
-
+    
 
 module.exports = {
     getAll,

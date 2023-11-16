@@ -15,10 +15,10 @@ productRouter.post("/paging/category", ProductController.paging);
 productRouter.post("/filter/", ProductController.filterProduct);
 productRouter.post("/paging/search", ProductController.pagingSearchBar);
 
-
-
 productRouter.get("/:id", ProductController.getProductById);
 productRouter.delete("/:id", ProductController.deleteProduct);
+
+
 
 
 

@@ -69,27 +69,34 @@ function Dashboard() {
                                     <PieChart />
                                 </div>
                             </div>
-                            <div className="ml-80 bg-white w-1/2">
-                                <div className="flex-col items-center  justify-center    ">
+                            <div className="leaderboard-container ml-80 bg-white w-1/2">
+                                {/* <div className="flex-col items-center  justify-center    ">
                                     <h1 className="pl-8 my-8 ">Best Sellers</h1>
                                     <div className="px-64 my-8"></div>
-                                </div>
-                                <table className="">
+                                </div> */}
+                                <table className="best-seller">
+                                    <caption><b>Sản phẩm bán chạy nhất</b></caption>
                                     <tr>
+                                        <th style={{width: '15%'}}>Ảnh</th>
+                                        <th style={{width: '55%'}}>Tên lồng</th>
+                                        <th style={{width: '15%', textAlign: 'center'}}>Giá</th>
+                                        <th style={{width: '15%', textAlign: 'center'}}>Tổng bán được</th>
                                     </tr>
-
                                     {bestSellers.map((sell, index) => (
                                         index < 5 && (
-                                            <tr key={sell.id} className="items-center flex  px-4 ">
-                                                <td className="mr-4 w-40 ">
+                                            <tr key={sell.id}>
+                                                <td>
                                                     <img
                                                         className="w-20 h-20"
                                                         src={sell.productDetail.Url}
                                                     />
                                                 </td>
-                                                <td className="w-4/5 mr-36">{sell.productDetail.Name}</td>
-                                                <td className="w-2/6 mr-36">{sell.productDetail.Price}</td>
-                                                <td className="w-1/6 flex gap-3 ">{sell.total_quantity_sold}</td>
+                                                <td>{sell.productDetail.Name}</td>
+                                                <td style={{textAlign: 'center'}}>{parseInt(sell.productDetail.Price).toLocaleString('vi', {
+                                                                        style: 'currency',
+                                                                        currency: 'VND'
+                                                                    })}{' '}</td>
+                                                <td style={{textAlign: 'center'}}>{sell.total_quantity_sold}</td>
                                             </tr>
                                         )
                                         //await 

@@ -7,12 +7,16 @@ import HomeIcon from '@mui/icons-material/Home'
 import InfoIcon from '@mui/icons-material/Info'
 import PhoneIcon from '@mui/icons-material/Phone'
 import HandymanIcon from '@mui/icons-material/Handyman'
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import CompareIcon from '@mui/icons-material/Compare'
 import { Badge } from '@mui/material'
+import axios from 'axios'
 
-export default function Navbar() {
+export default function Navbar({getCardListFilter}) {
     const [cartData, setCartData] = useState({ products: [] })
-    const [loading, setLoading] = useState(true)
+    // const [loading, setLoading] = useState(true)
+    const [category, setCategory] = useState([])
+    const [cateId, setCateId] = useState('')
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -20,8 +24,14 @@ export default function Navbar() {
         if (cartDataFromSession) {
             setCartData(JSON.parse(cartDataFromSession))
         }
-        setLoading(false)
+        async function fetchCategory() {
+            const response = await axios.get(`http://localhost:3000/Category/`)
+            setCategory(response.data)
+        }
+        fetchCategory()
+        // setLoading(false)
     }, [])
+    
 
     const totalProductQuantity = () => {
         let total = 0
@@ -32,14 +42,31 @@ export default function Navbar() {
         })
         return total
     }
+    
+    const handleSeeMore = (categoryId) => {
+        setCateId(categoryId)
+        console.log(cateId)
+        navigate('/filter/' + 1 + '/' + categoryId)
+        getCardListFilter(1, categoryId)
+    }
 
     return (
         <div id="navbar">
             <div className="menu">
                 <div className="menu-button">☰ Danh Mục Sản Phẩm </div>
                 <ul className="menu-list">
-                    <li>Lồng Chim</li>
-                    <li>Phụ Kiện</li>
+                    <li className="cage-menu">
+                        <div className="cage">Lồng Chim <KeyboardArrowRightIcon/></div>
+                        <ul className="cage-list">
+                        {category.map((cate) => 
+                        cate.id.trim() != "PK" &&(
+                            <li key={cate} value={cate.id} onClick={() => handleSeeMore(cate.id)}>
+                                {cate.name}
+                            </li>
+                        ))}
+                        </ul>
+                    </li>
+                    <li onClick={() => handleSeeMore("PK")}>Phụ Kiện</li>
                 </ul>
             </div>
             <nav className="nav">
