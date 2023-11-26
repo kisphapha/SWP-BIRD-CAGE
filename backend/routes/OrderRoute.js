@@ -30,5 +30,7 @@ OrderRouter.post("/addCustomProduct", OrderController.addCustomProduct);
 
 OrderRouter.get("/:id", OrderController.getOrderById);
 
+OrderRouter.get("/list2/:id", OrderController.getCustomOrderItemByOrderID);
+
 module.exports = OrderRouter;
 

@@ -1,14 +1,10 @@
 ﻿import {
     Button,
-    FormControl,
-    FormControlLabel,
-    FormLabel,
     Paper,
-    Radio,
-    RadioGroup,
     TableBody,
     TableCell,
     TableContainer,
+    Table,
     TableHead,
     TableRow,
     TextField
@@ -54,14 +50,23 @@ export default function Order() {
     const [orderItem, setOrderItem] = useState([])
     const [rows, setRows] = useState([])
     const [btnState, setBtnState] = useState('')
+    const [selectedComponents, setSelectedComponents] = useState([])
 
     const handleRowClick = async (id) => {
         console.log(id)
         const order = await getAnOrder(id)
         const detail = await fetchOrderItems(id)
+        const component =  await getComponents(id)
         setOrder(order)
         setOrderItem(detail)
         setOpenPopup(true)
+        setSelectedComponents(component)        
+    }
+
+    async function getComponents(id) {
+        const response = await axios.get(`http://localhost:3000/order/getCustomComponentImageByOrderID?orderId=${id}`)
+        console.log(response.data)
+        return response.data
     }
 
     async function getAnOrder(id) {
@@ -139,7 +144,7 @@ export default function Order() {
     }, [])
 
     ///active button
-    const [activeButton, setActiveButton] = useState(null)
+    const [activeButton, setActiveButton] = useState('choDuyet')
 
     const handleButtonClick = (buttonName) => {
         setActiveButton(buttonName)
@@ -225,6 +230,7 @@ export default function Order() {
                                         onClick={() => {
                                             handleRowClick(card.OrderId)
                                         }}
+                                        style={{backgroundColor: card.haveCustomProduct ? 'cyan' : 'white'}}
                                     >
                                         <TableCell className="w-12">{card.OrderId}</TableCell>
                                         <TableCell className="w-1/6">{card.Name}</TableCell>
@@ -279,7 +285,7 @@ export default function Order() {
                                                     </div>
                                                 </div>
                                                 <div className="overflow-y-scroll h-96">
-                                                {orderItem.map((item) => (
+                                                {order.haveCustomProduct == false ? orderItem.map((item) => (
                                                     <div key={item.Id}>
                                                         <hr />
                                                         <div className="flex my-2 place-content-between">
@@ -306,7 +312,56 @@ export default function Order() {
                                                         </div>
                                                         <hr />
                                                     </div>
-                                                ))}
+                                                )):(
+                                                    <TableContainer className="" component={Paper}>
+                                                    <Table aria-label="simple table">
+                                                        <TableHead>
+                                                            <TableRow>
+                                                                <TableCell>
+                                                                    <div className="text-center  font-bold text-base">Ảnh</div>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <div className="text-center font-bold  text-base">Tên thành phần</div>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <div className="text-center font-bold  text-base">Thời gian chế tác</div>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <div className="text-center font-bold  text-base">Giá</div>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        </TableHead>
+                                                        <TableBody>
+                                                            {selectedComponents.map((selectedComponent, index) => (
+                                                                <TableRow key={`a${index}`}>
+                                                                    <TableCell>
+                                                                        <div>
+                                                                            {selectedComponent ?.Picture ? (
+                                                                                <img className="w-20 h-20" src={selectedComponent ?.Picture} />
+                                                                            ) : (
+                                                                                <div className="h-20"></div>
+                                                                            )}
+                                                                        </div>
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                        <div>{selectedComponent ?.Description || ''}</div>
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                        <div>{selectedComponent ?.CraftTime || 'N/A'}
+                                                                        </div>
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                        <div>
+                                                                            {selectedComponent ?.Price.toLocaleString('vi', { style: 'currency', currency: 'VND' }) ||
+                                                                                ''}
+                                                                        </div>
+                                                                    </TableCell>
+                                                                </TableRow>
+                                                            ))}
+                                                        </TableBody>
+                                                    </Table>
+                                                </TableContainer>
+                                                )}
                                                 </div>
                                                 <div className="text-right mx-8 my-4  flex justify-end ">
                                                     <div className="text-xl font-bold   ">Tổng cộng:</div>

@@ -79,6 +79,7 @@ const OrderList = (props) => {
                 const orderWithItems = { ...order, items: itemWithRatings };
                 ordersWithItems.push(orderWithItems);
             }
+            console.log(ordersWithItems);
             setCards(ordersWithItems);
         }
     }
@@ -163,17 +164,20 @@ const OrderList = (props) => {
                                         </div>
                                     </div>
                                     <div className="text-end">
-                                        <Button
-                                            className=""
-                                            variant="contained"
-                                            onClick={() => handleFeedbackButtonClick(card, item)}
-                                        >
-                                            {item.ratings.some((rating) => rating.userid === props.user.Id)
-                                                ? 'Xem đánh giá'
-                                                : 'Đánh giá'}
-                                        </Button>
+                                        
 
                                         <Popup
+                                            trigger={
+                                                <Button
+                                                    className=""
+                                                    variant="contained"
+                                                    onClick={() => handleFeedbackButtonClick(card, item)}
+                                                >
+                                                    {item.ratings.some((rating) => rating.userid === props.user.Id)
+                                                        ? 'Xem đánh giá'
+                                                        : 'Đánh giá'}
+                                                </Button>
+                                            }
                                             open={openPopup}
                                             position="right center"
                                             closeOnDocumentClick={false}

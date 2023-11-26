@@ -156,7 +156,7 @@ const Profile = (props) => {
                                     variant="standard"
                                     onChange={handlePhoneNumberChange}
                                     onKeyDown={handleKeyDown}
-                                    value={phoneNumber}
+                                    value={phoneNumber != null ? phoneNumber : null}
                                     helperText={(!checkValidation || !checkNumChar) ? (!phoneNumber ? 'Xin hãy nhập số điện thoại' : 'Số điện thoại không hợp lệ') : ('')}
                                 />
                             </td>

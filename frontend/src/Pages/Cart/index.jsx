@@ -85,7 +85,7 @@ export default function Cart() {
         const updatedCart = { ...cartData }
         const productIndex = updatedCart.products.findIndex((product) => product.id === productId)
 
-        if (updatedCart.products[productIndex].quantity < 10) {
+        if (updatedCart.products[productIndex].quantity < updatedCart.products[productIndex].stock) {
             updatedCart.products[productIndex].quantity = parseInt(updatedCart.products[productIndex].quantity) + 1
             sessionStorage.setItem('cart', JSON.stringify(updatedCart))
             setCartData(updatedCart)
@@ -99,7 +99,7 @@ export default function Cart() {
             if (cartItems && cartItems.length > 0) {
                 if (sessionStorage.loginedUser != null) {
                     if (orderAddress) {
-                        if (phoneNumber) {
+                        if (phoneNumber && checkNumChar) {
                             if(checkValidation){
                                 const res = await axios.post('http://localhost:3000/order/addordertodb', {
                                     UserID: user.Id,
@@ -158,8 +158,6 @@ export default function Cart() {
                                 const emptyCart = { products: [] }
                                 setCartData(emptyCart)
                                 sessionStorage.setItem('cart', JSON.stringify(emptyCart))
-                                window.location.reload(false)
-
                             }else {
                                 setCheckValidation(false)
                             }
@@ -289,6 +287,14 @@ export default function Cart() {
         setPhoneNumber(event.target.value)
     }
 
+    const checkUserPhoneNum = () => {
+        if (user.PhoneNumber) {
+            setPhoneNumber(user.PhoneNumber)
+            console.log(user.PhoneNumber)
+            console.log(phoneNumber)
+        }
+    }
+
     const handleKeyDown = (event) => {
         const forbiddenKeys = ['e', '+', '-', '.'];
 
@@ -393,7 +399,10 @@ export default function Cart() {
                                     {cartData.products.length != 0 ? (
                                         <Popup
                                             trigger={<Button variant="contained">Thanh toán</Button>}
-                                            onOpen={fetchAddresses}
+                                            onOpen={()=>{
+                                                fetchAddresses()
+                                                checkUserPhoneNum()
+                                            }}
                                             closeOnDocumentClick={false}
                                             position="right center"
                                             modal

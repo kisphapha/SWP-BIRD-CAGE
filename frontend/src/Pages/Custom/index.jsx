@@ -73,19 +73,25 @@ export default function Custom() {
     }
 
     const handleCountChangeOnlyNumber = (event) => {
-        // Allow only numbers and an empty string
-        const input = event.target.value;
-        const regex = /^[0-9]*$/;
+        const forbiddenKeys = ['e', '+', '-', '.'];
 
-        if (regex.test(input) || input === '') {
-            setTempCount(input);
+        // Prevent the characters "e", "+", and "-" from being entered.
+        if (forbiddenKeys.includes(event.key)) {
+            event.preventDefault();
         }
     };
 
     const handleKeyDown = (event) => {
+        const forbiddenKeys = ['e', '+', '-', '.'];
+
         // Prevent the characters "e", "+", and "-" from being entered.
-        if (['e', '+', '-', '.'].includes(event.key)) {
-            event.preventDefault()
+        if (forbiddenKeys.includes(event.key)) {
+            event.preventDefault();
+        }
+
+        // Prevent input when the length is 11 and the key pressed is not delete, backspace, or arrow keys.
+        if (event.target.value.length >= 11 && !['Delete', 'Backspace', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+            event.preventDefault();
         }
     }
 
@@ -108,7 +114,6 @@ export default function Custom() {
     }
 
 
-
     const componentType = ['Móc', 'Khung', 'Nan', 'Nắp', 'Đáy', 'Bình nước']
 
     const initialSelectedComponents = componentType.map((type) => ({
@@ -117,6 +122,15 @@ export default function Custom() {
     }))
 
     const [selectedComponents, setSelectedComponents] = useState(initialSelectedComponents)
+
+    const handleChangeCageType = () =>{
+        handleRemoveComponent('Móc')
+        handleRemoveComponent('Khung')
+        handleRemoveComponent('Nan')
+        handleRemoveComponent('Nắp')
+        handleRemoveComponent('Đáy')
+        handleRemoveComponent('Bình nước')
+    }
 
     const handleSelectedComponentChange = (event, componentType) => {
         const selectedComponentData = components.find((component) => component.ID === event.target.value)
@@ -180,6 +194,7 @@ export default function Custom() {
                         PhoneNumber: phoneNumber,
                         OrderDate: new Date().toISOString().slice(0, 10),
                         PaymentDate: null,
+                        VoucherID: orderVoucher,
                         Note: '',
                         // Them voucher zo sau
                         TotalAmount: total,
@@ -285,9 +300,11 @@ export default function Custom() {
                 }
                 return comp
             })
+            setSelectedComponents(updatedSelectedComponents)
             return updatedSelectedComponents
         })
     }
+
     return (
         <form action="">
             <div className="w-full">
@@ -307,6 +324,7 @@ export default function Custom() {
                                         onClick={() => {
                                             fetchComponents(category.id.trim())
                                             setSelectedImage(index + 1)
+                                            handleChangeCageType()
                                         }}
                                         key={index}
                                     >
@@ -344,6 +362,7 @@ export default function Custom() {
                                                 <hr className="border" style={{ borderTop: `5px solid ${typeToColor[type] || 'gray'}` }} />
 
                                                 <TextField
+                                                    id={type}
                                                     fullWidth
                                                     required
                                                     select
@@ -434,13 +453,13 @@ export default function Custom() {
                                 </div>
                                 <div className="w-1/6 mt-6 ">
                                     <TextField
+                                        type="number"
                                         fullWidth
                                         placeholder={'Số lượng'}
                                         variant="standard"
-                                        onChange={handleCountChange, handleCountChangeOnlyNumber}
+                                        onChange={handleCountChange}
+                                        onKeyDown={handleCountChangeOnlyNumber}
                                         value={tmpCount}
-                                        multiline
-                                        rows={1}
                                     />
                                 </div>
                                 <div className="mt-8 w-3/8">

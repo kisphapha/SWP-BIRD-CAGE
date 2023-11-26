@@ -5,9 +5,11 @@ import Navbar from '../../components/common/Navbar';
 import { Paper, TableBody, TableCell, TableContainer, TableHead, TableRow, Button } from '@mui/material';
 import axios from 'axios';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useNavigate } from 'react-router-dom';
 
 export default function Compare() {
     const [product, setProduct] = useState([]);
+    const navigate = useNavigate()
 
     const fetchProduct = async (id) => {
         const response = await axios.get(`http://localhost:3000/products/${id}`);
@@ -99,7 +101,7 @@ export default function Compare() {
                                                 ) : (
                                                     <div className='mx-12 text-center flex gap-2'>
                                                         <div>
-                                                            <Button className='' variant='contained'>Mua Ngay</Button>
+                                                            <Button className='' variant='contained' onClick={() => {navigate('/products/'+pro.Id)}}>Mua Ngay</Button>
                                                         </div>
                                                         <div>
                                                             {/* Pass the removeProductFromCompare function and product ID */}

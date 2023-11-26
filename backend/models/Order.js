@@ -7,14 +7,15 @@ const getAllOrder = async () => {
         const result = await poolConnection.request().query(
             `SELECT dbo.Orders.Id AS OrderId,
             dbo.[User].Name,dbo.Orders.OrderDate,Orders.Status_Paid,
-            dbo.Orders.Status_Shipping,
+            dbo.Orders.Status_Shipping,dbo.Orders.haveCustomProduct,
             CONCAT(dbo.UserAddress.SoNha,', ', dbo.UserAddress.PhuongXa,', ',dbo.UserAddress.QuanHuyen,', ', dbo.UserAddress.TinhTP ) AS Address,
             dbo.Orders.PhoneNumber, dbo.Orders.TotalAmount, dbo.Orders.UpdateAt, dbo.Orders.Note 
             FROM dbo.Orders 
             JOIN dbo.[User]
             ON [User].Id = Orders.UserID
             JOIN dbo.UserAddress
-            ON UserAddress.ID = Orders.AddressID`
+            ON UserAddress.ID = Orders.AddressID
+            ORDER BY OrderDate desc`
         );
         return result.recordset;
     } catch (error) {
@@ -420,6 +421,26 @@ const getCustomComponentImageByOrderID = async(Id) => {
     }
 }
 
+const getCustomOrderItemByOrderID = async (id) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const query = `
+            SELECT p.Id, p.Name, oi.CreatedAt, oi.Price, oi.Quantity, c.name AS Shape, p.discount, p.material
+            FROM OrderItem oi
+            INNER JOIN Orders o ON o.Id = oi.OrdersId
+            INNER JOIN Products p ON oi.ProductId = p.id
+            INNER JOIN Category c ON p.Category = c.Id
+            WHERE o.Id = @OrderId;
+        `;
+        const result = await poolConnection.request()
+            .input('OrderId', sql.Int, id)
+            .query(query);
+        return result.recordset;
+    } catch (error) {
+        console.log("error: ", error);
+    }
+};
+
 module.exports = {
     getAllOrder,
     getOrderById,
@@ -432,5 +453,6 @@ module.exports = {
     changeToSeen,
     pieChartData,
     addCustomProduct,
-    getCustomComponentImageByOrderID
+    getCustomComponentImageByOrderID,
+    getCustomOrderItemByOrderID
 }

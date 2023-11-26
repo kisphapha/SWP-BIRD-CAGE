@@ -8,7 +8,7 @@ const getAllCategory = async () => {
             `SELECT c.id, c.name, c.imageUrl, c.Allow_customize
             FROM Category c
             LEFT JOIN Products p ON p.Category = c.id
-            WHERE c.isHide = 0 
+            WHERE c.isHide = 'false'
 
             GROUP BY c.id, c.name, c.imageUrl, c.Allow_customize
             ORDER BY c.id;`
