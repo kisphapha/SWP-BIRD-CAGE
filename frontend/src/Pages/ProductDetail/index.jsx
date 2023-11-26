@@ -400,16 +400,11 @@ export default function ProductDetails() {
                                 close()
                                 setOrderAddress('')
                                 setPhoneNumber('')
-                                // sessionStorage.setItem('cart', '{"products":[]}')
-                                // window.location.reload(false)
                             }
-                            // sessionStorage.setItem('cart', '{"products":[]}')
                         } else {
-                            // setThrowError('Xin hãy nhập đúng số điện thoại')
-                        setCheckValidation(false)
+                            setCheckValidation(false)
                         }
                     } else {
-                        // setThrowError("Xin hãy nhập số điện thoại")
                         setCheckValidation(false)
                     }
                 } else {

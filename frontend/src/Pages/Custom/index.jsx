@@ -25,6 +25,7 @@ export default function Custom() {
     const [addressList, setAddressList] = useState([])
     const [phoneNumber, setPhoneNumber] = useState('')
     const [paymentMethod, setPaymentMethod] = useState('COD')
+    const [checkAddress, setCheckAddress] = useState(true)
     const [checkValidation, setCheckValidation] = useState(true)
     const [openPopup, setOpenPopup] = useState(false)
     const [voucherList, setVoucherList] = useState([])
@@ -72,6 +73,14 @@ export default function Custom() {
         setPhoneNumber(event.target.value)
     }
 
+    const checkUserPhoneNum = () => {
+        if(user.PhoneNumber) {
+            setPhoneNumber(user.PhoneNumber)
+            console.log(user.PhoneNumber)
+            console.log(phoneNumber)
+        }
+    }
+
     const handleCountChangeOnlyNumber = (event) => {
         const forbiddenKeys = ['e', '+', '-', '.'];
 
@@ -109,8 +118,9 @@ export default function Custom() {
     }
 
 
-    function isOrderAddressEmpty(orderAddress) {
-        return !orderAddress || orderAddress.trim() === ''
+    const handleAddressChange = (event) => {
+        setCheckAddress(true)
+        setOrderAddress(event.target.value)
     }
 
 
@@ -173,7 +183,7 @@ export default function Custom() {
         return regex.test(inputValue)
     }
 
-    const handlePayment = async () => {
+    const handlePayment = async (close) => {
         if (sessionStorage.loginedUser != null) {
             if (orderAddress) {
                 if (phoneNumber) {
@@ -194,9 +204,8 @@ export default function Custom() {
                         PhoneNumber: phoneNumber,
                         OrderDate: new Date().toISOString().slice(0, 10),
                         PaymentDate: null,
-                        VoucherID: orderVoucher,
                         Note: '',
-                        // Them voucher zo sau
+                        VoucherID: orderVoucher,
                         TotalAmount: total,
                         PaymentMethod: paymentMethod,
                         Quantity: 1,
@@ -240,10 +249,13 @@ export default function Custom() {
                     }
                     // sessionStorage.setItem('cart', '{"products":[]}')
                 } else {
-                    alert('Please enter your phone number')
+                    setCheckValidation(false)
                 }
             } else {
-                alert('Please enter your address')
+                setCheckAddress(false)
+                if(!phoneNumber){
+                    setCheckValidation(false)
+                }
             }
         } else {
             alert('Đăng nhập để tiến hành thanh toán')
@@ -502,7 +514,7 @@ export default function Custom() {
                                     closeOnDocumentClick={false}
                                     position="right center"
                                     modal
-                                    onOpen={() => { fetchAddresses(); fetchVouchers(); }}
+                                    onOpen={() => { fetchAddresses(); fetchVouchers(); checkUserPhoneNum()}}
                                     onClose={() => setOpenPopup(false)}
                                 >
                                     {(close) => (
@@ -522,11 +534,9 @@ export default function Custom() {
                                                             SelectProps={{
                                                                 native: true
                                                             }}
-                                                            onChange={(event) => {
-                                                                setOrderAddress(event.target.value)
-                                                            }}
-                                                            error={isOrderAddressEmpty(orderAddress)}
-                                                            helperText={isOrderAddressEmpty(orderAddress) ? 'Xin hãy chọn địa chỉ' : ''}
+                                                            onChange={handleAddressChange}
+                                                            error={!checkAddress}
+                                                            helperText={!checkAddress ? 'Xin hãy chọn địa chỉ' : ''}
                                                         >
                                                             <option value="" selected></option>
                                                             {addressList.map((adr) => (
@@ -715,8 +725,7 @@ export default function Custom() {
                                                         <Button
                                                             variant="contained"
                                                             onClick={() => {
-                                                                close()
-                                                                handlePayment()
+                                                                handlePayment(close)
                                                             }}
                                                         >
                                                             Thanh toán

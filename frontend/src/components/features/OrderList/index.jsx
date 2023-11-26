@@ -164,8 +164,6 @@ const OrderList = (props) => {
                                         </div>
                                     </div>
                                     <div className="text-end">
-                                        
-
                                         <Popup
                                             trigger={
                                                 <Button
@@ -174,7 +172,7 @@ const OrderList = (props) => {
                                                     onClick={() => handleFeedbackButtonClick(card, item)}
                                                 >
                                                     {item.ratings.some((rating) => rating.userid === props.user.Id)
-                                                        ? 'Xem đánh giá'
+                                                        ? 'Đánh giá'
                                                         : 'Đánh giá'}
                                                 </Button>
                                             }
