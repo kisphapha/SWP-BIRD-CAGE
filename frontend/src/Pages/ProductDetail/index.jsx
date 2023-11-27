@@ -346,7 +346,7 @@ export default function ProductDetails() {
                                 PaymentDate: null,
                                 AddressID: orderAddress,
                                 PhoneNumber: phoneNumber,
-                                Note: 'abcxyz',
+                                Note: '',
                                 TotalAmount: calculateGrandTotal(),
                                 PaymentMethod: paymentMethod,
                                 Status: 'UNPAID',

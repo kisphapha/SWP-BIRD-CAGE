@@ -15,7 +15,7 @@ const getAllOrder = async () => {
             ON [User].Id = Orders.UserID
             JOIN dbo.UserAddress
             ON UserAddress.ID = Orders.AddressID
-            ORDER BY OrderDate desc`
+            ORDER BY OrderId desc`
         );
         return result.recordset;
     } catch (error) {

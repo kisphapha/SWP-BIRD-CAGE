@@ -107,7 +107,7 @@ export default function Cart() {
                                     PaymentDate: null,
                                     AddressID: orderAddress,
                                     PhoneNumber: phoneNumber,
-                                    Note: 'Cart',
+                                    Note: '',
                                     TotalAmount: calculateGrandTotal(),
                                     PaymentMethod: paymentMethod,
                                     VoucherID: orderVoucher,
