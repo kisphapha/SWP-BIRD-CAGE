@@ -230,9 +230,8 @@ export default function Order() {
                                         onClick={() => {
                                             handleRowClick(card.OrderId)
                                         }}
-                                        style={{backgroundColor: card.haveCustomProduct ? 'cyan' : 'white'}}
                                     >
-                                        <TableCell className="w-12">{card.OrderId}</TableCell>
+                                        <TableCell className="w-12" style={{backgroundColor: card.haveCustomProduct ? 'cyan' : 'white'}}>{card.OrderId}</TableCell>
                                         <TableCell className="w-1/6">{card.Name}</TableCell>
                                         <TableCell>{card.OrderDate ? card.OrderDate.substr(0, 10) : ''}</TableCell>
                                         <TableCell>{card.Status_Paid}</TableCell>
