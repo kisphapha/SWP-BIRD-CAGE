@@ -157,7 +157,7 @@ const BicaCoinPage = () => {
                                         <Button className="w-48 h-16" variant="contained" onClick={() => {
                                             close();
                                             window.location.reload()
-                                        }                                             
+                                    }
                                                 }>
                                             <div className="text-2xl font-bold">
                                                 NHẬN
