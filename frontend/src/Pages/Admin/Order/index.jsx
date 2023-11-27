@@ -371,7 +371,7 @@ export default function Order() {
                                                 </div>
                                                 <div className="flex mx-2 place-content-between">
                                                     <div className="flex gap-4">
-                                                        {getActiveStep(order.Status_Shipping) < 3 && (
+                                                        {getActiveStep(order.Status_Shipping) < 2 && (
                                                             <Button
                                                                 variant="outlined"
                                                                 onClick={() => {

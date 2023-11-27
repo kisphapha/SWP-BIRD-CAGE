@@ -134,12 +134,9 @@ export default function Custom() {
     const [selectedComponents, setSelectedComponents] = useState(initialSelectedComponents)
 
     const handleChangeCageType = () =>{
-        handleRemoveComponent('Móc')
-        handleRemoveComponent('Khung')
-        handleRemoveComponent('Nan')
-        handleRemoveComponent('Nắp')
-        handleRemoveComponent('Đáy')
-        handleRemoveComponent('Bình nước')
+        for(const comp of componentType){
+            handleRemoveComponent(comp)
+        }
     }
 
     const handleSelectedComponentChange = (event, componentType) => {
