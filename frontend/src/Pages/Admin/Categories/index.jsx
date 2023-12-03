@@ -76,6 +76,8 @@ export default function Categories() {
     async function handleDelete(id) {
         try{
             const response = await axios.delete('http://localhost:3000/category/delete/' + id)
+            alert("Đã xóa danh mục này")
+            fetchCategories()
         } catch {
             alert("Không thể xóa danh mục này")
             fetchCategories()

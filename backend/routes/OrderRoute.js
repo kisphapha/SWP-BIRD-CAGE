@@ -14,6 +14,8 @@ OrderRouter.post("/addordertodb", OrderController.addOrderToDB);
 
 OrderRouter.get("/list/:id", OrderController.getOrderItemByOrderID);
 
+OrderRouter.get("/list2/:id", OrderController.getCustomOrderItemByOrderID);
+
 OrderRouter.get("/user/:id", OrderController.getOrderByUserId);
 
 OrderRouter.get("/user2/:id", OrderController.getOrderByUserId2);

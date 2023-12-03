@@ -181,6 +181,7 @@ export default function Custom() {
                         OrderDate: new Date().toISOString().slice(0, 10),
                         PaymentDate: null,
                         Note: '',
+                        VoucherID: orderVoucher,
                         // Them voucher zo sau
                         TotalAmount: total,
                         PaymentMethod: paymentMethod,

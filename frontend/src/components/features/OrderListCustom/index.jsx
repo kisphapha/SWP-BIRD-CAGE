@@ -27,7 +27,7 @@ const OrderListCustom = (props) => {
     };
 
     async function fetchOrderItems(id) {
-        const response = await axios.get(`http://localhost:3000/order/list/${id}`);
+        const response = await axios.get(`http://localhost:3000/order/list2/${id}`);
         return response.data;
     }
 
@@ -38,13 +38,25 @@ const OrderListCustom = (props) => {
 
     async function fetchOrder() {
         const response = await axios.get(`http://localhost:3000/order/user2/${props.user.Id}`);
-        if (response.data.length > 0) {
-            const order = response.data;
-            const items = await fetchOrderItems(order.Id);
-            const customComponents = await fetchCustomComponents(order.Id);
+        if (response.data) {
+            const jsonData = response.data;
+            const ordersWithItems = [];
 
-            const orderWithItems = { ...order, items, customComponents };
-            setCards([orderWithItems]);
+            for (const order of jsonData) {
+                const items = await fetchOrderItems(order.Id);
+                const itemsWithCustomComponents = [];
+
+                for (const item of items) {
+                    const customComponents = await fetchCustomComponents(order.Id);
+                    const itemWithCustomComponents = { ...item, customComponents };
+                    itemsWithCustomComponents.push(itemWithCustomComponents);
+                }
+
+                const orderWithItems = { ...order, items: itemsWithCustomComponents };
+                ordersWithItems.push(orderWithItems);
+            }
+            console.log(ordersWithItems)
+            setCards(ordersWithItems);
         }
     }
 
@@ -83,7 +95,7 @@ const OrderListCustom = (props) => {
                     <hr className="border  border-slate-300 my-2 w-full " />
 
                     <div className="flex-row w-full">
-                        {card.customComponents.map((component) => (
+                        {card.items[0].customComponents.map((component) => (
                             <div key={component.Id}>
                                 <div className="flex-row w-full">
                                     <div className="flex place-content-between">

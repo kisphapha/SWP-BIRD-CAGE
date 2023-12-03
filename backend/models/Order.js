@@ -205,6 +205,27 @@ const getAllOrderItemByOrderID = async (id) => {
     }
 };
 
+const getCustomOrderItemByOrderID = async (id) => {
+    try {
+        let poolConnection = await sql.connect(config);
+        const query = `
+            SELECT p.Id, p.Name, oi.CreatedAt, oi.Price, oi.Quantity, c.name AS Shape, p.discount, p.material
+            FROM OrderItem oi
+            INNER JOIN Orders o ON o.Id = oi.OrdersId
+            INNER JOIN Products p ON oi.ProductId = p.id
+            INNER JOIN Category c ON p.Category = c.Id
+            WHERE o.Id = @OrderId;
+        `;
+        const result = await poolConnection.request()
+            .input('OrderId', sql.Int, id)
+            .query(query);
+        return result.recordset;
+    } catch (error) {
+        console.log("error: ", error);
+    }
+};
+
+
 
 const loadUnSeen = async (id) => {
     try {
@@ -432,5 +453,6 @@ module.exports = {
     changeToSeen,
     pieChartData,
     addCustomProduct,
-    getCustomComponentImageByOrderID
+    getCustomComponentImageByOrderID,
+    getCustomOrderItemByOrderID
 }

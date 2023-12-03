@@ -65,6 +65,15 @@ const getOrderItemByOrderID = async (req, res) => {
         res.status(500).json({ message: error.message })
     }
 }
+const getCustomOrderItemByOrderID = async (req, res) => {
+    try {
+        const order = await Order.getCustomOrderItemByOrderID(req.params.id);
+        res.json(order);
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+}
+
 
 const changeStatus_Paid = async (req, res) => {
     try {
@@ -153,5 +162,6 @@ module.exports = {
     changeToSeen,
     pieChartData,
     addCustomProduct,
-    getCustomComponentImageByOrderID
+    getCustomComponentImageByOrderID,
+    getCustomOrderItemByOrderID
 }
