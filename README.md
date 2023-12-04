@@ -25,13 +25,13 @@ The Bird Cage Shop project includes the following features:
 
 To run the Bird Cage Shop project locally, follow these steps:
 
-1. Clone the repository: `git clone https://github.com/your-username/bird-cage-shop.git`
+1. Clone the repository: `git clone https://github.com/kisphapha/SWP-BIRD-CAGE.git`
 
 2. Install dependencies:
-   - Navigate to the frontend directory: `cd bird-cage-shop/frontend`
+   - Navigate to the frontend directory: `cd ./frontend`
    - Run `npm install` to install frontend dependencies.
    
-   - Navigate to the backend directory: `cd bird-cage-shop/backend`
+   - Navigate to the backend directory: `cd ./backend`
    - Run `npm install` to install backend dependencies.
 
 3. Database Setup:
