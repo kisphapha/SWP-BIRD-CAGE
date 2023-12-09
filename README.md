@@ -36,7 +36,13 @@ To run the Bird Cage Shop project locally, follow these steps:
 
 3. Database Setup:
    - Set up a SQL Server database.
-   - Update the database configuration in the backend configuration files.
+   - Update the database configuration in the backend configuration files. In backend folder, add an ".env" file with following content:
+         DB_USER = <Your user name>
+         DB_PASSWORD = <Your password>
+         DB_SERVER = <Your server's name>
+         DB_PORT = 1433
+         DB_NAME = bica10
+         PORT=3000
 
 4. Start the Application:
    - Start the frontend: In the frontend directory, run `npm run dev`.
